@@ -30,44 +30,96 @@
 </div>
             <div id="padding"></div>
             <div id="toc"><ul class="sectlevel1">
-<li><a href="#_overview">1. Overview</a></li>
-<li><a href="#_history">2. History</a></li>
-<li><a href="#_operating_modes">3. Operating Modes</a>
+<li><a href="#_history">1. History</a></li>
+<li><a href="#_operating_modes">2. Operating Modes</a>
 <ul class="sectlevel2">
-<li><a href="#_real_mode">3.1. Real Mode</a></li>
-<li><a href="#_protected_mode_16_bit">3.2. Protected Mode (16-bit)</a></li>
-<li><a href="#_protected_mode_32_bit">3.3. Protected Mode (32-bit)</a></li>
-<li><a href="#_compatibility_mode_x86_64_only">3.4. Compatibility Mode (x86-64 only)</a></li>
-<li><a href="#_long_mode_x86_64_only">3.5. Long Mode (x86-64 only)</a></li>
+<li><a href="#_real_mode">2.1. Real Mode</a></li>
+<li><a href="#_protected_mode_16_bit">2.2. Protected Mode (16-bit)</a></li>
+<li><a href="#_protected_mode_32_bit">2.3. Protected Mode (32-bit)</a></li>
+<li><a href="#_compatibility_mode_x86_64_only">2.4. Compatibility Mode (x86-64 only)</a></li>
+<li><a href="#_long_mode_x86_64_only">2.5. Long Mode (x86-64 only)</a></li>
 </ul>
 </li>
-<li><a href="#_extensions">4. Extensions</a>
+<li><a href="#_extensions">3. Extensions</a>
 <ul class="sectlevel2">
-<li><a href="#_x86_64">4.1. x86-64</a></li>
-<li><a href="#_paenx">4.2. PAE/NX</a></li>
-<li><a href="#_x87">4.3. x87</a></li>
-<li><a href="#_sse">4.4. SSE</a></li>
-<li><a href="#_avx">4.5. AVX</a></li>
+<li><a href="#_x86_64">3.1. x86-64</a></li>
+<li><a href="#_paenx">3.2. PAE/NX</a></li>
+<li><a href="#_x87">3.3. x87</a></li>
+<li><a href="#_sse">3.4. SSE</a></li>
+<li><a href="#_avx">3.5. AVX</a></li>
 </ul>
 </li>
-<li><a href="#_see_also">5. See Also</a></li>
+<li><a href="#_see_also">4. See Also</a></li>
 </ul></div>
 <article>
 <h1 class="sect0">x86</h1>
 
-<div class="sect1">
-<h2 id="_overview">1. Overview</h2>
+<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>x86 is a complex-instruction-set, little-endian, 32-bit/64-bit instruction set architecture (ISA) introduced in 1985 by Intel<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>. It was preceded by the Intel 8086 architecture, a 16-bit CPU architecture from 1978.</p>
+<p><strong>x86</strong> is a backwards compatible family of little-endian, complex instruction
+set architectures (ISA) introduced in 1978 by
+Intel<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.
+The iterations of the ISA can be broadly classified by integer width:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>16-bit x86, also referred to as x86_16 or IA-16 (introduced with the Intel
+8086 in 1978)</p>
+</li>
+<li>
+<p>32-bit x86, also referred to as x86_32 or IA-32 (introduced with the Intel
+386 in 1985)</p>
+</li>
+<li>
+<p>64-bit x86 (not to be confused with IA-64), also referred to as x86_64, AMD64
+or x64.
+It is also referred to as EM64T, IA-32e or Intel64 by Intel.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_history">2. History</h2>
+<h2 id="_history">1. History</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In 1984, Intel announced the Intel 80386 architecture (later renamed x86). The first processor to implement the full architecture was the Intel 386 in 1985. In 1989, the Intel 486 was introduced, with new features, such as:</p>
+<p>The first iteration of the x86 architecture was introduced in 1978 with the
+8086.
+The 8086 was a 16-bit CPU, with 16-bit registers, a 16-bit data bus and a
+20-bit address bus.
+Thus it was able to address one megabyte of RAM.
+Slightly later, the 8088 CPU was introduced, which was internally identical to
+the 8086, but had a 8-bit data bus.
+The 8088 was used by the original IBM PC, introduced in 1981, which was the
+predecessor of all modern PCs.
+Thus, the x86 architecture became the dominant architecture on personal
+computers.</p>
+</div>
+<div class="paragraph">
+<p>In 1982, Intel introduced the 186, 188 and 286.
+The 186 and 188 where similar to the 8086 and 8088 respectively, but where
+intended for embedded systems, and included peripheral that were not compatible
+with IBM PCs.
+The Intel 286, however, was intended for multi-user, multitasking environments.
+Thus the 286 introduced features for multitasking and memory protection and was
+able to address up to 16 megabytes of RAM.
+To preserve compatibility with the 8086, most of the features introduced with
+the 286 could only be used in a mode called <strong>protected mode</strong>.
+The 286 and most subsequent x86 processors start in <strong>real mode</strong>, which emulates
+the behavior of a 8086.
+The 286 started to gain wide adoption with the introduction of the IBM AT in
+1984.</p>
+</div>
+<div class="paragraph">
+<p>In 1985, Intel introduced the 386.
+This new interation introduced support for 32-bit integers and extended
+protected mode to introduce, among other things, paging and support for up to
+four gigabytes of RAM.</p>
+</div>
+<div class="paragraph">
+<p>In 1989, the Intel 486 was introduced, with new features, such as:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -83,133 +135,180 @@
 </ul>
 </div>
 <div class="paragraph">
-<p>To this day, every properly-implemented x86 processor has backwards compatibility, all the way back to the original Intel 8086.</p>
+<p>To this day, every properly-implemented x86 processor has backwards
+compatibility, all the way back to the original Intel 8086.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_operating_modes">3. Operating Modes</h2>
+<h2 id="_operating_modes">2. Operating Modes</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>x86 has a handful of operating modes, used for backwards compatibility.</p>
 </div>
 <div class="sect2">
-<h3 id="_real_mode">3.1. Real Mode</h3>
+<h3 id="_real_mode">2.1. Real Mode</h3>
 <div class="paragraph">
-<p>Real mode is the operating mode that an x86 processor boots into. It mostly models the original 16-bit 8086 processor, with a few extensions.</p>
+<p>Real mode is the operating mode that an x86 processor boots into. It mostly
+models the original 16-bit 8086 processor, with a few extensions.</p>
 </div>
 <div class="paragraph">
-<p>While data can be handled 16 bits at a time, segment offset registers offer addressing up to 21 bits, which provides the processor with 1MiB of addressable memory.</p>
+<p>While data can be handled 16 bits at a time, segment offset registers offer
+addressing up to 21 bits, which provides the processor with 1MiB of addressable
+memory.</p>
 </div>
 <div class="paragraph">
 <p>Real mode contains no access rings or protection of any kind.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_protected_mode_16_bit">3.2. Protected Mode (16-bit)</h3>
+<h3 id="_protected_mode_16_bit">2.2. Protected Mode (16-bit)</h3>
 <div class="paragraph">
-<p>16-bit protected mode runs with 16-bit data and instructions, but segment offset registers are replaced with segment selector registers, which point to an entry into the 16-bit GDT.</p>
+<p>16-bit protected mode runs with 16-bit data and instructions, but segment
+offset registers are replaced with segment selector registers, which point to
+an entry into the 16-bit GDT.</p>
 </div>
 <div class="paragraph">
-<p>Programs written for real mode may have a handful of compatibility issues with 16-bit protected mode, but instructions are still read in the same format.</p>
+<p>Programs written for real mode may have a handful of compatibility issues with
+16-bit protected mode, but instructions are still read in the same format.</p>
 </div>
 <div class="paragraph">
 <p>16-bit protected mode is rarely used.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_protected_mode_32_bit">3.3. Protected Mode (32-bit)</h3>
+<h3 id="_protected_mode_32_bit">2.3. Protected Mode (32-bit)</h3>
 <div class="paragraph">
-<p>32-bit protected mode reads and addresses with 32-bit values. This is the mode commonly referred to as "protected mode". Protected mode mandates a 32-bit before entry. Protected mode is officially entered when a far jump is performed that sets CS to an offset which points to a code segment in a 32-bit GDT.</p>
+<p>32-bit protected mode reads and addresses with 32-bit values. This is the mode
+commonly referred to as "protected mode".
+Protected mode mandates a 32-bit before entry.
+Protected mode is officially entered when a far jump is performed that sets CS
+to an offset which points to a code segment in a 32-bit GDT.</p>
 </div>
 <div class="paragraph">
-<p>32 bits of addressing provide up to 4GiB of addressable virtual memory. However, with PAE paging extensions, the virtual address space can be mapped to 64-bit physical addresses, theoretically allowing up to 16PiB of physical memory to be addressed.</p>
+<p>32 bits of addressing provide up to 4GiB of addressable virtual memory.
+However, with PAE paging extensions, the virtual address space can be mapped to
+64-bit physical addresses, theoretically allowing up to 16PiB of physical
+memory to be addressed.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_compatibility_mode_x86_64_only">3.4. Compatibility Mode (x86-64 only)</h3>
+<h3 id="_compatibility_mode_x86_64_only">2.4. Compatibility Mode (x86-64 only)</h3>
 <div class="paragraph">
-<p>Compatibility mode runs during the transition from protected mode to long mode. Compatibility mode runs similarly to protected mode, and is used to allow 64-bit structures to be loaded before entering proper long mode.</p>
+<p>Compatibility mode runs during the transition from protected mode to long mode.
+Compatibility mode runs similarly to protected mode, and is used to allow
+64-bit structures to be loaded before entering proper long mode.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_long_mode_x86_64_only">3.5. Long Mode (x86-64 only)</h3>
+<h3 id="_long_mode_x86_64_only">2.5. Long Mode (x86-64 only)</h3>
 <div class="paragraph">
-<p>Long mode handles data up to 64 bits in general purpose registers, with extensions that allow for the handling of up to 512 bits of data at a time. Addressing in long mode is 64-bit, theoretically allowing for up to 16PiB of virtual memory to be <strong>directly</strong> addressed.</p>
+<p>Long mode handles data up to 64 bits in general purpose registers, with
+extensions that allow for the handling of up to 512 bits of data at a time.
+Addressing in long mode is 64-bit, theoretically allowing for up to 16PiB of
+virtual memory to be <em>directly</em> addressed.</p>
 </div>
 <div class="paragraph">
-<p>However, on most x86-64 processors, only 48 bits of addressing are actually implemented, with the notable exception of processors that support 5-level-paging. These 48-bit addresses must all have the top unsupported bits be set or unset, resulting in two "halves" of the virtual address space. These addresses are referred to as "canonical" addresses.</p>
+<p>However, on most x86-64 processors, only 48 bits of addressing are actually
+implemented, with the notable exception of processors that support 5-level
+paging.
+These 48-bit addresses must all have the top unsupported bits be set or unset,
+resulting in two "halves" of the virtual address space. These addresses are
+referred to as "canonical" addresses.</p>
 </div>
 <div class="paragraph">
-<p>The name "long mode" refers to the commonplace technical term for a 64-bit integer, a "long".</p>
+<p>The name "long mode" refers to the commonplace technical term for a 64-bit
+integer, a "long".</p>
 </div>
 <div class="paragraph">
-<p>Due to the unfulfillable amount of virtual memory, PAE paging is mandated in long mode. This allows for contiguous mapping of physical RAM, with memory-mapped IO out of physical RAM space. This also allows x86-64 operating systems to implement "swap memory", a process where virtual addresses point to data not in physical RAM, but rather stored on disk.</p>
+<p>Due to the unfulfillable amount of virtual memory, PAE paging is mandated in
+long mode.
+This allows for contiguous mapping of physical RAM, with memory-mapped IO out
+of physical RAM space.
+This also allows x86-64 operating systems to implement "swap memory", a process
+where virtual addresses point to data not in physical RAM, but rather stored on
+disk.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_extensions">4. Extensions</h2>
+<h2 id="_extensions">3. Extensions</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>x86 processors have a plethora of extensions that expand on standard behavior. The most notable, x86-64, implements 64-bit addressing and long mode.</p>
+<p>x86 processors have a plethora of extensions that expand on standard behavior.
+The most notable, x86-64, implements 64-bit addressing and long mode.</p>
 </div>
 <div class="paragraph">
-<p>(This section only contains a handful of extensions, there are too many to list at once.)</p>
+<p>This section only contains a handful of extensions, there are too many to list
+at once.</p>
 </div>
 <div class="sect2">
-<h3 id="_x86_64">4.1. x86-64</h3>
+<h3 id="_x86_64">3.1. x86-64</h3>
 <div class="paragraph">
-<p>The x86-64 extension is quite expansive, implementing the 64-bit operating mode and 64-bit addressing. It is nearly impossible to find a working computer today that does not support x86-64.</p>
+<p>The x86-64 extension is quite expansive, implementing the 64-bit operating mode
+and 64-bit addressing.
+It is nearly impossible to find a working computer today that does not support
+x86-64.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_paenx">4.2. PAE/NX</h3>
+<h3 id="_paenx">3.2. PAE/NX</h3>
 <div class="paragraph">
-<p>PAE/NX implements 4-level paging, and adds a handful of properties to pages to implement extensive memory protection, including NX, a flag to disable execution on a particular page.</p>
+<p>PAE/NX implements 4-level paging, and adds a handful of properties to pages to
+implement extensive memory protection, including NX, a flag to disable
+execution on a particular page.</p>
 </div>
 <div class="paragraph">
 <p>Most operational computers today support PAE/NX.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_x87">4.3. x87</h3>
+<h3 id="_x87">3.3. x87</h3>
 <div class="paragraph">
-<p>x87 is a floating-point calculation extension. While technically an extension, it is supported on most x86 processors.</p>
+<p>x87 is a floating-point calculation extension.
+While technically an extension, it is supported on most x86 processors.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sse">4.4. SSE</h3>
+<h3 id="_sse">3.4. SSE</h3>
 <div class="paragraph">
-<p>SSE is a 128-bit data extension. It adds 8-16 128-bit general purpose <code>XMM</code> registers, and instructions to perform SIMD vector math.</p>
+<p>SSE is a 128-bit data extension.
+It adds 8-16 128-bit general purpose <code>XMM</code> registers, and instructions to
+perform SIMD vector math.</p>
 </div>
 <div class="paragraph">
-<p>SSE has several versions. x86-64 processors are mandated to support at least SSE2.</p>
+<p>SSE has several versions. x86-64 processors are mandated to support at least
+SSE2.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_avx">4.5. AVX</h3>
+<h3 id="_avx">3.5. AVX</h3>
 <div class="paragraph">
-<p>AVX is a 256-bit data extension. It performs a purpose similar to SSE, and implements a handful of 256-bit <code>YMM</code> registers.</p>
+<p>AVX is a 256-bit data extension. It performs a purpose similar to SSE, and
+implements a handful of 256-bit <code>YMM</code> registers.</p>
 </div>
 <div class="paragraph">
-<p>AVX was released alongside the Haswell microarchitecture in 2014. A not-insignificant number of operational computers today do not support AVX.</p>
+<p>AVX was released alongside the Haswell microarchitecture in 2014.
+A not-insignificant number of operational computers today do not support AVX.</p>
 </div>
 <div class="sect3">
-<h4 id="_avx_512">4.5.1. AVX-512</h4>
+<h4 id="_avx_512">3.5.1. AVX-512</h4>
 <div class="paragraph">
-<p>AVX-512 is not a single extension, but rather a family of extensions. It is similar to AVX, but implements a handful of 512-bit <code>ZMM</code> registers.</p>
+<p>AVX-512 is not a single extension, but rather a family of extensions.
+It is similar to AVX, but implements a handful of 512-bit <code>ZMM</code> registers.</p>
 </div>
 <div class="paragraph">
-<p>AVX-512 is quite new, with consumer processors supporting AVX-512 being released in 2018.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup> It is yet to become widely supported.</p>
+<p>AVX-512 is quite new, with consumer processors supporting AVX-512 being
+released in 2018.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup>
+It is yet to become widely supported.</p>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_see_also">5. See Also</h2>
+<h2 id="_see_also">4. See Also</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
