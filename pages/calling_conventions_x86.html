@@ -103,12 +103,22 @@ These registers, and RAX, R10, R11, XMM4, and XMM5, are considered volatile.</p>
 </div>
 <div class="sect3">
 <h4 id="_register_allocation">1.1.1. Register allocation</h4>
-<div class="paragraph">
-<p>Caller-saved: RAX, RCX, RDX,  R8, R9, R10, R11</p>
-</div>
-<div class="paragraph">
-<p>Callee-saved: RBX, RBP, RDI, RSI, RSP, R12, R13, R14, R15</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller saved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RAX, RCX, RDX,  R8, R9, R10, R11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Callee saved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RBX, RBP, RDI, RSI, RSP, R12, R13, R14, R15</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_stack">1.1.2. Stack</h4>
@@ -142,7 +152,7 @@ bytes below the caller’s stack.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="c"><table class="linenotable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><pre><span></span><span class="tok-w"> </span><span class="tok-kt">void</span><span class="tok-w"> </span><span class="tok-nf">DoSomething</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">a</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">float</span><span class="tok-w"> </span><span class="tok-n">b</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">c</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">d</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">e</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">float</span><span class="tok-w"> </span><span class="tok-n">f</span><span class="tok-p">);</span><span class="tok-w"></span>
+<pre class="pygments highlight"><code data-lang="c"><table class="linenotable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><pre><span></span><span class="tok-w"> </span><span class="tok-kt">void</span><span class="tok-w"> </span><span class="tok-nf">do_something</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">a</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">float</span><span class="tok-w"> </span><span class="tok-n">b</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">c</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">d</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">e</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">float</span><span class="tok-w"> </span><span class="tok-n">f</span><span class="tok-p">);</span><span class="tok-w"></span>
 </pre></td></tr></table></code></pre>
 </div>
 </div>
@@ -160,10 +170,21 @@ parameters and home space and ensure that the stack is aligned after the <code>C
 to 64 bits, it is returned in RAX; otherwise, the struct is allocated by the
 caller and a pointer to it is passed as the first parameter.</p>
 </div>
-<div class="paragraph">
-<p><code>LargeStruct DoSomething(int a)</code>
-actually becomes
-<code>void DoSomething(LargeStruct *ret, int a)</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c"><table class="linenotable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><pre><span></span><span class="tok-o">---</span><span class="tok-w"></span>
+<span class="tok-w"> </span><span class="tok-c1">// large_struct_t is larger than 64 bits, this:</span>
+<span class="tok-w"> </span><span class="tok-n">large_struct_t</span><span class="tok-w"> </span><span class="tok-n">do_something</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">a</span><span class="tok-p">)</span><span class="tok-w"></span>
+<span class="tok-w"> </span><span class="tok-c1">// effectively becomes this:</span>
+<span class="tok-w"> </span><span class="tok-kt">void</span><span class="tok-w"> </span><span class="tok-n">do_something</span><span class="tok-p">(</span><span class="tok-n">large_struct_t</span><span class="tok-w"> </span><span class="tok-o">*</span><span class="tok-n">ret</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">a</span><span class="tok-p">)</span><span class="tok-w"></span>
+<span class="tok-o">---</span><span class="tok-w"></span>
+</pre></td></tr></table></code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -198,12 +219,22 @@ Remaining registers "belong" to the called function.</p>
 </div>
 <div class="sect3">
 <h4 id="_register_allocation_2">1.2.1. Register allocation</h4>
-<div class="paragraph">
-<p>Caller-saved: RAX, RCX, RDX, RDI, RSI, R8, R9, R10, R11</p>
-</div>
-<div class="paragraph">
-<p>Callee-saved: RBX, RBP, RSP R12, R13, R14, R15</p>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller saved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RAX, RCX, RDX, RDI, RSI, R8, R9, R10, R11</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Callee saved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RBX, RBP, RSP, R12, R13, R14, R15</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_stack_2">1.2.2. Stack</h4>
@@ -227,7 +258,7 @@ available SSE register (<code>XMM0</code>-<code>XMM7</code>).</p>
 </div>
 <div class="paragraph">
 <p>For example, a function with the prototype
-<code>void DoSomething(int a, float b, int c, int d, int e, float f)</code> would pass
+<code>void do_something(int a, float b, int c, int d, int e, float f)</code> would pass
 parameters in <code>RDI</code>, <code>XMM0</code>, <code>R8</code>, <code>R9</code>, <code>[RSP+0x00]</code> and <code>XMM1</code> respectively.
 A function calling this needs to have at least 32 bytes of stack to store the
 parameters and align the stack upon call.</p>
@@ -242,10 +273,21 @@ caller and a pointer to it is passed as the first parameter, similarly to the
 Microsoft x64 ABI.
 Dissimilarly, the pointer is actually returned in <code>RAX</code> upon return.</p>
 </div>
-<div class="paragraph">
-<p><code>LargeStruct DoSomething(int a)</code>
-actually becomes
-<code>LargeStruct* DoSomething(LargeStruct *ret, int a)</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="c"><table class="linenotable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><pre><span></span><span class="tok-o">---</span><span class="tok-w"></span>
+<span class="tok-w"> </span><span class="tok-c1">// large_struct_t is larger than 64 bits, this:</span>
+<span class="tok-w"> </span><span class="tok-n">large_struct_t</span><span class="tok-w"> </span><span class="tok-n">do_something</span><span class="tok-p">(</span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">a</span><span class="tok-p">)</span><span class="tok-w"></span>
+<span class="tok-w"> </span><span class="tok-c1">// effectively becomes this:</span>
+<span class="tok-w"> </span><span class="tok-kt">void</span><span class="tok-w"> </span><span class="tok-n">do_something</span><span class="tok-p">(</span><span class="tok-n">large_struct_t</span><span class="tok-w"> </span><span class="tok-o">*</span><span class="tok-n">ret</span><span class="tok-p">,</span><span class="tok-w"> </span><span class="tok-kt">int</span><span class="tok-w"> </span><span class="tok-n">a</span><span class="tok-p">)</span><span class="tok-w"></span>
+<span class="tok-o">---</span><span class="tok-w"></span>
+</pre></td></tr></table></code></pre>
+</div>
 </div>
 </div>
 </div>
