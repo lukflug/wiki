@@ -41,7 +41,6 @@
 <li><a href="#_macos">4.4. macOS</a></li>
 </ul>
 </li>
-<li><a href="#_enabling_cross_compilation">5. Enabling cross-compilation</a></li>
 </ul></div>
 <article>
 <h1 class="sect0">Clang cross compiler</h1>
@@ -53,7 +52,7 @@
 generates a code for a different platform (the <strong>target</strong>) than platform it
 runs on (the <strong>host</strong>).
 The platforms may differ in CPU architecture, library environment,
-<a href="../pages/calling_conventions.html">ABI</a>, and executable format.
+<a href="../pages/calling_conventions_x86.html">ABI</a>, and executable format.
 For operating system development, the host is our development system, and the
 target is the developed OS.
 It is important to realize that these two platforms are not the same: the
@@ -89,7 +88,7 @@ developed that not only simplify the development process, but are of higher
 quality and are more powerful than what was used before.
 One of these technologies is <a href="https://llvm.org">LLVM</a>.
 Most osdev guides instruct the developer to use GCC.
-Using LLVM+Clang makes the life of an OS developer easier at the beginning,
+Using LLVM and Clang makes the life of an OS developer easier at the beginning,
 because unlike GCC, this compiler was designed to cross-compile from the very
 beginning, and thus it is not neccessary to build an entire toolchain from
 scratch for each desired target platform.
@@ -128,16 +127,16 @@ There is an installer for Windows.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Ubuntu-based: <code># apt install Clang</code></p>
+<p>Ubuntu-based: <code># apt install clang</code></p>
 </li>
 <li>
-<p>Arch-based: <code># pacman -S Clang</code></p>
+<p>Arch-based: <code># pacman -S clang</code></p>
 </li>
 <li>
-<p>Fedora: <code># dnf install Clang</code></p>
+<p>Fedora: <code># dnf install clang</code></p>
 </li>
 <li>
-<p>Gentoo: <code># emerge -a Clang</code></p>
+<p>Gentoo: <code># emerge -a clang</code></p>
 <div class="ulist">
 <ul>
 <li>
@@ -148,7 +147,7 @@ in /etc/portage/make.conf</p>
 </div>
 </li>
 <li>
-<p>Alpine: <code># apk add Clang</code></p>
+<p>Alpine: <code># apk add clang</code></p>
 </li>
 <li>
 <p>Others: It is highly unlikely the distribution does not provide Clang
@@ -174,9 +173,6 @@ See <a href="https://docs.microsoft.com/en-us/cpp/build/clang-support-msbuild?vi
 be installed from the
 <a href="https://github.com/llvm/llvm-project/releases">LLVM GitHub release page</a>.</p>
 </div>
-<div class="paragraph">
-<p>TODO: Windows</p>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_bsd">4.3. *BSD</h3>
@@ -190,19 +186,11 @@ pre-installed.</p>
 <div class="paragraph">
 <p>The built-in apple Clang comes crippled: it only ships with x86_64 and arm64
 support (but still supports ELF).
-It is recommended to get Clang from <a href="https://brew.sh">homebrew</a>, as the LLVM
+It is recommended to get Clang from <a href="https://brew.sh">Homebrew</a>, as the LLVM
 linker (lld) is needed to get anything meaningful done either way.
 It is also worth noting that proper cross-compilation GCC tools are also in the
-homebrew repositories (under the names x86_64-elf-binutils and x86_64-elf-gcc).</p>
+Homebrew repositories (under the names x86_64-elf-binutils and x86_64-elf-gcc).</p>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_enabling_cross_compilation">5. Enabling cross-compilation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>TODO</p>
 </div>
 </div>
 </div>
