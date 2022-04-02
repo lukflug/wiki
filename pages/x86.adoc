@@ -2,176 +2,650 @@
 title: x86
 tags: x86, architecture
 category: x86
-description: Description and brief history of the x86 CPU architecture.
+description: Description and history of the x86 CPU architecture.
 ---
 
 *x86* is a backwards compatible family of little-endian, complex instruction
-set architectures (ISA) introduced in 1978 by
-Intelfootnote:[https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html].
+set architectures (ISA) introduced in 1978 by Intel.
+The two preeminent manufacturers of CPUs implementing x86 are Intel and AMD.
 The iterations of the ISA can be broadly classified by integer width:
 
-* 16-bit x86, also referred to as x86_16 or IA-16 (introduced with the Intel
-  8086 in 1978)
-* 32-bit x86, also referred to as x86_32 or IA-32 (introduced with the Intel
-  386 in 1985)
-* 64-bit x86 (not to be confused with IA-64), also referred to as x86_64, AMD64
-  or x64.
-  It is also referred to as EM64T, IA-32e or Intel64 by Intel.
+* 16-bit x86, also referred to as *IA-16*, *x86-16* or *x86_16* (introduced
+  with the Intel 8086 in 1978)
+* 32-bit x86, also referred to as *IA-32*, *x86-32* or *x86_32* (introduced
+  with the Intel 386 in 1985)
+* 64-bit x86 (not to be confused with IA-64), also referred to as *x86-64*,
+  *x86_64*, *AMD64* or *x64*.
+  It is also referred to as *EM64T*, *IA-32e* or *Intel64* by Intel.
 
 == History
+=== First generation
 The first iteration of the x86 architecture was introduced in 1978 with the
-8086.
+*Intel 8086*.
 The 8086 was a 16-bit CPU, with 16-bit registers, a 16-bit data bus and a
 20-bit address bus.
 Thus it was able to address one megabyte of RAM.
-Slightly later, the 8088 CPU was introduced, which was internally identical to
-the 8086, but had a 8-bit data bus.
+Although the 8086 had no binary compatibility with the 8080 or 8085, the design
+was such, that all 8080 or 8085 programs could be machine translated to work on
+the 8086.
+
+Slightly later, the *Intel 8088* CPU was introduced, which was internally
+identical to the 8086, but had a 8-bit data bus.
 The 8088 was used by the original IBM PC, introduced in 1981, which was the
 predecessor of all modern PCs.
 Thus, the x86 architecture became the dominant architecture on personal
 computers.
 
-In 1982, Intel introduced the 186, 188 and 286.
-The 186 and 188 where similar to the 8086 and 8088 respectively, but where
-intended for embedded systems, and included peripheral that were not compatible
+Intel also introduced the *Intel 8087* FPU that provides floating-point
+capabilities, and operated in parallel to the main processor.
+The Intel 8089 IOP (I/O processor) was also introduced to allow fast I/O
+operations without CPU supervision, allowing for an increasing degree of
+parallelism.
+However, the IBM PC did not use the 8089, instead using the simpler Intel 8237
+(designed for the 8-bit 8085).
+This meant that no successor to the 8089 was ever made.
+
+=== Second generation
+In 1982, Intel introduced the *Intel 80186*), *Intel 80188* and *Intel 80286*
+(also known as the 186, 188 and 286 respectively).
+The 186 and 188 were similar to the 8086 and 8088 respectively, but were
+intended for embedded systems, and included peripherals that were not compatible
 with IBM PCs.
-The Intel 286, however, was intended for multi-user, multitasking environments.
+
+Much later, the *Intel 80187* (also known as the 187) was introduced as a
+math coprocessor compatible the 186, but not the 188.
+The 187 was internally more similar to the 387 and supported all the 387
+instructions and was IEEE 754 compliant.
+
+The 286, however, was intended for multi-user, multitasking environments.
 Thus the 286 introduced features for multitasking and memory protection and was
-able to address up to 16 megabytes of RAM.
+able to address up to 16 MiBs of RAM.
 To preserve compatibility with the 8086, most of the features introduced with
-the 286 could only be used in a mode called *protected mode*.
-The 286 and most subsequent x86 processors start in *real mode*, which emulates
+the 286 could only be used in a mode called _protected mode_.
+The 286 and most subsequent x86 processors start in _real mode_, which emulates
 the behavior of a 8086.
 The 286 started to gain wide adoption with the introduction of the IBM AT in
 1984.
 
-In 1985, Intel introduced the 386.
-This new interation introduced support for 32-bit integers and extended
+The math coprocessor for the 286 is the *Intel 80287* (also known as the 287).
+A later version of the 287, known as the 287XL, was internally similar to the
+387SX.
+The 287 is also compatible with the 386DX and 386SX.
+
+=== NEC V20
+The *NEC V20* was a pin compatible replacement for the 8088, that was a very
+popular upgrade for XT-class machines, due to being able to execute more
+instructions on average in a smaller amount of time.
+Variants included the *NEC V30*, which was pin compatible with the 8086, the
+*NEC V40*, which corresponded to the 188, and the *NEC V50*, which corresponded
+to the 186.
+The *NEC V33* and its variant, the *NEC V53*, is a V30 variant with performance
+equivalent to a 286 and can address up to 16 MiB of memory.
+The *NEC V25* and *NEC V35* are microcontroller variants of the V20 and V30
+respectively.
+The later V60 series implemented a different ISA, but had a V20 emulation mode.
+
+All these CPUs supported the 186 instruction set and new instructions
+exclusively available on NEC CPUs.
+Among other things, these instructions included nibble and bitwise operations.
+The V25 and V35 implemented additional enhancements, such as eight register
+banks for interrupt handling.
+
+The V33 and V53 implemented *expanded addressing mode*, which allows the use of
+up to 16 MiB of RAM.
+This mode is essentially real mode with paging of 16 kiB pages.
+The translation table translating the 20-bit linear address to a 24-bit
+physical address is mapped to the I/O ports 0xFF00 to 0xFF7F.
+
+=== Third generation
+In 1985, Intel introduced the *386DX*.
+This new iteration introduced support for 32-bit integers and extended
 protected mode to introduce, among other things, paging and support for up to
-four gigabytes of RAM.
+4 GiBs of RAM.
+Later, Intel introduced the *386SX*, which was internally similar to the 386DX,
+but had a 16-bit data bus and 24-bit address bus, rather than 32-bit busses.
 
-In 1989, the Intel 486 was introduced, with new features, such as:
+In 1987, the *387DX* was introduced.
+Due to its 32-bit data bus, it was incompatible with the 386SX, which had its
+own math coprocessor called the *387SX*
 
-- An integrated "x87" FPU
-- L1 cache used for increased IPC
-- System management capabilities
+=== Fourth generation
+In 1989, the *Intel 486DX* was introduced, introducing new features, such as
+tightly coupled (i.e. true) pipelining and an integrated FPU.
+The *486SX* variant was a version without an integrated FPU.footnote:[Early
+486SX chips were actually 486DX chips with the FPU disabled.]
+A *487SX* math coprocessor upgrade was available for 486SX systems.footnote:[The
+487SX was actually a full 486DX that disabled the 486SX completely.]
 
-To this day, every properly-implemented x86 processor has backwards
-compatibility, all the way back to the original Intel 8086.
+=== Fifth generation
+In 1993, the *Intel Pentium* was introduced, featuring the new *P5* (also known
+as *i586*) microarchitecture, which introduced superscalar architecture, a
+64-bit external data bus and branch prediction.
 
-== Operating modes
+=== Sixth generation
+The Pentium was followed up by the Pentium Pro in 1995, which was the first
+implementation of the *P6* (also known as *i686*) microarchitecture,
+introducing register renaming, out-of-order execution, speculative execution
+and a 36-bit address bus, that allowed for up to 64 GiBs of RAM, that could be
+accessed through PAE or PSE-36.
 
-x86 has a handful of operating modes, used for backwards compatibility.
-
-=== Real mode
-Real mode is the operating mode that an x86 processor boots into. It mostly
-models the original 16-bit 8086 processor, with a few extensions.
-
-While data can be handled 16 bits at a time, segment offset registers offer
-addressing up to 21 bits, which provides the processor with 1MiB of addressable
-memory.
-
-Real mode contains no access rings or protection of any kind.
-
-=== Protected mode (16-bit)
-16-bit protected mode runs with 16-bit data and instructions, but segment
-offset registers are replaced with segment selector registers, which point to
-an entry into the 16-bit GDT.
-
-Programs written for real mode may have a handful of compatibility issues with
-16-bit protected mode, but instructions are still read in the same format.
-
-16-bit protected mode is rarely used.
-
-=== Protected mode (32-bit)
-32-bit protected mode reads and addresses with 32-bit values. This is the mode
-commonly referred to as "protected mode".
-Protected mode mandates a 32-bit before entry.
-Protected mode is officially entered when a far jump is performed that sets CS
-to an offset which points to a code segment in a 32-bit GDT.
-
-32 bits of addressing provide up to 4GiB of addressable virtual memory.
-However, with PAE paging extensions, the virtual address space can be mapped to
-64-bit physical addresses, theoretically allowing up to 16PiB of physical
-memory to be addressed.
-
-=== Compatibility mode (x86-64 only)
-Compatibility mode runs during the transition from protected mode to long mode.
-Compatibility mode runs similarly to protected mode, and is used to allow
-64-bit structures to be loaded before entering proper long mode.
-
-=== Long mode (x86-64 only)
-Long mode handles data up to 64 bits in general purpose registers, with
-extensions that allow for the handling of up to 512 bits of data at a time.
-Addressing in long mode is 64-bit, theoretically allowing for up to 16PiB of
-virtual memory to be _directly_ addressed.
-
-However, on most x86-64 processors, only 48 bits of addressing are actually
-implemented, with the notable exception of processors that support 5-level
-paging.
-These 48-bit addresses must all have the top unsupported bits be set or unset,
-resulting in two "halves" of the virtual address space. These addresses are
-referred to as "canonical" addresses.
-
-The name "long mode" refers to the commonplace technical term for a 64-bit
-integer, a "long".
-
-Due to the unfulfillable amount of virtual memory, PAE paging is mandated in
-long mode.
-This allows for contiguous mapping of physical RAM, with memory-mapped IO out
-of physical RAM space.
-This also allows x86-64 operating systems to implement "swap memory", a process
-where virtual addresses point to data not in physical RAM, but rather stored on
-disk.
-
-== Extensions
-x86 processors have a plethora of extensions that expand on standard behavior.
-The most notable, x86-64, implements 64-bit addressing and long mode. 
-
-This section only contains a handful of extensions, there are too many to list
-at once.
+Intel's competitors also started building their chips on their own, unique,
+in-house designs, such as the AMD K5 (introduced in 1996) and the Cyrix 5x86
+(1995) and 6x86 (1996), rather than trying to replicate Intel's chips, or
+orient their designs around them, as with the Am486 and Am5x86 and the Cx486.
 
 === x86-64
-The x86-64 extension is quite expansive, implementing the 64-bit operating mode
-and 64-bit addressing.
-It is nearly impossible to find a working computer today that does not support
-x86-64.
+The first processor to implement *x86-64*, a 64-bit extension originally
+proposed by AMD in 1999, was the AMD Opteron, introduced in 2003.
+Aside from increasing the size and count of general-purpose and SSE registers,
+it introduced 64-bit linear addresses, albeit the paging scheme restricts the
+virtual address space to 48 bits (splitting it into to halves through sign
+extension).
+In addition, many legacy features, such as certain aspects of segmentation,
+have been removed.
+To maintain backwards compatibility these new features can only be used in
+long mode.
+The behavior compatible with older CPUs (i.e. real and protected mode) are
+available in legacy mode.
 
-=== PAE/NX
-PAE/NX implements 4-level paging, and adds a handful of properties to pages to
-implement extensive memory protection, including NX, a flag to disable
-execution on a particular page. 
+To this day, every properly-implemented x86 processor has a large degree of
+binary backwards compatibility, all the way back to the original Intel 8086.
 
-Most operational computers today support PAE/NX.
+== Operating modes
+x86 has a handful of operating modes.
+On x86-64 processors, real mode and protected mode are group together into
+legacy mode.
+
+=== Real mode
+*Real mode* is the operating mode that an x86 processor boots into.
+It mostly models the original 16-bit 8086 processor, with a few extensions.
+Real mode contains no access rings or memory protection of any kind.
+
+Access to memory is done via a 16-bit segment selector and a 16-bit offset
+address, using following formula:
+
+[source]
+physical_address = segment * 16 + offset
+
+The default operand and address size is 16-bit.
+The segment limit is 65536 bytes (64 kiB), this means even when using a 32-bit
+address size prefix, the offset may not exceed 65535.
+
+Due to these limitations, software in real mode can only directly access the
+first 1114096 (1 MiB + 64 kiB - 16 bytes) of physical memory:
+
+[source]
+65535 * 16 + 65536 = 1114096
+
+==== Unreal mode
+*Unreal mode*, also known as *flat real mode*, *32-bit real mode* or
+*voodoo mode*, is an originally undocumented variant of real mode that alters
+the segment descriptor cache, in order to allow 32-bit offsets, so that
+programs may access up to 4 GiB of memory.
+Unreal mode is available on the 386 and above.
+
+===== Big real mode
+*Big real mode*, also known as *big unreal mode*, sets the limit of data
+segments to 4 GiB, allowing for a flat 32-bit physical address space
+starting from zero, if selector zero is used.
+
+===== Huge real mode
+*Huge real mode*, also known as *huge unreal mode*, sets the limit of code
+segments to 4 GiB, in addition to changing the data segment limit.
+However, the high 16 bits of `eip` are not saved by real mode interrupts,
+making it difficult to use.
+
+=== Protected mode
+*Protected mode* was introduced with the 286 and provides memory protection.
+Unlike real mode, there is no linear relationship between segment selector and
+segment base address.
+The segment base address and other properties of each segment are determined by
+the global descriptor table (GDT) and local descriptor table (LDT).
+The segment selector is essentially an index to a segment descriptor.
+
+Protected mode provides four protection rings, Ring 0 being the most privileged
+and Ring 3 being the least privileged.
+Most operating systems only use Ring 0 and Ring 3.
+Code running in Ring 0 may access any segment and may interface directly with
+hardware.
+The privileges of other Rings depend on the GDT and LDT and the state of the
+CPU.
+Ring 0 is often referred to as "kernel mode" and Ring 3 is often referred to as
+"user mode".
+
+The 286 originally allowed for up to 16 MiB of RAM, however extensions to
+protected mode introduced with the 386 increased this to 4 GiB.
+The 386 also introduced optional paging to protected mode, allowing for an
+extra level of translation after segmentation.
+Later extensions, such as PAE and PSE-36, increase the maximum size of physical
+memory to beyond 4 GiB.
+However, the size of virtual address space is still limited to 4 GiB.
+
+Thus, the *logical address*, consisting of segment selector and offset is first
+translated to a *linear address*, by adding the segment base address of the
+corresponding segment descriptor to the offset.
+If paging is enabled, the linear address is translated to a *physical address*,
+otherwise the linear address corresponds to the physical address.
+
+Protected mode has two sub-modes, depending on the current code segment.
+However, 16-bit and 32-bit segment descriptors may coexist in the same
+descriptor table.
+
+==== 16-bit protected mode
+If the current code segment is a 16-bit segment, the default address and
+operand size is 16-bit.
+
+Code targeting real mode is largely compatible with 16-bit protected mode,
+assuming, among other things, it does not attempt to do any privileged
+operation, does not assume that there is a direct relationship between segment
+base and segment selector (as is the case in real mode) and does not try to
+modify code or execute data.
+In practice, most existing real mode programs do at least one of the things
+listed above, rendering them incompatible with 16-bit protected mode.
+
+==== 32-bit protected mode
+If the current code segment is a 32-bit segment, the default address and
+operand size is 32-bit.
+
+32-bit addressing allows for up to 4 GiB of directly addressable RAM, rather
+than 64 kiB, as is the case with 16-bit addressing.
+This, along with paging, largely removes the necessity for multiple segments,
+as modern operating systems mostly rely on paging and have one code segment and
+one data segment per Ring per virtual address space, usually having the base
+zero.
+To a 32-bit user program, segmentation is essentially transparent and the
+address space consists of 4 GiB of flat, contiguous memory.
+
+==== Virtual 8086 mode
+*Virtual 8086 mode* was introduced with the 386 and allows the execution of
+real mode programs in a virtual machine under a hypervisor in protected mode.
+
+=== System management mode
+Introduced with the 386SL (a CPU targeting laptops), system management mode is
+mostly transparent to the operating system.
+System management mode is intended for firmware to provide functions, such as
+power management, independently from the operating system that is currently
+running.
+
+=== Long mode
+*Long mode* was introduced with x86-64 and allows software to use 64-bit
+address and data.
+Linear addresses are now 64-bit, thus allowing for a virtual address space of
+up to 16 EiB.
+The paging scheme restricts this to 48-bit, however, with the remaining bits
+being sign extended, thus producing two halves of 128 TiB of "canonical address
+space".
+An address that complies with this sign extension requirement is said to be in
+*canonical form*.
+The half starting at zero is called the (canonical) *lower half*.
+The half starting at 16 EiB - 128 TiB is called the (canonical) *upper half*.
+
+If 5-level paging (also known as LA57) is enabled, the canonical address space
+is extended to 57-bit, thus extending the maximum amount of virtual memory from
+256 TiB to 128 PiB.
+
+Much like protected mode, long mode has three sub-modes depending on the
+current code segment.
+
+==== 64-bit mode
+If the current code segment is 64-bit, the code will be interpreted as 64-bit
+code and 64-bit registers may be used.
+Many legacy features of protected mode, such as segmentation, are largely
+disabled.
+`cs`, `ds`, `es` and `ss` always have base zero, while `fs` and `gs` may have
+a non-zero base.
+No segment limit checks are performed.
+
+==== Compatibility mode
+16-bit and 32-bit segments may coexist with 64-bit segments and are meant to
+provide compatibility with protected mode user programs.
+Segmentation works like in protected mode, but many features only directly
+visible to the operating system, such as paging, system calls and interrupt,
+work as they do in 64-bit mode.
+
+Certain features, such as virtual 8086 protected mode, no longer work under
+compatibility mode.
+
+===== 16-bit compatibility mode
+If the current code segment is 16-bit, the code will be interpreted as 16-bit
+code.
+As with 16-bit protected mode, most existing real mode software is not cannot
+be run in 16-bit compatibility mode.
+
+===== 32-bit compatibility mode
+If the current code segment is 32-bit, the code will be interpreted as 32-bit
+code.
+32-bit compatibility mode allows existing 32-bit programs to be run under long
+mode.
+
+==== x86 virtualization
+Modern x86 processors provide hardware-assisted virtualization.
+Intel processors have VT-x (also known as VMX) and AMD processors have AMD-V
+(also known as SVM).
+
+== Instruction set and execution model
+Each of the major x86 generations introduce major additions to the core
+instruction set.
+
+In the context of x86 a *word* is a 16-bit value, a *dword* is a 32-bit value
+and a *qword* is a 64-bit value.footnote:[As is convention elsewhere, a byte is
+an 8-bit value and a nibble is a 4-bit value.]
+
+=== 8086
+The original 8086 had eight word-size general-purpose registers and eight
+byte-sized general-purpose registers.
+These byte registers are aliases for individual bytes of the word-sized
+general-purpose registers `ax`, `bx`, `cx` and `dx`.
+The byte register `al` is an alias for the low byte of `ax`, the byte
+register `ah` is an alias for the high byte of `ax`.
+Analogous relationships exist between `bl`, `bh` and `bx`, `cl`, `ch` and `cx`,
+and `dl`, `dh` and `dx`.
+The remaining general-purpose registers are `si` (source index),
+`di` (destination index), `bp` (base pointer) and `sp` (stack pointer).
+
+.8086 general-purpose registers
+|===
+| Register name | Purpose | High byte alias | Low byte alias
+
+| `ax` | Accumulator | `ah` | `al`
+
+| `bx` | Base address | `bh` | `bl`
+
+| `cx` | Counter | `ch` | `cl`
+
+| `dx` | Auxiliary accumulator | `dh` | `dl`
+
+| `si` | Source index 2+| _None_
+
+| `di` | Destination index 2+| _None_
+
+| `bp` | Base pointer 2+| _None_
+
+| `sp` | Stack pointer 2+| _None_
+|===
+
+In addition to the general purpose registers, there are four word-sized segment
+registers:
+the code segment `cs`, the data segment `ds`, the extra segment `es` and the
+stack segment `ss`.
+There are also two registers hidden to the programmer: the 16-bit instruction
+pointer `ip` and the `flags` register.
+
+The `flags` register can be directly accessed in two ways:
+
+* `lahf` and `sahf` encode a subset of the flags into a byte (compatible with
+  the Intel 8080 and 8085).
+* `pushf` and `popf` encode all the flags in a word, with the low byte
+  corresponding to the encoding found in `lahf` and `sahf`.
+
+.8086 `flags` encoding
+[cols="16*"]
+|===
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| | | | | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
+|===
+
+The 8086 has following flags:
+
+* The carry flag `cf` indicates an arithmetic carry for unsigned operations.
+* The parity flag `pf` is set if the parity of the result of an arithmetic
+  operation is even.
+* The adjust flag, or auxiliary carry flag, `af` indicates a carry out of the
+  first nibble of an arithmetic operation.
+* The zero flag `zf` is set if the result is zero.
+* The sign flag `sf` indicates a negative value as the result of a signed
+  arithmetic operation.
+* If the trap falg `tf` is set, interrupt 1 (see below) is raised on each
+  instruction that is executed.
+  The trap flag is automatically cleared when an interrupt is dispatched.
+* If the interrupt flag `if` is cleared, all hardware interrupts are disabled,
+  except for NMI.
+  The interrupt flag is automatically cleared when an interrupt is dispatched.
+* The direction flag `df` determines the direction of string operations.
+  If it is cleared, the indices (`si` or `di`) involved are increased.
+  If it is set, the indices are decreased.
+* The overflow flag `of` is set, if a signed arithmetic operation results in
+  an overflow.
+
+Since memory is accessed through a segment selector (which is always one of the
+segment registers), in addition to an offset (the notation `segment:offset` is
+used), the program counter and stack pointer consist of two 16-bit registers.
+The program counter is `cs:ip` and the stack pointer is `ss:sp`.
+
+The normal flow of execution is increasing `ip`.
+`cs` is not automatically incremented, if `ip` exceeds the limit of `cs`,
+instead `ip` will either wrap around to zero (as is the case on the 8086) or
+an exception will be raised on later CPUs.
+
+On x86, the stack grows downwards, `push` decreases `sp` and `pop` increases
+`sp`.
+As with the program counter, exceeding the limits of the stack segment does not
+result in a change in `ss`.
+
+Despite having eight general-purpose registers, the 8086 instruction set is not
+very orthogonal.
+Every 16-bit register has a special role in at least one instruction, examples
+include:
+
+* `al` is the 8-bit accumulator and is used to store the quotient of a
+  `div byte` instruction.
+* `ah` is used to store the remainder of a `div byte` instruction.
+* `ax` is used to store the quotient of a `div word` instruction.
+* `bx` is used as the table base address for the `xlat` instruction.
+* `cx` is used as a counter for the `loop` instruction.
+* `dx` is used to store the remainder of a `div word` instruction.
+* `si` is used as the source address for the `movsb` and `movsw` instructions.
+* `di` is used as the destination address for the `movsb` and `movsw`
+  instructions.
+* using `bp` as the base of the effective address (see below) will result in
+  the use of the stack segment.
+* `sp` is the stack pointer.
+
+Every instruction involving memory has a default segment and most may be
+overriden using a *segment override prefix*.
+Most memory operands may have a wide variety of indirect addressing modes.
+Offsets may be determined through a runtime computation of adding up to three
+values:
+
+* *base* - either zero, `bx` or `bp`
+* *index* - either zero, `si` or `di`
+* *displacement* - a constant value (encoding allows either zero, a
+  sign-extended byte or a word)
+
+The result of the computation is called the *effective address* (one may write
+`[base + index + displacement]` to refer to the corresponding memory address,
+or `[segment:base + index + displacement]` when using a segment override).
+The default segment is `ds`, except when the base is `bp`, in which case it is
+`ss`.
+
+.8086 addressing modes
+|===
+| Effective address | Displacement formats | Default segment
+
+| `bx + si + disp` | Zero, byte or word | `ds`
+
+| `bx + di + disp` | Zero, byte or word | `ds`
+
+| `bp + si + disp` | Zero, byte or word | `ss`
+
+| `bp + di + disp` | Zero, byte or word | `ss`
+
+| `si + disp` | Zero, byte or word | `ds`
+
+| `di + disp` | Zero, byte or word | `ds`
+
+| `bp + disp`
+| Byte or wordfootnote:[The encoding for displacement zero is used to indicate
+  a direct offset. This means `[bp\]` is encoded as `[bp+0\]` and is not shorter
+  than `[bp+1\]` (e.g. the encoding for `[si+0\]` is shorter than `[si+1\]`).]
+| `ss`
+
+| `disp` footnote:[As in: direct memory reference.] | Word | `ds`
+
+| `di + disp` | Zero, byte or word | `ds`
+|===
+
+=== 80186
+The 186 and 188 implement most of the new 286 instructions that are not related
+to protected mode or the new registers that have been added.
+These extension include:
+
+* immediate modes for `imul`, `push` and the shift and roll instructions
+* string operations on I/O ports
+* shorthands `bound`, `leave`, `pusha`, `popa`
+
+== Floating-point and vector extensions
+x86 processors have a plethora of extensions that expand on the general-purpose
+instruction set.
 
 === x87
-x87 is a floating-point calculation extension.
-While technically an extension, it is supported on most x86 processors.
+*x87*, also known as *Numerical Processing Extension (NPX)* or FPU, is a scalar
+floating-point calculation extension.
+Units that implement x87 are often referred to as "the FPU", although the term
+may also apply to the SIMD floating-point extensions listed below.
+Originally implemented as a separate coprocessor, it is integrated into the
+486DX and most processors that came after it.
+
+The instruction set primarily operates on a stack of eight 80-bit registers
+that are addressed as `st(0)` to `st(7)` relative to the top of the stack.
+
+=== MMX
+*Multimedia Extensions (MMX)* is a SIMD (single instruction; multiple data)
+extension introduced in 1997 with the Pentium MMX.
+AMD first implemented MMX in the K6 in 1997.
+MMX supported only integer math and operated on aliases to the 64-bit
+significand part of the x87 registers, called `mm0` to `mm7`.
+Unlike x87, MMX can addresses those registers directly, without a stack
+pointer.
+This aliasing makes it difficult for applications to use MMX and x87 at the
+same time.
+
+==== 3DNow!
+In 1998, AMD introduced *3DNow!* with the K6-2.
+This extended MMX to introduce support for operations on 32-bit floating-point
+data.
+
+AMD introduced an extended version of 3DNow! in 1999 with the original Athlon.
+This also included a subset of new MMX integer instructions introduced with
+SEE.
+
+Starting with AMD "Bulldozer" CPUs, 3DNow! is no longer supported (except for
+two instructions that are also found in newer Intel processors).
 
 === SSE
-SSE is a 128-bit data extension.
-It adds 8-16 128-bit general purpose `XMM` registers, and instructions to
-perform SIMD vector math. 
+*Streaming SIMD Extensions (SSE)*, also known as *Katmai New Instructions (KNI)*
+or *Internet Streaming SIMD Extensions (ISSE)*, is a SIMD extension introduced
+in 1999 with the Intel Pentium III and supported by AMD since the Athlon XP in
+2001.
+In addition to adding new instructions to the existing MMX integer instruction
+set, it introduces a new set of eight 128-bit registers `xmm0` to `xmm7` that
+can each store four 32-bit floating-point numbers.
 
-SSE has several versions. x86-64 processors are mandated to support at least
-SSE2.
+==== SSE2
+*SSE2*, also known as *Willamette New Instructions (WNI)*, was introduced in 2000
+with the Intel Penium 4 and AMD first implemented it with the x86-64 Opteron in
+2003.
+SSE2 adds support for 64-bit floating-point numbers and integers of sizes
+ranging from 8-bit to 64-bit, through MMX-like instructions on SSE registers.
+Thus, it is a full replacement of MMX and a partial replacement for x87 (though
+x87 supports higher precision 80-bit floating-point math).
+
+AMD's x86-64 implementation introduced eight new registers `xmm8` to `xmm15`,
+that can only be used in 64-bit mode.
+Infact, SSE2 with 16 registers is mandatory for every x86-64 implementation.
+
+==== SSE3
+SSE3, also known as *Prescott New Instructions (PNI)* was introduced by Intel
+in 2004 with the Prescott Pentium 4 and by AMD in 2005 with the Athlon XP
+Revision E.
+This extension introduced support for "horizontal" operations between values in
+the same register.
+
+==== SSSE3
+*Supplementary Streaming SMD Extenions 3 (SSSE3)*, also known as *Merom New
+Instructions (MNI)* was first implemented by Intel in 2006 with Woodcrest Xeons
+and by AMD with Bulldozer AMD FX CPUs in 2011.
+It is not to be confused with SSE4.
+
+==== SSE4
+*SSE4*, was divided into two subsets by Intel.
+The first subset, *SSE4.1*, also known as *Penryn New Instructions (PNI)*, was
+introduced with Penryn Core 2 CPUs in 2007.
+The second subset, *SSE4.2*, also known as *String and Text New Instructions
+(STTNI)*, was introduced with Nehalem Core i7 CPUs in 2008.
+Nehalem also introduced performance improvements for misaligned data.
+While SSE4.1 added new SIMD instructions, such as a dot product instruction,
+SSE4.2 added string search and comparison instructions and a CRC32 instruction.
+
+AMD introduced its own subset of SSE4, *SSE4A*, with the K10 in 2007.
+SSE4A introduces four instructions not available on any Intel processor.
+AMD started supporting the full SSE4 instruction set with the Bulldozer
+architecture in 2011.
+
+With SSE4, AMD also introduced greater support for operations with misaligned
+data.
+These new instructions were implemented by Intel with AVX.
+
+==== SSE5
+*SSE5* was a proposed extension by AMD in 2007.
+It does not include all SSE4 instructions and proposed a new *DREX encoding*,
+which is incompatible with AVX's VEX encoding.
+This extension was never implemented in hardware and had to be revised and
+split into  F16C, XOP and FMA4 in 2009, in order to remain compatible with AVX.
+
+==== F16C
+*F16C*, also known as *CVT16* originally proposed by AMD in 2009, it adds
+instructions to convert between half-precision and single-precision
+floating-point numbers.
+It was first implemented by AMD with Bulldozer in 2011 and by Intel with Ivy
+Bridge in 2012.
+
+==== XOP
+*Extended Operations (XOP)* adds new vector instructions to SSE and was first
+proposed by AMD in 2015 and first implemented in Bulldozer in 2011.
+XOP does not use the VEX coding scheme of AVX.
+No Intel CPU implemented XOP and AMD dropped support with Zen in 2017.
+
+==== FMA
+There exist to variants of *Fused Multiply-Add (FMA)*: the three-operand *FMA3*
+and the four-operand *FMA4*.
+The original instructions in SSE5 were three-operand DREX-encoded.
+Intel's original AVX specification specified a VEX-encoded four-operand
+version (FMA4).
+Later, Intel changed it to a three-operand VEX-encoded version (FMA3).
+
+AMD first implemented FMA4 with Bulldozer in 2011 and FMA4 with Piledriver in
+2013.
+Intel never implemented FMA4 and implemented FMA3 with Haswell in 2013.
+AMD officially dropped support for FMA4 with Zen in 2017.
 
 === AVX
-AVX is a 256-bit data extension. It performs a purpose similar to SSE, and
-implements a handful of 256-bit `YMM` registers.
+*Advanced Vector Extensions (AVX)* was first proposed by Intel in 2008 and
+implemented in 2011 by Intel with Sandy Bridge and by AMD with Bulldozer.
+It introduces the new *VEX instruction coding* scheme and expands the 128-bit
+`xmm` SSE registers to 256-bit `ymm` registers (`ymm0` to `ymm15`).
+The VEX coding scheme allows three-operand operations, relaxes alignment
+requirements and allows 128-bit operations.
 
-AVX was released alongside the Haswell microarchitecture in 2014.
-A not-insignificant number of operational computers today do not support AVX.
+==== AVX2
+*AVX2* is an extension to AVX introduced by Intel in 2013 with Haswell and by
+AMD in 2015 with Excavator.
 
 ==== AVX-512
-AVX-512 is not a single extension, but rather a family of extensions.
-It is similar to AVX, but implements a handful of 512-bit `ZMM` registers.
+*AVX-512* is a set of extensions first proposed by Intel in 2013 and first
+implemented in 2015.
+AVX-512 consists of multiple instruction sets, with only *AVX-512F* (Foundation)
+being mandatory.
+AVX-512 expands the 256-bit AVX registers to 512-bit registers and introduces
+the new *EVEX coding scheme*, allowing for 32 registers (`zmm0` to `zmm31`).
+The *AVX-512VL* (vector length) set allows the use of AVX-512 operations on
+256-bit (`ymm0` to `ymm31`) and 128-bit (`xmm0` to ``xmm31`) operands.
 
-AVX-512 is quite new, with consumer processors supporting AVX-512 being
-released in 2018.footnote:[https://web.archive.org/web/20161023135525/http://www.legitreviews.com/intel-cannonlake-added-to-llvms-clang_179210]
-It is yet to become widely supported.
+==== AVX-VNNI
+*AVX-VNNI* allows for *AVX-512VNNI* (virtual neural network interface)
+instructions on 128-bit and 256-bit operands using the VEX encoding for CPUs
+that do not yet fully support AVX-512.
 
-== See Also
+== External links
 * https://en.wikipedia.org/wiki/X86[x86 on Wikipedia]
-* https://www.amd.com/en/support/tech-docs/amd64-architecture-programmers-manual-volumes-1-5[AMD64 Architecture Programmers' Manuals]
-* https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html[Intel Software Developer Manuals]
