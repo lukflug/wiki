@@ -2,7 +2,7 @@
 title: x86
 tags: x86, architecture
 category: x86
-description: Description and history of the x86 CPU architecture.
+description: Introduction to the x86 CPU architecture.
 ---
 
 *x86* is a backwards compatible family of little-endian, complex instruction
@@ -16,7 +16,7 @@ The iterations of the ISA can be broadly classified by integer width:
   with the Intel 386 in 1985)
 * 64-bit x86 (not to be confused with IA-64), also referred to as *x86-64*,
   *x86_64*, *AMD64* or *x64*.
-  It is also referred to as *EM64T*, *IA-32e* or *Intel64* by Intel.
+  It is also referred to as _EM64T_, _IA-32e_ or _Intel64_ by Intel.
 
 == History
 === First generation
@@ -46,14 +46,15 @@ However, the IBM PC did not use the 8089, instead using the simpler Intel 8237
 This meant that no successor to the 8089 was ever made.
 
 === Second generation
-In 1982, Intel introduced the *Intel 80186*), *Intel 80188* and *Intel 80286*
+In 1982, Intel introduced the *Intel 80186*, *Intel 80188* and *Intel 80286*
 (also known as the 186, 188 and 286 respectively).
 The 186 and 188 were similar to the 8086 and 8088 respectively, but were
 intended for embedded systems, and included peripherals that were not compatible
 with IBM PCs.
 
-Much later, the *Intel 80187* (also known as the 187) was introduced as a
-math coprocessor compatible the 186, but not the 188.
+Although the 8087 is compatible with both the 186 and 187, the *Intel 80187*
+(also known as the 187) was introduced much later as a math coprocessor
+compatible the 186 (but not the 188).
 The 187 was internally more similar to the 387 and supported all the 387
 instructions and was IEEE 754 compliant.
 
@@ -77,11 +78,11 @@ The *NEC V20* was a pin compatible replacement for the 8088, that was a very
 popular upgrade for XT-class machines, due to being able to execute more
 instructions on average in a smaller amount of time.
 Variants included the *NEC V30*, which was pin compatible with the 8086, the
-*NEC V40*, which corresponded to the 188, and the *NEC V50*, which corresponded
+_NEC V40_, which corresponded to the 188, and the _NEC V50_, which corresponded
 to the 186.
-The *NEC V33* and its variant, the *NEC V53*, is a V30 variant with performance
+The _NEC V33_ and its variant, the _NEC V53_, is a V30 variant with performance
 equivalent to a 286 and can address up to 16 MiB of memory.
-The *NEC V25* and *NEC V35* are microcontroller variants of the V20 and V30
+The _NEC V25_ and _NEC V35_ are microcontroller variants of the V20 and V30
 respectively.
 The later V60 series implemented a different ISA, but had a V20 emulation mode.
 
@@ -91,30 +92,35 @@ Among other things, these instructions included nibble and bitwise operations.
 The V25 and V35 implemented additional enhancements, such as eight register
 banks for interrupt handling.
 
-The V33 and V53 implemented *expanded addressing mode*, which allows the use of
+In addition to the enhancements common to all V-series CPUs, the V20, V30, V40
+and V50 featured an _8080 emulation mode_, whereby 8080 binaries could be
+executed without translation.
+
+The V33 and V53 implemented _expanded addressing mode_, which allows the use of
 up to 16 MiB of RAM.
 This mode is essentially real mode with paging of 16 kiB pages.
 The translation table translating the 20-bit linear address to a 24-bit
 physical address is mapped to the I/O ports 0xFF00 to 0xFF7F.
 
 === Third generation
-In 1985, Intel introduced the *386DX*.
+In 1985, Intel introduced the *Intel 386DX*.
 This new iteration introduced support for 32-bit integers and extended
 protected mode to introduce, among other things, paging and support for up to
 4 GiBs of RAM.
-Later, Intel introduced the *386SX*, which was internally similar to the 386DX,
-but had a 16-bit data bus and 24-bit address bus, rather than 32-bit busses.
+Later, Intel introduced the *Intel 386SX*, which was internally similar to the
+386DX, but had a 16-bit data bus and 24-bit address bus, rather than 32-bit
+busses.
 
-In 1987, the *387DX* was introduced.
+In 1987, the *Intel 387DX* was introduced.
 Due to its 32-bit data bus, it was incompatible with the 386SX, which had its
 own math coprocessor called the *387SX*
 
 === Fourth generation
 In 1989, the *Intel 486DX* was introduced, introducing new features, such as
 tightly coupled (i.e. true) pipelining and an integrated FPU.
-The *486SX* variant was a version without an integrated FPU.footnote:[Early
+The *Intel 486SX* variant was a version without an integrated FPU.footnote:[Early
 486SX chips were actually 486DX chips with the FPU disabled.]
-A *487SX* math coprocessor upgrade was available for 486SX systems.footnote:[The
+A *Intel 487SX* math coprocessor upgrade was available for 486SX systems.footnote:[The
 487SX was actually a full 486DX that disabled the 486SX completely.]
 
 === Fifth generation
@@ -161,8 +167,8 @@ legacy mode.
 It mostly models the original 16-bit 8086 processor, with a few extensions.
 Real mode contains no access rings or memory protection of any kind.
 
-Access to memory is done via a 16-bit segment selector and a 16-bit offset
-address, using following formula:
+Access to memory is done via a 16-bit _segment address_ and a 16-bit _offset_,
+using following formula:
 
 [source]
 physical_address = segment * 16 + offset
@@ -178,30 +184,31 @@ first 1114096 (1 MiB + 64 kiB - 16 bytes) of physical memory:
 65535 * 16 + 65536 = 1114096
 
 ==== Unreal mode
-*Unreal mode*, also known as *flat real mode*, *32-bit real mode* or
-*voodoo mode*, is an originally undocumented variant of real mode that alters
+_Unreal mode_, also known as _flat real mode_, _32-bit real mode_ or
+_voodoo mode_, is an originally undocumented variant of real mode that alters
 the segment descriptor cache, in order to allow 32-bit offsets, so that
 programs may access up to 4 GiB of memory.
 Unreal mode is available on the 386 and above.
 
 ===== Big real mode
-*Big real mode*, also known as *big unreal mode*, sets the limit of data
+_Big real mode_, also known as _big unreal mode_, sets the limit of data
 segments to 4 GiB, allowing for a flat 32-bit physical address space
-starting from zero, if selector zero is used.
+starting from zero, if segment zero is used.
 
 ===== Huge real mode
-*Huge real mode*, also known as *huge unreal mode*, sets the limit of code
+_Huge real mode_, also known as _huge unreal mode_, sets the limit of code
 segments to 4 GiB, in addition to changing the data segment limit.
 However, the high 16 bits of `eip` are not saved by real mode interrupts,
 making it difficult to use.
 
 === Protected mode
 *Protected mode* was introduced with the 286 and provides memory protection.
-Unlike real mode, there is no linear relationship between segment selector and
+Unlike real mode, there is no linear relationship between segment address and
 segment base address.
 The segment base address and other properties of each segment are determined by
-the global descriptor table (GDT) and local descriptor table (LDT).
-The segment selector is essentially an index to a segment descriptor.
+the _global descriptor table (GDT)_ and _local descriptor table (LDT)_.
+The segment address is now a segment selector, which is essentially an index
+to a segment descriptor.
 
 Protected mode provides four protection rings, Ring 0 being the most privileged
 and Ring 3 being the least privileged.
@@ -221,10 +228,10 @@ Later extensions, such as PAE and PSE-36, increase the maximum size of physical
 memory to beyond 4 GiB.
 However, the size of virtual address space is still limited to 4 GiB.
 
-Thus, the *logical address*, consisting of segment selector and offset is first
-translated to a *linear address*, by adding the segment base address of the
+Thus, the _logical address_, consisting of segment selector and offset is first
+translated to a _linear address_, by adding the segment base address of the
 corresponding segment descriptor to the offset.
-If paging is enabled, the linear address is translated to a *physical address*,
+If paging is enabled, the linear address is translated to a _physical address_,
 otherwise the linear address corresponds to the physical address.
 
 Protected mode has two sub-modes, depending on the current code segment.
@@ -238,7 +245,7 @@ operand size is 16-bit.
 Code targeting real mode is largely compatible with 16-bit protected mode,
 assuming, among other things, it does not attempt to do any privileged
 operation, does not assume that there is a direct relationship between segment
-base and segment selector (as is the case in real mode) and does not try to
+base and segment address (as is the case in real mode) and does not try to
 modify code or execute data.
 In practice, most existing real mode programs do at least one of the things
 listed above, rendering them incompatible with 16-bit protected mode.
@@ -257,12 +264,12 @@ To a 32-bit user program, segmentation is essentially transparent and the
 address space consists of 4 GiB of flat, contiguous memory.
 
 ==== Virtual 8086 mode
-*Virtual 8086 mode* was introduced with the 386 and allows the execution of
+_Virtual 8086 mode_ was introduced with the 386 and allows the execution of
 real mode programs in a virtual machine under a hypervisor in protected mode.
 
 === System management mode
-Introduced with the 386SL (a CPU targeting laptops), system management mode is
-mostly transparent to the operating system.
+Introduced with the 386SL (a CPU targeting laptops), *system management mode*
+is mostly transparent to the operating system.
 System management mode is intended for firmware to provide functions, such as
 power management, independently from the operating system that is currently
 running.
@@ -276,9 +283,9 @@ The paging scheme restricts this to 48-bit, however, with the remaining bits
 being sign extended, thus producing two halves of 128 TiB of "canonical address
 space".
 An address that complies with this sign extension requirement is said to be in
-*canonical form*.
-The half starting at zero is called the (canonical) *lower half*.
-The half starting at 16 EiB - 128 TiB is called the (canonical) *upper half*.
+_canonical form_.
+The half starting at zero is called the (canonical) _lower half_.
+The half starting at 16 EiB - 128 TiB is called the (canonical) _higher half_.
 
 If 5-level paging (also known as LA57) is enabled, the canonical address space
 is extended to 57-bit, thus extending the maximum amount of virtual memory from
@@ -320,18 +327,19 @@ mode.
 
 ==== x86 virtualization
 Modern x86 processors provide hardware-assisted virtualization.
-Intel processors have VT-x (also known as VMX) and AMD processors have AMD-V
+Intel processors have *VT-x* (also known as VMX) and AMD processors have *AMD-V*
 (also known as SVM).
 
 == Instruction set and execution model
 Each of the major x86 generations introduce major additions to the core
 instruction set.
 
-In the context of x86 a *word* is a 16-bit value, a *dword* is a 32-bit value
-and a *qword* is a 64-bit value.footnote:[As is convention elsewhere, a byte is
+In the context of x86 a _word_ is a 16-bit value, a _dword_ is a 32-bit value
+and a _qword_ is a 64-bit value.footnote:[As is convention elsewhere, a byte is
 an 8-bit value and a nibble is a 4-bit value.]
 
 === 8086
+==== Registers
 The original 8086 had eight word-size general-purpose registers and eight
 byte-sized general-purpose registers.
 These byte registers are aliases for individual bytes of the word-sized
@@ -388,29 +396,34 @@ The `flags` register can be directly accessed in two ways:
 
 The 8086 has following flags:
 
-* The carry flag `cf` indicates an arithmetic carry for unsigned operations.
-* The parity flag `pf` is set if the parity of the result of an arithmetic
-  operation is even.
-* The adjust flag, or auxiliary carry flag, `af` indicates a carry out of the
-  first nibble of an arithmetic operation.
-* The zero flag `zf` is set if the result is zero.
-* The sign flag `sf` indicates a negative value as the result of a signed
-  arithmetic operation.
-* If the trap falg `tf` is set, interrupt 1 (see below) is raised on each
-  instruction that is executed.
-  The trap flag is automatically cleared when an interrupt is dispatched.
-* If the interrupt flag `if` is cleared, all hardware interrupts are disabled,
-  except for NMI.
-  The interrupt flag is automatically cleared when an interrupt is dispatched.
-* The direction flag `df` determines the direction of string operations.
-  If it is cleared, the indices (`si` or `di`) involved are increased.
-  If it is set, the indices are decreased.
-* The overflow flag `of` is set, if a signed arithmetic operation results in
-  an overflow.
+Carry flag `cf`:: Indicates an arithmetic carry for unsigned operations.
+Parity flag `pf`:: Is set if the parity of the result of an arithmetic
+                   operation is even.
+Adjust flag (or auxiliary carry flag) `af`:: Indicates a carry out of the first
+                                             nibble of an arithmetic operation.
+Zero flag `zf`:: Is set if the result is zero.
+Sign flag `sf`:: Indicates a negative value as the result of a signed
+                 arithmetic operation.
+Trap flag `tf`:: If set, interrupt 1 (see below) is raised on each instruction
+                 that is executed.
+                 The trap flag is automatically cleared when an interrupt is
+                 dispatched.
+Interrupt flag `if`:: If cleared, all hardware interrupts are disabled, except
+                      for NMI.
+                      The interrupt flag is automatically cleared when an
+                      interrupt is dispatched.
+Direction flag `df`:: Determines the direction of string operations.
+                      If it is cleared, the indices (`si` or `di`) involved are
+                      increased.
+                      If it is set, the indices are decreased.
+Overflow flag `of`:: Is set, if a signed arithmetic operation results in an
+                     overflow.
 
-Since memory is accessed through a segment selector (which is always one of the
-segment registers), in addition to an offset (the notation `segment:offset` is
-used), the program counter and stack pointer consist of two 16-bit registers.
+==== Instruction modes
+Since memory is accessed through a segment address (which is always the value
+of one of the segment registers), in addition to an offset (the notation
+`segment:offset` is used), the program counter and stack pointer consist of two
+16-bit registers.
 The program counter is `cs:ip` and the stack pointer is `ss:sp`.
 
 The normal flow of execution is increasing `ip`.
@@ -486,22 +499,322 @@ The default segment is `ds`, except when the base is `bp`, in which case it is
 | `di + disp` | Zero, byte or word | `ds`
 |===
 
+==== Memory models
+Since 16-bit segments are limited to 64 kiB, applications may use multiple
+segments, meaning that there are multiple ways to organize a program into
+memory segments.
+These schemes are called *memory models*.
+There are six standard memory models that are widely supported by compilers and
+assemblers:
+
+Tiny:: Everything is in a single segment.
+Small:: One code segment, one data segment.
+Compact:: One code segment, multiple data segments.
+Medium:: Multiple code segments, one data segment.
+Large:: Multiple code segments, multiple data segments.
+Huge:: Single 1 MiB memory range (see below).
+
+There exist three types of pointers:
+Near pointers:: Word-sized offsets that are used when there is no ambiguity
+                regarding the segment.
+Far pointers:: Dword-sized segment-offset pairs that are used when there is a
+               necessity to specify what segment is used.
+Huge pointers:: Similar to far pointers, in that they are dword-sized
+                segment-offset pairs, and are used in the huge memory model.
+
+The *huge memory model* takes advantage of the linear relationship between
+segment address and segment base in real mode, to treat the entire 1 MiB range
+as a single memory segment.
+This is done through huge pointers, which are essentially far pointers that are
+normalized, so the offset is always smaller than 16.
+This effectively yields a 20-bit address, if the highest 12 bits of the offset
+are ignored (since they are always zero due to normalization).
+This allows to transparently implement arrays larger than 64 kiB.
+The stack, however, may not exceed 64 kiB.
+Due to relying on real mode segment arithmetic, it does not work in protected
+mode.
+
+.8086 memory models
+|===
+| Memory model | Code pointer type | Data pointer type | Segment registers
+| Tiny | Near | Near | `cs` = `ds` = `es` = `ss`
+| Small | Near | Near | `ds` = `ss`
+| Compact | Near | Far |
+| Medium | Far | Near | `ds` = `ss`
+| Large | Far | Far |
+| Huge | Huge | Huge |
+|===
+
+==== Interrupts and exceptions
+The 8086 also supported 256 types of interrupts.
+Interrupts may be caused by hardware, by a CPU exception or explicitly by
+software through the `int` instruction.
+When an interrupt is raised, the processor pushes the current state of the
+flags register, current code segment and the offset of the next instruction to
+be executed, when the interrupted program is resumed.
+It then determines the address to jump to using the *interrupt vector table
+(IVT)*, a 1 kiB (256 times 4 bytes) table starting at physical address zero,
+consisting of far pointers.
+
+The routine that is called when an interrupt happens is called the *interrupt
+service routine (ISR)*.
+An ISR may resume the interrupt program through the `iret` instruction.
+The 8086 generated following CPU exceptions:
+
+* Division by zero (interrupt 0) occurs when a `div` or `idiv` instruction has
+  operand zero or if the quotient does not find into the accumulator.
+* Single-step trap (interrupt 1) occurs when the trap flag (see above) is set.
+* Debug breakpoint (interrupt 3) is invoked when the (single byte) `int3`
+  instruction is executed.
+* Overflow (interrupt) is invoked when the `into` (interrupt on overflow)
+  instruction is executed and the overflow flag is set.
+
 === 80186
-The 186 and 188 implement most of the new 286 instructions that are not related
+The 186 and 188 implement all of the new 286 instructions that are not related
 to protected mode or the new registers that have been added.
-These extension include:
+New CPU exceptions, such as the invalid opcode exception, were also introduced.
+These extensions consist of:
 
 * immediate modes for `imul`, `push` and the shift and roll instructions
 * string operations on I/O ports
-* shorthands `bound`, `leave`, `pusha`, `popa`
+* `bound` instruction and the bounds range exceeded exception
+* shorthands `enter`, `leave`, `pusha`, `popa`
+* invalid opcode and coprocessor not present exceptions
+
+=== 80286
+The introduction of protected mode with the 286 was a major change to the x86
+ISA.
+Protected mode introduced new data structures and mechanisms for virtual memory,
+memory protection and hardware task switching.
+
+Hardware memory protection is primarily enforced through *protection rings*.
+Ring 0 is the most privileged and Ring 3 is the least privileged.
+Rings with lower number (more privilege) are referred to hereafter as _lower_,
+rings with higher number (less privilege) are referred to hereafter as _higher_
+(i.e. the numeric relation).
+
+==== Virtual memory
+There is no longer a linear relationship between segment address and segment
+base.
+Instead, the properties of segments are determined by *segment descriptors*.
+The values of the segment registers are now interpreted as *segment selectors*.
+The segment selector is essentially an index to one of the two segment
+descriptor tables: the *Global Descriptor Table (GDT)* and the *Local
+Descriptor Table (LDT)*.
+
+As the names suggest, the GDT contains segment descriptors for every task and
+the LDT contains segment descriptors for a specific task.
+Thus, each task can access a global virtual address space, in addition to
+having its own, private address space.
+
+.Segment selector format
+[cols="16*"]
+|===
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+13+| Index | TI 2+| DPL
+|===
+
+Index:: The index within the descriptor table.
+TI:: The table indicator. Zero for GDT; one for LDT.
+DPL:: The descriptor privilege level.
+
+Descriptor tables are arrays of 8-byte *segment descriptors* that reside in
+RAM.
+
+.286 segment descriptor format
+[cols="17*"]
+|===
+| Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| +48 16+| Reserved
+
+| +32 | P 2+| DPL | S 4+| Type 8+| Base (23:16)
+
+| +16 16+| Base (15:0)
+
+| +0 16+| Limit
+|===
+
+Limit:: The highest allowed offset address (inclusive).
+        This means a limit of 65535 indicates a segment of 65536 bytes, a limit
+        of zero indicates a segment of one byte.
+        For expand-down segments, it is lowest allowed offset address minus one
+        (i.e. exclusive), with the maximum allowed offset being 65535.
+        If the present bit is not set, this field may be used for other data.
+Base:: Physical address of first byte of segment (equivalent to offset zero).
+       For expand-down segments, defines the first byte after the last byte
+       of the segment (equivalent to offset zero).
+       If the present bit is not set, this field may be used for other data.
+Type:: Meaning depends on the whether it is a system segment descriptor or a
+       code or data segment descriptor.
+S flag:: Zero for system segment descriptors; one for code or data descriptors.
+DPL:: Descriptor privilege level.
+Present bit:: Zero indicates the segment is invalid (intended for operating
+              systems to implement swapping).
+
+.Type field for code and data segment descriptors
+[cols="4*"]
+|===
+| 43 | 42 | 41 | 40
+
+| X | CE | RW | A
+|===
+
+Executable bit:: One for code segments; zero for data segments.
+Conforming/expand-down bit:: For code segments: zero for non-conforming code
+                             segments; one for conforming code segments.
+                             For data segments: zero for expand-up data
+                             segments; one for expand-down data segments.
+Readable/writable bit:: For code segments: zero for execute-only code segments;
+                        one for readable code segments.
+                        For data segments: zero for read-only data segments;
+                        one for writable data segments.
+Accessed bit:: This bit is set when a segment is accessed.
+               This way the operating system can keep track of which segments
+               were used.
+
+.286 system segment types
+|===
+| 43 | 42 | 41 | 40 | Segment type
+
+| 0 | 0 | 0 | 0 | Reserved
+
+| 0 | 0 | 0 | 1 | Available TSS
+
+| 0 | 0 | 1 | 0 | LDT descriptor
+
+| 0 | 0 | 1 | 1 | Busy TSS
+
+| 0 | 1 | 0 | 0 | Call gate
+
+| 0 | 1 | 0 | 1 | Task gate
+
+| 0 | 1 | 1 | 0 | Interrupt gate
+
+| 0 | 1 | 1 | 1 | Trap gate
+
+| 1 | x | x | x | Reserved
+|===
+
+The first entry of the GDT is reserved.
+Selectors referring to this entry are so-called _null selectors_ and may be
+used as placeholder values for `ds` and `es`, but not `cs` and `ss`.
+Any attempt to access memory through a null selector, will result in a general
+protection fault.
+
+In addition to the visible 16-bit selectors, all segment registers have an
+invisible _segment descriptor cache_, which contains the segment descriptor
+corresponding to the selector, so that the CPU does not need to constantly look
+up the descriptor tables.
+Aside from the performance improvements this has certain side effects.
+Notable among those is unreal mode.
+
+The location of the GDT and LDT is indicated by the _GDT Register (GDTR)_ and
+_LDT Register (LDTR)_ respectively.
+These 48-bit registers are so-called _pseudo-descriptors_, that have a similar
+structure to the regular segment descriptors, in the sense that they contain a
+base and limit field.
+The GDTR can be set through the `lgdt` instruction and the LDTR can be
+initialized through the `lldt` instruction.
+
+.Pseudo-descriptor format
+[cols="17*"]
+|===
+| Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| +32 16+| Base (31:16)
+
+| +16 16+| Base (15:0)
+
+| +0 16+| Limit
+|===
+
+Much like regular segment registers, the LDTR has a 16-bit selector field, in
+addition to the pseudo-descriptor.
+This 16-bit selector points to a LDT descriptor in the GDT.
+
+==== Memory protection
+Protected mode introduces new memory protection mechanisms.
+In order to understand these, one must first understand the different privilege
+levels that are taken into account:
+
+* The __current privilege level (CPL)_ is the privilege level of the current
+  task.
+  It corresponds to the RPL field of the segment selectors stored in `cs` and
+  `ss` (i.e. bits 0 and 1 of the visible 16-bit values of `cs` and `ss`).
+* The __descriptor privilege level (DPL)__ is the privilege level of the
+  segment being accessed (determined in the segment descriptor).
+* The __requested privilege level (RPL)__ is the privilege level given by the
+  segment selector (i.e. bits 0 and 1 of the segment selector).
+* The __effective privilege level (EPL)__ is the maximum of the CPL and RPL.
+* The __I/O privilege level (IOPL)__ is a value in the `flags` register that
+  determines the highest CPL allowed to do direct I/O within the current task.
+
+Certain instructions, such as `lgdt` can only be used if the CPL is 0.
+There are also forms of protection independent of the privilege levels, such as
+checking segment limits, restricting writing a read-only data segment or code
+segment and reading a execute-only code segment through a `cs` override.
+
+Before accessing a segment, a segment register must first be set, so the CPU
+can perform most privilege checks at that point.
+`ds`, `es` and `ss` can be directly set.
+`cs` and `ss` can be indirectly set through far `jmp` and `call` instructions
+and interrupts.
+Following restrictions apply to the types of segments that are loaded:
+
+* `cs` may only be loaded with segment selectors to code segments (which may
+  indirectly happen through gates).
+
+* `ds` and `es` may only be loaded with segment selectors to data segments or
+  readable code segments (not call gates).
+
+* `ss` may only be loaded with writable data segments.
+
+When `cs` is changed, the CPL is set to the DPL, if the new descriptor is
+nonconforming.
+Otherwise, if the descriptor is conforming, the CPL remains unchanged.
+Segment registers may be modified in following ways with following
+restrictions:
+
+* When `ds`, `es` or `ss` is directly loaded.
+
+  * If a selector to a data segment or nonconforming code segment is loaded,
+    the DPL must not be lower than the EPL.
+  * Loading a selector to a conforming code segment is always permitted.
+
+* When `cs` is modified through a `jmp` or `call` instruction.
+
+  * If the target selector points to a nonconforming code segment, the DPL must
+    be equal to the CPL and the RPL must not be higher than the CPL.
+  * If the target selector points to a conforming code segment, the DPL must
+    not be higher than the CPL.
+
+The RPL (and EPL) mechanism serves to prevent privilege escalation (i.e. a
+less privileged program accessing privileged memory indirectly through a system
+call, by passing a pointer to that portion of memory).
+When a less privileged code passes a pointer to more privileged code, the
+pointer can be tagged using the `arpl` instruction (which takes the maximum of
+the CPL of the callee with the current RPL of the selector).
+This means pointers are tagged with the CPL of the original caller.
+
+For example, a procedure with CPL 3 passes a selector with RPL 0 pointing to a
+descriptor with DPL 2 to a procedure with CPL 2 that in turn calls a procedure
+with CPL 0.
+When the procedure with CPL 2 is invoked, it executes `arpl` and sets the RPL
+of the selector to 3 (which is the maximum of CPL 3 and RPL 0).
+The procedure with CPL 0 also invokes `arpl` and the RPL of the selector
+remains 3 (which is the maximum of CPL 2 and RPL 3).
+Throughout all the stages, the EPL remains 3, which means a general protection
+fault will be raised, even in Ring 0, since the EPL is larger than the DPL.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
 instruction set.
 
 === x87
-*x87*, also known as *Numerical Processing Extension (NPX)* or FPU, is a scalar
-floating-point calculation extension.
+*x87*, also known as _Numerical Processing Extension (NPX)_ or _FPU_, is a
+scalar floating-point calculation extension.
 Units that implement x87 are often referred to as "the FPU", although the term
 may also apply to the SIMD floating-point extensions listed below.
 Originally implemented as a separate coprocessor, it is integrated into the
@@ -534,8 +847,8 @@ Starting with AMD "Bulldozer" CPUs, 3DNow! is no longer supported (except for
 two instructions that are also found in newer Intel processors).
 
 === SSE
-*Streaming SIMD Extensions (SSE)*, also known as *Katmai New Instructions (KNI)*
-or *Internet Streaming SIMD Extensions (ISSE)*, is a SIMD extension introduced
+*Streaming SIMD Extensions (SSE)*, also known as _Katmai New Instructions (KNI)_
+or _Internet Streaming SIMD Extensions (ISSE)_, is a SIMD extension introduced
 in 1999 with the Intel Pentium III and supported by AMD since the Athlon XP in
 2001.
 In addition to adding new instructions to the existing MMX integer instruction
@@ -543,7 +856,7 @@ set, it introduces a new set of eight 128-bit registers `xmm0` to `xmm7` that
 can each store four 32-bit floating-point numbers.
 
 ==== SSE2
-*SSE2*, also known as *Willamette New Instructions (WNI)*, was introduced in 2000
+*SSE2*, also known as _Willamette New Instructions (WNI)_, was introduced in 2000
 with the Intel Penium 4 and AMD first implemented it with the x86-64 Opteron in
 2003.
 SSE2 adds support for 64-bit floating-point numbers and integers of sizes
@@ -556,24 +869,24 @@ that can only be used in 64-bit mode.
 Infact, SSE2 with 16 registers is mandatory for every x86-64 implementation.
 
 ==== SSE3
-SSE3, also known as *Prescott New Instructions (PNI)* was introduced by Intel
+*SSE3*, also known as _Prescott New Instructions (PNI)_ was introduced by Intel
 in 2004 with the Prescott Pentium 4 and by AMD in 2005 with the Athlon XP
 Revision E.
 This extension introduced support for "horizontal" operations between values in
 the same register.
 
 ==== SSSE3
-*Supplementary Streaming SMD Extenions 3 (SSSE3)*, also known as *Merom New
-Instructions (MNI)* was first implemented by Intel in 2006 with Woodcrest Xeons
+*Supplementary Streaming SMD Extenions 3 (SSSE3)*, also known as _Merom New
+Instructions (MNI)_ was first implemented by Intel in 2006 with Woodcrest Xeons
 and by AMD with Bulldozer AMD FX CPUs in 2011.
 It is not to be confused with SSE4.
 
 ==== SSE4
 *SSE4*, was divided into two subsets by Intel.
-The first subset, *SSE4.1*, also known as *Penryn New Instructions (PNI)*, was
+The first subset, *SSE4.1*, also known as _Penryn New Instructions (PNI)_, was
 introduced with Penryn Core 2 CPUs in 2007.
-The second subset, *SSE4.2*, also known as *String and Text New Instructions
-(STTNI)*, was introduced with Nehalem Core i7 CPUs in 2008.
+The second subset, *SSE4.2*, also known as _String and Text New Instructions
+(STTNI)_, was introduced with Nehalem Core i7 CPUs in 2008.
 Nehalem also introduced performance improvements for misaligned data.
 While SSE4.1 added new SIMD instructions, such as a dot product instruction,
 SSE4.2 added string search and comparison instructions and a CRC32 instruction.
@@ -589,7 +902,7 @@ These new instructions were implemented by Intel with AVX.
 
 ==== SSE5
 *SSE5* was a proposed extension by AMD in 2007.
-It does not include all SSE4 instructions and proposed a new *DREX encoding*,
+It does not include all SSE4 instructions and proposed a new _DREX encoding_,
 which is incompatible with AVX's VEX encoding.
 This extension was never implemented in hardware and had to be revised and
 split into  F16C, XOP and FMA4 in 2009, in order to remain compatible with AVX.
@@ -623,7 +936,7 @@ AMD officially dropped support for FMA4 with Zen in 2017.
 === AVX
 *Advanced Vector Extensions (AVX)* was first proposed by Intel in 2008 and
 implemented in 2011 by Intel with Sandy Bridge and by AMD with Bulldozer.
-It introduces the new *VEX instruction coding* scheme and expands the 128-bit
+It introduces the new _VEX instruction coding_ scheme and expands the 128-bit
 `xmm` SSE registers to 256-bit `ymm` registers (`ymm0` to `ymm15`).
 The VEX coding scheme allows three-operand operations, relaxes alignment
 requirements and allows 128-bit operations.
@@ -635,15 +948,15 @@ AMD in 2015 with Excavator.
 ==== AVX-512
 *AVX-512* is a set of extensions first proposed by Intel in 2013 and first
 implemented in 2015.
-AVX-512 consists of multiple instruction sets, with only *AVX-512F* (Foundation)
+AVX-512 consists of multiple instruction sets, with only _AVX-512F_ (Foundation)
 being mandatory.
 AVX-512 expands the 256-bit AVX registers to 512-bit registers and introduces
-the new *EVEX coding scheme*, allowing for 32 registers (`zmm0` to `zmm31`).
-The *AVX-512VL* (vector length) set allows the use of AVX-512 operations on
+the new _EVEX coding scheme_, allowing for 32 registers (`zmm0` to `zmm31`).
+The _AVX-512VL_ (vector length) set allows the use of AVX-512 operations on
 256-bit (`ymm0` to `ymm31`) and 128-bit (`xmm0` to ``xmm31`) operands.
 
 ==== AVX-VNNI
-*AVX-VNNI* allows for *AVX-512VNNI* (virtual neural network interface)
+*AVX-VNNI* allows for _AVX-512VNNI_ (virtual neural network interface)
 instructions on 128-bit and 256-bit operands using the VEX encoding for CPUs
 that do not yet fully support AVX-512.
 
