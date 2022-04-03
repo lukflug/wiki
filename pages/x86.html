@@ -8,7 +8,7 @@
         <title>x86 - osdev.wiki</title>
         
         <meta name="keywords" content="osdev-wiki,osdev,programming,x86">
-        <meta name="description" content="Description and history of the x86 CPU architecture.">
+        <meta name="description" content="Introduction to the x86 CPU architecture.">
     </head>
     <body>
         <span id="roothack" href="../"></span>
@@ -54,6 +54,7 @@
 <ul class="sectlevel2">
 <li><a href="#_8086">3.1. 8086</a></li>
 <li><a href="#_80186">3.2. 80186</a></li>
+<li><a href="#_80286">3.3. 80286</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -90,7 +91,7 @@ with the Intel 386 in 1985)</p>
 <li>
 <p>64-bit x86 (not to be confused with IA-64), also referred to as <strong>x86-64</strong>,
 <strong>x86_64</strong>, <strong>AMD64</strong> or <strong>x64</strong>.
-It is also referred to as <strong>EM64T</strong>, <strong>IA-32e</strong> or <strong>Intel64</strong> by Intel.</p>
+It is also referred to as <em>EM64T</em>, <em>IA-32e</em> or <em>Intel64</em> by Intel.</p>
 </li>
 </ul>
 </div>
@@ -133,15 +134,16 @@ This meant that no successor to the 8089 was ever made.</p>
 <div class="sect2">
 <h3 id="_second_generation">1.2. Second generation</h3>
 <div class="paragraph">
-<p>In 1982, Intel introduced the <strong>Intel 80186</strong>), <strong>Intel 80188</strong> and <strong>Intel 80286</strong>
+<p>In 1982, Intel introduced the <strong>Intel 80186</strong>, <strong>Intel 80188</strong> and <strong>Intel 80286</strong>
 (also known as the 186, 188 and 286 respectively).
 The 186 and 188 were similar to the 8086 and 8088 respectively, but were
 intended for embedded systems, and included peripherals that were not compatible
 with IBM PCs.</p>
 </div>
 <div class="paragraph">
-<p>Much later, the <strong>Intel 80187</strong> (also known as the 187) was introduced as a
-math coprocessor compatible the 186, but not the 188.
+<p>Although the 8087 is compatible with both the 186 and 187, the <strong>Intel 80187</strong>
+(also known as the 187) was introduced much later as a math coprocessor
+compatible the 186 (but not the 188).
 The 187 was internally more similar to the 387 and supported all the 387
 instructions and was IEEE 754 compliant.</p>
 </div>
@@ -170,11 +172,11 @@ The 287 is also compatible with the 386DX and 386SX.</p>
 popular upgrade for XT-class machines, due to being able to execute more
 instructions on average in a smaller amount of time.
 Variants included the <strong>NEC V30</strong>, which was pin compatible with the 8086, the
-<strong>NEC V40</strong>, which corresponded to the 188, and the <strong>NEC V50</strong>, which corresponded
+<em>NEC V40</em>, which corresponded to the 188, and the <em>NEC V50</em>, which corresponded
 to the 186.
-The <strong>NEC V33</strong> and its variant, the <strong>NEC V53</strong>, is a V30 variant with performance
+The <em>NEC V33</em> and its variant, the <em>NEC V53</em>, is a V30 variant with performance
 equivalent to a 286 and can address up to 16 MiB of memory.
-The <strong>NEC V25</strong> and <strong>NEC V35</strong> are microcontroller variants of the V20 and V30
+The <em>NEC V25</em> and <em>NEC V35</em> are microcontroller variants of the V20 and V30
 respectively.
 The later V60 series implemented a different ISA, but had a V20 emulation mode.</p>
 </div>
@@ -186,7 +188,12 @@ The V25 and V35 implemented additional enhancements, such as eight register
 banks for interrupt handling.</p>
 </div>
 <div class="paragraph">
-<p>The V33 and V53 implemented <strong>expanded addressing mode</strong>, which allows the use of
+<p>In addition to the enhancements common to all V-series CPUs, the V20, V30, V40
+and V50 featured an <em>8080 emulation mode</em>, whereby 8080 binaries could be
+executed without translation.</p>
+</div>
+<div class="paragraph">
+<p>The V33 and V53 implemented <em>expanded addressing mode</em>, which allows the use of
 up to 16 MiB of RAM.
 This mode is essentially real mode with paging of 16 kiB pages.
 The translation table translating the 20-bit linear address to a 24-bit
@@ -196,15 +203,16 @@ physical address is mapped to the I/O ports 0xFF00 to 0xFF7F.</p>
 <div class="sect2">
 <h3 id="_third_generation">1.4. Third generation</h3>
 <div class="paragraph">
-<p>In 1985, Intel introduced the <strong>386DX</strong>.
+<p>In 1985, Intel introduced the <strong>Intel 386DX</strong>.
 This new iteration introduced support for 32-bit integers and extended
 protected mode to introduce, among other things, paging and support for up to
 4 GiBs of RAM.
-Later, Intel introduced the <strong>386SX</strong>, which was internally similar to the 386DX,
-but had a 16-bit data bus and 24-bit address bus, rather than 32-bit busses.</p>
+Later, Intel introduced the <strong>Intel 386SX</strong>, which was internally similar to the
+386DX, but had a 16-bit data bus and 24-bit address bus, rather than 32-bit
+busses.</p>
 </div>
 <div class="paragraph">
-<p>In 1987, the <strong>387DX</strong> was introduced.
+<p>In 1987, the <strong>Intel 387DX</strong> was introduced.
 Due to its 32-bit data bus, it was incompatible with the 386SX, which had its
 own math coprocessor called the <strong>387SX</strong></p>
 </div>
@@ -214,8 +222,8 @@ own math coprocessor called the <strong>387SX</strong></p>
 <div class="paragraph">
 <p>In 1989, the <strong>Intel 486DX</strong> was introduced, introducing new features, such as
 tightly coupled (i.e. true) pipelining and an integrated FPU.
-The <strong>486SX</strong> variant was a version without an integrated FPU.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
-A <strong>487SX</strong> math coprocessor upgrade was available for 486SX systems.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+The <strong>Intel 486SX</strong> variant was a version without an integrated FPU.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
+A <strong>Intel 487SX</strong> math coprocessor upgrade was available for 486SX systems.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
 </div>
 </div>
 <div class="sect2">
@@ -281,8 +289,8 @@ It mostly models the original 16-bit 8086 processor, with a few extensions.
 Real mode contains no access rings or memory protection of any kind.</p>
 </div>
 <div class="paragraph">
-<p>Access to memory is done via a 16-bit segment selector and a 16-bit offset
-address, using following formula:</p>
+<p>Access to memory is done via a 16-bit <em>segment address</em> and a 16-bit <em>offset</em>,
+using following formula:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -308,8 +316,8 @@ first 1114096 (1 MiB + 64 kiB - 16 bytes) of physical memory:</p>
 <div class="sect3">
 <h4 id="_unreal_mode">2.1.1. Unreal mode</h4>
 <div class="paragraph">
-<p><strong>Unreal mode</strong>, also known as <strong>flat real mode</strong>, <strong>32-bit real mode</strong> or
-<strong>voodoo mode</strong>, is an originally undocumented variant of real mode that alters
+<p><em>Unreal mode</em>, also known as <em>flat real mode</em>, <em>32-bit real mode</em> or
+<em>voodoo mode</em>, is an originally undocumented variant of real mode that alters
 the segment descriptor cache, in order to allow 32-bit offsets, so that
 programs may access up to 4 GiB of memory.
 Unreal mode is available on the 386 and above.</p>
@@ -317,15 +325,15 @@ Unreal mode is available on the 386 and above.</p>
 <div class="sect4">
 <h5 id="_big_real_mode">Big real mode</h5>
 <div class="paragraph">
-<p><strong>Big real mode</strong>, also known as <strong>big unreal mode</strong>, sets the limit of data
+<p><em>Big real mode</em>, also known as <em>big unreal mode</em>, sets the limit of data
 segments to 4 GiB, allowing for a flat 32-bit physical address space
-starting from zero, if selector zero is used.</p>
+starting from zero, if segment zero is used.</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_huge_real_mode">Huge real mode</h5>
 <div class="paragraph">
-<p><strong>Huge real mode</strong>, also known as <strong>huge unreal mode</strong>, sets the limit of code
+<p><em>Huge real mode</em>, also known as <em>huge unreal mode</em>, sets the limit of code
 segments to 4 GiB, in addition to changing the data segment limit.
 However, the high 16 bits of <code>eip</code> are not saved by real mode interrupts,
 making it difficult to use.</p>
@@ -337,11 +345,12 @@ making it difficult to use.</p>
 <h3 id="_protected_mode">2.2. Protected mode</h3>
 <div class="paragraph">
 <p><strong>Protected mode</strong> was introduced with the 286 and provides memory protection.
-Unlike real mode, there is no linear relationship between segment selector and
+Unlike real mode, there is no linear relationship between segment address and
 segment base address.
 The segment base address and other properties of each segment are determined by
-the global descriptor table (GDT) and local descriptor table (LDT).
-The segment selector is essentially an index to a segment descriptor.</p>
+the <em>global descriptor table (GDT)</em> and <em>local descriptor table (LDT)</em>.
+The segment address is now a segment selector, which is essentially an index
+to a segment descriptor.</p>
 </div>
 <div class="paragraph">
 <p>Protected mode provides four protection rings, Ring 0 being the most privileged
@@ -364,10 +373,10 @@ memory to beyond 4 GiB.
 However, the size of virtual address space is still limited to 4 GiB.</p>
 </div>
 <div class="paragraph">
-<p>Thus, the <strong>logical address</strong>, consisting of segment selector and offset is first
-translated to a <strong>linear address</strong>, by adding the segment base address of the
+<p>Thus, the <em>logical address</em>, consisting of segment selector and offset is first
+translated to a <em>linear address</em>, by adding the segment base address of the
 corresponding segment descriptor to the offset.
-If paging is enabled, the linear address is translated to a <strong>physical address</strong>,
+If paging is enabled, the linear address is translated to a <em>physical address</em>,
 otherwise the linear address corresponds to the physical address.</p>
 </div>
 <div class="paragraph">
@@ -385,7 +394,7 @@ operand size is 16-bit.</p>
 <p>Code targeting real mode is largely compatible with 16-bit protected mode,
 assuming, among other things, it does not attempt to do any privileged
 operation, does not assume that there is a direct relationship between segment
-base and segment selector (as is the case in real mode) and does not try to
+base and segment address (as is the case in real mode) and does not try to
 modify code or execute data.
 In practice, most existing real mode programs do at least one of the things
 listed above, rendering them incompatible with 16-bit protected mode.</p>
@@ -411,7 +420,7 @@ address space consists of 4 GiB of flat, contiguous memory.</p>
 <div class="sect3">
 <h4 id="_virtual_8086_mode">2.2.3. Virtual 8086 mode</h4>
 <div class="paragraph">
-<p><strong>Virtual 8086 mode</strong> was introduced with the 386 and allows the execution of
+<p><em>Virtual 8086 mode</em> was introduced with the 386 and allows the execution of
 real mode programs in a virtual machine under a hypervisor in protected mode.</p>
 </div>
 </div>
@@ -419,8 +428,8 @@ real mode programs in a virtual machine under a hypervisor in protected mode.</p
 <div class="sect2">
 <h3 id="_system_management_mode">2.3. System management mode</h3>
 <div class="paragraph">
-<p>Introduced with the 386SL (a CPU targeting laptops), system management mode is
-mostly transparent to the operating system.
+<p>Introduced with the 386SL (a CPU targeting laptops), <strong>system management mode</strong>
+is mostly transparent to the operating system.
 System management mode is intended for firmware to provide functions, such as
 power management, independently from the operating system that is currently
 running.</p>
@@ -437,9 +446,9 @@ The paging scheme restricts this to 48-bit, however, with the remaining bits
 being sign extended, thus producing two halves of 128 TiB of "canonical address
 space".
 An address that complies with this sign extension requirement is said to be in
-<strong>canonical form</strong>.
-The half starting at zero is called the (canonical) <strong>lower half</strong>.
-The half starting at 16 EiB - 128 TiB is called the (canonical) <strong>upper half</strong>.</p>
+<em>canonical form</em>.
+The half starting at zero is called the (canonical) <em>lower half</em>.
+The half starting at 16 EiB - 128 TiB is called the (canonical) <em>higher half</em>.</p>
 </div>
 <div class="paragraph">
 <p>If 5-level paging (also known as LA57) is enabled, the canonical address space
@@ -498,7 +507,7 @@ mode.</p>
 <h4 id="_x86_virtualization">2.4.3. x86 virtualization</h4>
 <div class="paragraph">
 <p>Modern x86 processors provide hardware-assisted virtualization.
-Intel processors have VT-x (also known as VMX) and AMD processors have AMD-V
+Intel processors have <strong>VT-x</strong> (also known as VMX) and AMD processors have <strong>AMD-V</strong>
 (also known as SVM).</p>
 </div>
 </div>
@@ -513,11 +522,13 @@ Intel processors have VT-x (also known as VMX) and AMD processors have AMD-V
 instruction set.</p>
 </div>
 <div class="paragraph">
-<p>In the context of x86 a <strong>word</strong> is a 16-bit value, a <strong>dword</strong> is a 32-bit value
-and a <strong>qword</strong> is a 64-bit value.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup></p>
+<p>In the context of x86 a <em>word</em> is a 16-bit value, a <em>dword</em> is a 32-bit value
+and a <em>qword</em> is a 64-bit value.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup></p>
 </div>
 <div class="sect2">
 <h3 id="_8086">3.1. 8086</h3>
+<div class="sect3">
+<h4 id="_registers">3.1.1. Registers</h4>
 <div class="paragraph">
 <p>The original 8086 had eight word-size general-purpose registers and eight
 byte-sized general-purpose registers.
@@ -680,51 +691,67 @@ corresponding to the encoding found in <code>lahf</code> and <code>sahf</code>.<
 <div class="paragraph">
 <p>The 8086 has following flags:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>The carry flag <code>cf</code> indicates an arithmetic carry for unsigned operations.</p>
-</li>
-<li>
-<p>The parity flag <code>pf</code> is set if the parity of the result of an arithmetic
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Carry flag <code>cf</code></dt>
+<dd>
+<p>Indicates an arithmetic carry for unsigned operations.</p>
+</dd>
+<dt class="hdlist1">Parity flag <code>pf</code></dt>
+<dd>
+<p>Is set if the parity of the result of an arithmetic
 operation is even.</p>
-</li>
-<li>
-<p>The adjust flag, or auxiliary carry flag, <code>af</code> indicates a carry out of the
-first nibble of an arithmetic operation.</p>
-</li>
-<li>
-<p>The zero flag <code>zf</code> is set if the result is zero.</p>
-</li>
-<li>
-<p>The sign flag <code>sf</code> indicates a negative value as the result of a signed
+</dd>
+<dt class="hdlist1">Adjust flag (or auxiliary carry flag) <code>af</code></dt>
+<dd>
+<p>Indicates a carry out of the first
+nibble of an arithmetic operation.</p>
+</dd>
+<dt class="hdlist1">Zero flag <code>zf</code></dt>
+<dd>
+<p>Is set if the result is zero.</p>
+</dd>
+<dt class="hdlist1">Sign flag <code>sf</code></dt>
+<dd>
+<p>Indicates a negative value as the result of a signed
 arithmetic operation.</p>
-</li>
-<li>
-<p>If the trap falg <code>tf</code> is set, interrupt 1 (see below) is raised on each
-instruction that is executed.
-The trap flag is automatically cleared when an interrupt is dispatched.</p>
-</li>
-<li>
-<p>If the interrupt flag <code>if</code> is cleared, all hardware interrupts are disabled,
-except for NMI.
-The interrupt flag is automatically cleared when an interrupt is dispatched.</p>
-</li>
-<li>
-<p>The direction flag <code>df</code> determines the direction of string operations.
-If it is cleared, the indices (<code>si</code> or <code>di</code>) involved are increased.
+</dd>
+<dt class="hdlist1">Trap flag <code>tf</code></dt>
+<dd>
+<p>If set, interrupt 1 (see below) is raised on each instruction
+that is executed.
+The trap flag is automatically cleared when an interrupt is
+dispatched.</p>
+</dd>
+<dt class="hdlist1">Interrupt flag <code>if</code></dt>
+<dd>
+<p>If cleared, all hardware interrupts are disabled, except
+for NMI.
+The interrupt flag is automatically cleared when an
+interrupt is dispatched.</p>
+</dd>
+<dt class="hdlist1">Direction flag <code>df</code></dt>
+<dd>
+<p>Determines the direction of string operations.
+If it is cleared, the indices (<code>si</code> or <code>di</code>) involved are
+increased.
 If it is set, the indices are decreased.</p>
-</li>
-<li>
-<p>The overflow flag <code>of</code> is set, if a signed arithmetic operation results in
-an overflow.</p>
-</li>
-</ul>
+</dd>
+<dt class="hdlist1">Overflow flag <code>of</code></dt>
+<dd>
+<p>Is set, if a signed arithmetic operation results in an
+overflow.</p>
+</dd>
+</dl>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_instruction_modes">3.1.2. Instruction modes</h4>
 <div class="paragraph">
-<p>Since memory is accessed through a segment selector (which is always one of the
-segment registers), in addition to an offset (the notation <code>segment:offset</code> is
-used), the program counter and stack pointer consist of two 16-bit registers.
+<p>Since memory is accessed through a segment address (which is always the value
+of one of the segment registers), in addition to an offset (the notation
+<code>segment:offset</code> is used), the program counter and stack pointer consist of two
+16-bit registers.
 The program counter is <code>cs:ip</code> and the stack pointer is <code>ss:sp</code>.</p>
 </div>
 <div class="paragraph">
@@ -873,12 +900,167 @@ The default segment is <code>ds</code>, except when the base is <code>bp</code>,
 </tbody>
 </table>
 </div>
+<div class="sect3">
+<h4 id="_memory_models">3.1.3. Memory models</h4>
+<div class="paragraph">
+<p>Since 16-bit segments are limited to 64 kiB, applications may use multiple
+segments, meaning that there are multiple ways to organize a program into
+memory segments.
+These schemes are called <strong>memory models</strong>.
+There are six standard memory models that are widely supported by compilers and
+assemblers:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Tiny</dt>
+<dd>
+<p>Everything is in a single segment.</p>
+</dd>
+<dt class="hdlist1">Small</dt>
+<dd>
+<p>One code segment, one data segment.</p>
+</dd>
+<dt class="hdlist1">Compact</dt>
+<dd>
+<p>One code segment, multiple data segments.</p>
+</dd>
+<dt class="hdlist1">Medium</dt>
+<dd>
+<p>Multiple code segments, one data segment.</p>
+</dd>
+<dt class="hdlist1">Large</dt>
+<dd>
+<p>Multiple code segments, multiple data segments.</p>
+</dd>
+<dt class="hdlist1">Huge</dt>
+<dd>
+<p>Single 1 MiB memory range (see below).</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>There exist three types of pointers:
+Near pointers:: Word-sized offsets that are used when there is no ambiguity
+                regarding the segment.
+Far pointers:: Dword-sized segment-offset pairs that are used when there is a
+               necessity to specify what segment is used.
+Huge pointers:: Similar to far pointers, in that they are dword-sized
+                segment-offset pairs, and are used in the huge memory model.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>huge memory model</strong> takes advantage of the linear relationship between
+segment address and segment base in real mode, to treat the entire 1 MiB range
+as a single memory segment.
+This is done through huge pointers, which are essentially far pointers that are
+normalized, so the offset is always smaller than 16.
+This effectively yields a 20-bit address, if the highest 12 bits of the offset
+are ignored (since they are always zero due to normalization).
+This allows to transparently implement arrays larger than 64 kiB.
+The stack, however, may not exceed 64 kiB.
+Due to relying on real mode segment arithmetic, it does not work in protected
+mode.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. 8086 memory models</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory model</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code pointer type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data pointer type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Segment registers</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tiny</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code> = <code>ds</code> = <code>es</code> = <code>ss</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Small</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ds</code> = <code>ss</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compact</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Far</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Far</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ds</code> = <code>ss</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Large</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Far</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Far</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Huge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Huge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Huge</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_interrupts_and_exceptions">3.1.4. Interrupts and exceptions</h4>
+<div class="paragraph">
+<p>The 8086 also supported 256 types of interrupts.
+Interrupts may be caused by hardware, by a CPU exception or explicitly by
+software through the <code>int</code> instruction.
+When an interrupt is raised, the processor pushes the current state of the
+flags register, current code segment and the offset of the next instruction to
+be executed, when the interrupted program is resumed.
+It then determines the address to jump to using the <strong>interrupt vector table
+(IVT)</strong>, a 1 kiB (256 times 4 bytes) table starting at physical address zero,
+consisting of far pointers.</p>
+</div>
+<div class="paragraph">
+<p>The routine that is called when an interrupt happens is called the <strong>interrupt
+service routine (ISR)</strong>.
+An ISR may resume the interrupt program through the <code>iret</code> instruction.
+The 8086 generated following CPU exceptions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Division by zero (interrupt 0) occurs when a <code>div</code> or <code>idiv</code> instruction has
+operand zero or if the quotient does not find into the accumulator.</p>
+</li>
+<li>
+<p>Single-step trap (interrupt 1) occurs when the trap flag (see above) is set.</p>
+</li>
+<li>
+<p>Debug breakpoint (interrupt 3) is invoked when the (single byte) <code>int3</code>
+instruction is executed.</p>
+</li>
+<li>
+<p>Overflow (interrupt) is invoked when the <code>into</code> (interrupt on overflow)
+instruction is executed and the overflow flag is set.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
 <div class="sect2">
 <h3 id="_80186">3.2. 80186</h3>
 <div class="paragraph">
-<p>The 186 and 188 implement most of the new 286 instructions that are not related
+<p>The 186 and 188 implement all of the new 286 instructions that are not related
 to protected mode or the new registers that have been added.
-These extension include:</p>
+New CPU exceptions, such as the invalid opcode exception, were also introduced.
+These extensions consist of:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -889,9 +1071,557 @@ These extension include:</p>
 <p>string operations on I/O ports</p>
 </li>
 <li>
-<p>shorthands <code>bound</code>, <code>leave</code>, <code>pusha</code>, <code>popa</code></p>
+<p><code>bound</code> instruction and the bounds range exceeded exception</p>
+</li>
+<li>
+<p>shorthands <code>enter</code>, <code>leave</code>, <code>pusha</code>, <code>popa</code></p>
+</li>
+<li>
+<p>invalid opcode and coprocessor not present exceptions</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_80286">3.3. 80286</h3>
+<div class="paragraph">
+<p>The introduction of protected mode with the 286 was a major change to the x86
+ISA.
+Protected mode introduced new data structures and mechanisms for virtual memory,
+memory protection and hardware task switching.</p>
+</div>
+<div class="paragraph">
+<p>Hardware memory protection is primarily enforced through <strong>protection rings</strong>.
+Ring 0 is the most privileged and Ring 3 is the least privileged.
+Rings with lower number (more privilege) are referred to hereafter as <em>lower</em>,
+rings with higher number (less privilege) are referred to hereafter as <em>higher</em>
+(i.e. the numeric relation).</p>
+</div>
+<div class="sect3">
+<h4 id="_virtual_memory">3.3.1. Virtual memory</h4>
+<div class="paragraph">
+<p>There is no longer a linear relationship between segment address and segment
+base.
+Instead, the properties of segments are determined by <strong>segment descriptors</strong>.
+The values of the segment registers are now interpreted as <strong>segment selectors</strong>.
+The segment selector is essentially an index to one of the two segment
+descriptor tables: the <strong>Global Descriptor Table (GDT)</strong> and the <strong>Local
+Descriptor Table (LDT)</strong>.</p>
+</div>
+<div class="paragraph">
+<p>As the names suggest, the GDT contains segment descriptors for every task and
+the LDT contains segment descriptors for a specific task.
+Thus, each task can access a global virtual address space, in addition to
+having its own, private address space.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Segment selector format</caption>
+<colgroup>
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="13"><p class="tableblock">Index</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TI</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">DPL</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Index</dt>
+<dd>
+<p>The index within the descriptor table.</p>
+</dd>
+<dt class="hdlist1">TI</dt>
+<dd>
+<p>The table indicator. Zero for GDT; one for LDT.</p>
+</dd>
+<dt class="hdlist1">DPL</dt>
+<dd>
+<p>The descriptor privilege level.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Descriptor tables are arrays of 8-byte <strong>segment descriptors</strong> that reside in
+RAM.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. 286 segment descriptor format</caption>
+<colgroup>
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8832%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Offset</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+48</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Reserved</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">DPL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S</p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">Base (23:16)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+16</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Base (15:0)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+0</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Limit</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Limit</dt>
+<dd>
+<p>The highest allowed offset address (inclusive).
+This means a limit of 65535 indicates a segment of 65536 bytes, a limit
+of zero indicates a segment of one byte.
+For expand-down segments, it is lowest allowed offset address minus one
+(i.e. exclusive), with the maximum allowed offset being 65535.
+If the present bit is not set, this field may be used for other data.</p>
+</dd>
+<dt class="hdlist1">Base</dt>
+<dd>
+<p>Physical address of first byte of segment (equivalent to offset zero).
+For expand-down segments, defines the first byte after the last byte
+of the segment (equivalent to offset zero).
+If the present bit is not set, this field may be used for other data.</p>
+</dd>
+<dt class="hdlist1">Type</dt>
+<dd>
+<p>Meaning depends on the whether it is a system segment descriptor or a
+code or data segment descriptor.</p>
+</dd>
+<dt class="hdlist1">S flag</dt>
+<dd>
+<p>Zero for system segment descriptors; one for code or data descriptors.</p>
+</dd>
+<dt class="hdlist1">DPL</dt>
+<dd>
+<p>Descriptor privilege level.</p>
+</dd>
+<dt class="hdlist1">Present bit</dt>
+<dd>
+<p>Zero indicates the segment is invalid (intended for operating
+systems to implement swapping).</p>
+</dd>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. Type field for code and data segment descriptors</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">43</th>
+<th class="tableblock halign-left valign-top">42</th>
+<th class="tableblock halign-left valign-top">41</th>
+<th class="tableblock halign-left valign-top">40</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">X</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RW</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Executable bit</dt>
+<dd>
+<p>One for code segments; zero for data segments.</p>
+</dd>
+<dt class="hdlist1">Conforming/expand-down bit</dt>
+<dd>
+<p>For code segments: zero for non-conforming code
+segments; one for conforming code segments.
+For data segments: zero for expand-up data
+segments; one for expand-down data segments.</p>
+</dd>
+<dt class="hdlist1">Readable/writable bit</dt>
+<dd>
+<p>For code segments: zero for execute-only code segments;
+one for readable code segments.
+For data segments: zero for read-only data segments;
+one for writable data segments.</p>
+</dd>
+<dt class="hdlist1">Accessed bit</dt>
+<dd>
+<p>This bit is set when a segment is accessed.
+This way the operating system can keep track of which segments
+were used.</p>
+</dd>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. 286 system segment types</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">43</th>
+<th class="tableblock halign-left valign-top">42</th>
+<th class="tableblock halign-left valign-top">41</th>
+<th class="tableblock halign-left valign-top">40</th>
+<th class="tableblock halign-left valign-top">Segment type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Available TSS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LDT descriptor</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Busy TSS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Call gate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Task gate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interrupt gate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap gate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">x</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The first entry of the GDT is reserved.
+Selectors referring to this entry are so-called <em>null selectors</em> and may be
+used as placeholder values for <code>ds</code> and <code>es</code>, but not <code>cs</code> and <code>ss</code>.
+Any attempt to access memory through a null selector, will result in a general
+protection fault.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the visible 16-bit selectors, all segment registers have an
+invisible <em>segment descriptor cache</em>, which contains the segment descriptor
+corresponding to the selector, so that the CPU does not need to constantly look
+up the descriptor tables.
+Aside from the performance improvements this has certain side effects.
+Notable among those is unreal mode.</p>
+</div>
+<div class="paragraph">
+<p>The location of the GDT and LDT is indicated by the <em>GDT Register (GDTR)</em> and
+<em>LDT Register (LDTR)</em> respectively.
+These 48-bit registers are so-called <em>pseudo-descriptors</em>, that have a similar
+structure to the regular segment descriptors, in the sense that they contain a
+base and limit field.
+The GDTR can be set through the <code>lgdt</code> instruction and the LDTR can be
+initialized through the <code>lldt</code> instruction.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 9. Pseudo-descriptor format</caption>
+<colgroup>
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8823%;">
+<col style="width: 5.8832%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Offset</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+32</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Base (31:16)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+16</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Base (15:0)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+0</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Limit</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Much like regular segment registers, the LDTR has a 16-bit selector field, in
+addition to the pseudo-descriptor.
+This 16-bit selector points to a LDT descriptor in the GDT.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_memory_protection">3.3.2. Memory protection</h4>
+<div class="paragraph">
+<p>Protected mode introduces new memory protection mechanisms.
+In order to understand these, one must first understand the different privilege
+levels that are taken into account:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <em>_current privilege level (CPL)</em> is the privilege level of the current
+task.
+It corresponds to the RPL field of the segment selectors stored in <code>cs</code> and
+<code>ss</code> (i.e. bits 0 and 1 of the visible 16-bit values of <code>cs</code> and <code>ss</code>).</p>
+</li>
+<li>
+<p>The <em>descriptor privilege level (DPL)</em> is the privilege level of the
+segment being accessed (determined in the segment descriptor).</p>
+</li>
+<li>
+<p>The <em>requested privilege level (RPL)</em> is the privilege level given by the
+segment selector (i.e. bits 0 and 1 of the segment selector).</p>
+</li>
+<li>
+<p>The <em>effective privilege level (EPL)</em> is the maximum of the CPL and RPL.</p>
+</li>
+<li>
+<p>The <em>I/O privilege level (IOPL)</em> is a value in the <code>flags</code> register that
+determines the highest CPL allowed to do direct I/O within the current task.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Certain instructions, such as <code>lgdt</code> can only be used if the CPL is 0.
+There are also forms of protection independent of the privilege levels, such as
+checking segment limits, restricting writing a read-only data segment or code
+segment and reading a execute-only code segment through a <code>cs</code> override.</p>
+</div>
+<div class="paragraph">
+<p>Before accessing a segment, a segment register must first be set, so the CPU
+can perform most privilege checks at that point.
+<code>ds</code>, <code>es</code> and <code>ss</code> can be directly set.
+<code>cs</code> and <code>ss</code> can be indirectly set through far <code>jmp</code> and <code>call</code> instructions
+and interrupts.
+Following restrictions apply to the types of segments that are loaded:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cs</code> may only be loaded with segment selectors to code segments (which may
+indirectly happen through gates).</p>
+</li>
+<li>
+<p><code>ds</code> and <code>es</code> may only be loaded with segment selectors to data segments or
+readable code segments (not call gates).</p>
+</li>
+<li>
+<p><code>ss</code> may only be loaded with writable data segments.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When <code>cs</code> is changed, the CPL is set to the DPL, if the new descriptor is
+nonconforming.
+Otherwise, if the descriptor is conforming, the CPL remains unchanged.
+Segment registers may be modified in following ways with following
+restrictions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>When <code>ds</code>, <code>es</code> or <code>ss</code> is directly loaded.</p>
+</li>
+<li>
+<p>If a selector to a data segment or nonconforming code segment is loaded,
+the DPL must not be lower than the EPL.</p>
+</li>
+<li>
+<p>Loading a selector to a conforming code segment is always permitted.</p>
+</li>
+<li>
+<p>When <code>cs</code> is modified through a <code>jmp</code> or <code>call</code> instruction.</p>
+</li>
+<li>
+<p>If the target selector points to a nonconforming code segment, the DPL must
+be equal to the CPL and the RPL must not be higher than the CPL.</p>
+</li>
+<li>
+<p>If the target selector points to a conforming code segment, the DPL must
+not be higher than the CPL.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The RPL (and EPL) mechanism serves to prevent privilege escalation (i.e. a
+less privileged program accessing privileged memory indirectly through a system
+call, by passing a pointer to that portion of memory).
+When a less privileged code passes a pointer to more privileged code, the
+pointer can be tagged using the <code>arpl</code> instruction (which takes the maximum of
+the CPL of the callee with the current RPL of the selector).
+This means pointers are tagged with the CPL of the original caller.</p>
+</div>
+<div class="paragraph">
+<p>For example, a procedure with CPL 3 passes a selector with RPL 0 pointing to a
+descriptor with DPL 2 to a procedure with CPL 2 that in turn calls a procedure
+with CPL 0.
+When the procedure with CPL 2 is invoked, it executes <code>arpl</code> and sets the RPL
+of the selector to 3 (which is the maximum of CPL 3 and RPL 0).
+The procedure with CPL 0 also invokes <code>arpl</code> and the RPL of the selector
+remains 3 (which is the maximum of CPL 2 and RPL 3).
+Throughout all the stages, the EPL remains 3, which means a general protection
+fault will be raised, even in Ring 0, since the EPL is larger than the DPL.</p>
+</div>
 </div>
 </div>
 </div>
@@ -906,8 +1636,8 @@ instruction set.</p>
 <div class="sect2">
 <h3 id="_x87">4.1. x87</h3>
 <div class="paragraph">
-<p><strong>x87</strong>, also known as <strong>Numerical Processing Extension (NPX)</strong> or FPU, is a scalar
-floating-point calculation extension.
+<p><strong>x87</strong>, also known as <em>Numerical Processing Extension (NPX)</em> or <em>FPU</em>, is a
+scalar floating-point calculation extension.
 Units that implement x87 are often referred to as "the FPU", although the term
 may also apply to the SIMD floating-point extensions listed below.
 Originally implemented as a separate coprocessor, it is integrated into the
@@ -952,8 +1682,8 @@ two instructions that are also found in newer Intel processors).</p>
 <div class="sect2">
 <h3 id="_sse">4.3. SSE</h3>
 <div class="paragraph">
-<p><strong>Streaming SIMD Extensions (SSE)</strong>, also known as <strong>Katmai New Instructions (KNI)</strong>
-or <strong>Internet Streaming SIMD Extensions (ISSE)</strong>, is a SIMD extension introduced
+<p><strong>Streaming SIMD Extensions (SSE)</strong>, also known as <em>Katmai New Instructions (KNI)</em>
+or <em>Internet Streaming SIMD Extensions (ISSE)</em>, is a SIMD extension introduced
 in 1999 with the Intel Pentium III and supported by AMD since the Athlon XP in
 2001.
 In addition to adding new instructions to the existing MMX integer instruction
@@ -963,7 +1693,7 @@ can each store four 32-bit floating-point numbers.</p>
 <div class="sect3">
 <h4 id="_sse2">4.3.1. SSE2</h4>
 <div class="paragraph">
-<p><strong>SSE2</strong>, also known as <strong>Willamette New Instructions (WNI)</strong>, was introduced in 2000
+<p><strong>SSE2</strong>, also known as <em>Willamette New Instructions (WNI)</em>, was introduced in 2000
 with the Intel Penium 4 and AMD first implemented it with the x86-64 Opteron in
 2003.
 SSE2 adds support for 64-bit floating-point numbers and integers of sizes
@@ -980,7 +1710,7 @@ Infact, SSE2 with 16 registers is mandatory for every x86-64 implementation.</p>
 <div class="sect3">
 <h4 id="_sse3">4.3.2. SSE3</h4>
 <div class="paragraph">
-<p>SSE3, also known as <strong>Prescott New Instructions (PNI)</strong> was introduced by Intel
+<p><strong>SSE3</strong>, also known as <em>Prescott New Instructions (PNI)</em> was introduced by Intel
 in 2004 with the Prescott Pentium 4 and by AMD in 2005 with the Athlon XP
 Revision E.
 This extension introduced support for "horizontal" operations between values in
@@ -990,8 +1720,8 @@ the same register.</p>
 <div class="sect3">
 <h4 id="_ssse3">4.3.3. SSSE3</h4>
 <div class="paragraph">
-<p><strong>Supplementary Streaming SMD Extenions 3 (SSSE3)</strong>, also known as <strong>Merom New
-Instructions (MNI)</strong> was first implemented by Intel in 2006 with Woodcrest Xeons
+<p><strong>Supplementary Streaming SMD Extenions 3 (SSSE3)</strong>, also known as <em>Merom New
+Instructions (MNI)</em> was first implemented by Intel in 2006 with Woodcrest Xeons
 and by AMD with Bulldozer AMD FX CPUs in 2011.
 It is not to be confused with SSE4.</p>
 </div>
@@ -1000,10 +1730,10 @@ It is not to be confused with SSE4.</p>
 <h4 id="_sse4">4.3.4. SSE4</h4>
 <div class="paragraph">
 <p><strong>SSE4</strong>, was divided into two subsets by Intel.
-The first subset, <strong>SSE4.1</strong>, also known as <strong>Penryn New Instructions (PNI)</strong>, was
+The first subset, <strong>SSE4.1</strong>, also known as <em>Penryn New Instructions (PNI)</em>, was
 introduced with Penryn Core 2 CPUs in 2007.
-The second subset, <strong>SSE4.2</strong>, also known as <strong>String and Text New Instructions
-(STTNI)</strong>, was introduced with Nehalem Core i7 CPUs in 2008.
+The second subset, <strong>SSE4.2</strong>, also known as <em>String and Text New Instructions
+(STTNI)</em>, was introduced with Nehalem Core i7 CPUs in 2008.
 Nehalem also introduced performance improvements for misaligned data.
 While SSE4.1 added new SIMD instructions, such as a dot product instruction,
 SSE4.2 added string search and comparison instructions and a CRC32 instruction.</p>
@@ -1024,7 +1754,7 @@ These new instructions were implemented by Intel with AVX.</p>
 <h4 id="_sse5">4.3.5. SSE5</h4>
 <div class="paragraph">
 <p><strong>SSE5</strong> was a proposed extension by AMD in 2007.
-It does not include all SSE4 instructions and proposed a new <strong>DREX encoding</strong>,
+It does not include all SSE4 instructions and proposed a new <em>DREX encoding</em>,
 which is incompatible with AVX’s VEX encoding.
 This extension was never implemented in hardware and had to be revised and
 split into  F16C, XOP and FMA4 in 2009, in order to remain compatible with AVX.</p>
@@ -1072,7 +1802,7 @@ AMD officially dropped support for FMA4 with Zen in 2017.</p>
 <div class="paragraph">
 <p><strong>Advanced Vector Extensions (AVX)</strong> was first proposed by Intel in 2008 and
 implemented in 2011 by Intel with Sandy Bridge and by AMD with Bulldozer.
-It introduces the new <strong>VEX instruction coding</strong> scheme and expands the 128-bit
+It introduces the new <em>VEX instruction coding</em> scheme and expands the 128-bit
 <code>xmm</code> SSE registers to 256-bit <code>ymm</code> registers (<code>ymm0</code> to <code>ymm15</code>).
 The VEX coding scheme allows three-operand operations, relaxes alignment
 requirements and allows 128-bit operations.</p>
@@ -1089,18 +1819,18 @@ AMD in 2015 with Excavator.</p>
 <div class="paragraph">
 <p><strong>AVX-512</strong> is a set of extensions first proposed by Intel in 2013 and first
 implemented in 2015.
-AVX-512 consists of multiple instruction sets, with only <strong>AVX-512F</strong> (Foundation)
+AVX-512 consists of multiple instruction sets, with only <em>AVX-512F</em> (Foundation)
 being mandatory.
 AVX-512 expands the 256-bit AVX registers to 512-bit registers and introduces
-the new <strong>EVEX coding scheme</strong>, allowing for 32 registers (<code>zmm0</code> to <code>zmm31</code>).
-The <strong>AVX-512VL</strong> (vector length) set allows the use of AVX-512 operations on
+the new <em>EVEX coding scheme</em>, allowing for 32 registers (<code>zmm0</code> to <code>zmm31</code>).
+The <em>AVX-512VL</em> (vector length) set allows the use of AVX-512 operations on
 256-bit (<code>ymm0</code> to <code>ymm31</code>) and 128-bit (<code>xmm0</code> to <code>`xmm31</code>) operands.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_avx_vnni">4.4.3. AVX-VNNI</h4>
 <div class="paragraph">
-<p><strong>AVX-VNNI</strong> allows for <strong>AVX-512VNNI</strong> (virtual neural network interface)
+<p><strong>AVX-VNNI</strong> allows for <em>AVX-512VNNI</em> (virtual neural network interface)
 instructions on 128-bit and 256-bit operands using the VEX encoding for CPUs
 that do not yet fully support AVX-512.</p>
 </div>
