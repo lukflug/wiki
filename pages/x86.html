@@ -530,9 +530,8 @@ and a <em>qword</em> is a 64-bit value.<sup class="footnote">[<a id="_footnotere
 <div class="sect3">
 <h4 id="_registers">3.1.1. Registers</h4>
 <div class="paragraph">
-<p>The original 8086 had eight word-size general-purpose registers and eight
-byte-sized general-purpose registers.
-These byte registers are aliases for individual bytes of the word-sized
+<p>The 8086 has eight word-sized and eight byte-sized general-purpose registers.
+These byte-sized registers are aliases for individual bytes of the word-sized
 general-purpose registers <code>ax</code>, <code>bx</code>, <code>cx</code> and <code>dx</code>.
 The byte register <code>al</code> is an alias for the low byte of <code>ax</code>, the byte
 register <code>ah</code> is an alias for the high byte of <code>ax</code>.
@@ -811,7 +810,7 @@ the use of the stack segment.</p>
 </div>
 <div class="paragraph">
 <p>Every instruction involving memory has a default segment and most may be
-overriden using a <strong>segment override prefix</strong>.
+overridden using a <strong>segment override prefix</strong>.
 Most memory operands may have a wide variety of indirect addressing modes.
 Offsets may be determined through a runtime computation of adding up to three
 values:</p>
@@ -934,7 +933,7 @@ assemblers:</p>
 </dd>
 <dt class="hdlist1">Huge</dt>
 <dd>
-<p>Single 1 MiB memory range (see below).</p>
+<p>Single memory range up to 1 MiB (see below).</p>
 </dd>
 </dl>
 </div>
@@ -968,13 +967,15 @@ mode.</p>
 <col style="width: 25%;">
 <col style="width: 25%;">
 </colgroup>
-<tbody>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Memory model</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Code pointer type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data pointer type</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Segment registers</p></td>
+<th class="tableblock halign-left valign-top">Memory model</th>
+<th class="tableblock halign-left valign-top">Code pointer type</th>
+<th class="tableblock halign-left valign-top">Data pointer type</th>
+<th class="tableblock halign-left valign-top">Segment registers</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Tiny</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Near</p></td>
@@ -1030,7 +1031,7 @@ consisting of far pointers.</p>
 <div class="paragraph">
 <p>The routine that is called when an interrupt happens is called the <strong>interrupt
 service routine (ISR)</strong>.
-An ISR may resume the interrupt program through the <code>iret</code> instruction.
+An ISR may resume the interrupted program through the <code>iret</code> instruction.
 The 8086 generated following CPU exceptions:</p>
 </div>
 <div class="ulist">
@@ -1051,6 +1052,11 @@ instruction is executed.</p>
 instruction is executed and the overflow flag is set.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Intel reserved the first 32 interrupts for future use (i.e. additional CPU
+exceptions).
+IBM did not heed that recommendation, causing compatibility issues.</p>
 </div>
 </div>
 </div>
@@ -1087,7 +1093,7 @@ These extensions consist of:</p>
 <div class="paragraph">
 <p>The introduction of protected mode with the 286 was a major change to the x86
 ISA.
-Protected mode introduced new data structures and mechanisms for virtual memory,
+Protected mode introduced new data structures, mechanisms for virtual memory,
 memory protection and hardware task switching.</p>
 </div>
 <div class="paragraph">
@@ -1113,6 +1119,20 @@ Descriptor Table (LDT)</strong>.</p>
 the LDT contains segment descriptors for a specific task.
 Thus, each task can access a global virtual address space, in addition to
 having its own, private address space.</p>
+</div>
+<div class="paragraph">
+<p>The IVT is replaced by the <strong>Interrupt Descriptor Table (IDT)</strong>.
+The IDT has an identical format to the GDT and LDT, but instead of referring to
+entries in the IDT through segment selectors, each entry in the IDT corresponds
+to an interrupt type (i.e. the first entry corresponds to interrupt 0, the
+second to interrupt 1, and so on), with the descriptor defining the ISR to be
+used.</p>
+</div>
+<div class="paragraph">
+<p>The 286 includes facilities for managing multiple tasks.
+The state of a task are stored in a <strong>Task State Segment (TSS)</strong>.
+Both LDT and TSS are segments, much regular segments, and have a corresponding
+entry in the GDT.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 5. Segment selector format</caption>
@@ -1179,29 +1199,35 @@ having its own, private address space.</p>
 </dl>
 </div>
 <div class="paragraph">
-<p>Descriptor tables are arrays of 8-byte <strong>segment descriptors</strong> that reside in
-RAM.</p>
+<p>Descriptor tables are arrays of 8-byte segment descriptors that reside in
+RAM.
+The first entry of the GDT is reserved.
+Selectors referring to this entry are so-called <em>null selectors</em> and may be
+used as placeholder values for <code>ds</code> and <code>es</code>, but not <code>cs</code> and <code>ss</code>.
+Any attempt to access memory through a null selector, will result in a general
+protection fault.
+The IDT may only consist of task, interrupt or trap gates.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 6. 286 segment descriptor format</caption>
 <colgroup>
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8832%;">
+<col style="width: 15.7894%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2641%;">
 </colgroup>
 <thead>
 <tr>
@@ -1286,7 +1312,7 @@ systems to implement swapping).</p>
 </dl>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Type field for code and data segment descriptors</caption>
+<caption class="title">Table 7. Code and data segment types</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1318,7 +1344,7 @@ systems to implement swapping).</p>
 </dd>
 <dt class="hdlist1">Conforming/expand-down bit</dt>
 <dd>
-<p>For code segments: zero for non-conforming code
+<p>For code segments: zero for nonconforming code
 segments; one for conforming code segments.
 For data segments: zero for expand-up data
 segments; one for expand-down data segments.</p>
@@ -1341,11 +1367,12 @@ were used.</p>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 8. 286 system segment types</caption>
 <colgroup>
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
+<col style="width: 6.6666%;">
+<col style="width: 6.6666%;">
+<col style="width: 6.6666%;">
+<col style="width: 6.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 40.0003%;">
 </colgroup>
 <thead>
 <tr>
@@ -1354,6 +1381,7 @@ were used.</p>
 <th class="tableblock halign-left valign-top">41</th>
 <th class="tableblock halign-left valign-top">40</th>
 <th class="tableblock halign-left valign-top">Segment type</th>
+<th class="tableblock halign-left valign-top">Descriptor tables</th>
 </tr>
 </thead>
 <tbody>
@@ -1363,6 +1391,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1370,6 +1399,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Available TSS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GDT only</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1377,6 +1407,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">LDT descriptor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GDT only</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1384,6 +1415,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Busy TSS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GDT only</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1391,6 +1423,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Call gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1398,6 +1431,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Task gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GDT, LDT</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1405,6 +1439,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interrupt gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IDT only</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -1412,6 +1447,7 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Trap gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IDT only</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
@@ -1419,15 +1455,98 @@ were used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">x</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">x</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>The first entry of the GDT is reserved.
-Selectors referring to this entry are so-called <em>null selectors</em> and may be
-used as placeholder values for <code>ds</code> and <code>es</code>, but not <code>cs</code> and <code>ss</code>.
-Any attempt to access memory through a null selector, will result in a general
-protection fault.</p>
+<p>Gates have a different format to other segment descriptors (i.e. code, data,
+LDT and TSS segments).</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 9. 286 gate descriptor format</caption>
+<colgroup>
+<col style="width: 15.7894%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2641%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Offset</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+48</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Reserved</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">DPL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S</p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top" colspan="5"><p class="tableblock">Word count</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+16</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Segment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+0</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Offset</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Offset</dt>
+<dd>
+<p>target offset (unused by task gate)</p>
+</dd>
+<dt class="hdlist1">Segment</dt>
+<dd>
+<p>target segment selector (must point to code segment for call,
+interrupt and trap gates and TSS for task gates, RPL is ignored by
+call gates)</p>
+</dd>
+<dt class="hdlist1">Word count</dt>
+<dd>
+<p>amount of words to push (call gates only, reserved for all other
+kinds of gate)</p>
+</dd>
+</dl>
 </div>
 <div class="paragraph">
 <p>In addition to the visible 16-bit selectors, all segment registers have an
@@ -1438,34 +1557,45 @@ Aside from the performance improvements this has certain side effects.
 Notable among those is unreal mode.</p>
 </div>
 <div class="paragraph">
-<p>The location of the GDT and LDT is indicated by the <em>GDT Register (GDTR)</em> and
-<em>LDT Register (LDTR)</em> respectively.
-These 48-bit registers are so-called <em>pseudo-descriptors</em>, that have a similar
-structure to the regular segment descriptors, in the sense that they contain a
-base and limit field.
-The GDTR can be set through the <code>lgdt</code> instruction and the LDTR can be
-initialized through the <code>lldt</code> instruction.</p>
+<p>The location of the GDT, LDT, IDT and TSS is indicated by the
+<em>GDT Register (GDTR)</em>, <em>LDT Register (LDTR)</em>, <em>IDT Register (IDTR)</em> and
+<em>Task Register (TR)</em> respectively.
+The LDTR and TR are similar to regular segment register, as they store a 16-bit
+selector, visible to the programmer, and a hidden descriptor cache.
+The LDTR can be set using the <code>lldt</code> instruction and the TR can be set using
+the <code>ltr</code> instruction.
+Both of these instructions accept a 16-bit direct operand (register or
+memory) containing selector pointing to the corresponding descriptor in the
+GDT.</p>
+</div>
+<div class="paragraph">
+<p>The GDT and IDT are not segments and the GDTR and LDTR do not have the visible
+16-bit selector part.
+The GDTR and LDTR are effectively 48-bit registers and may be set using the
+<code>lgdt</code> and <code>lidt</code> instructions respectively, which take a pointer to a 6 byte
+structure called a <em>pseudo-descriptor</em>, that is similar to a regular segment
+descriptor, due to having base and limit fields.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. Pseudo-descriptor format</caption>
+<caption class="title">Table 10. Pseudo-descriptor format</caption>
 <colgroup>
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8823%;">
-<col style="width: 5.8832%;">
+<col style="width: 15.7894%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2631%;">
+<col style="width: 5.2641%;">
 </colgroup>
 <thead>
 <tr>
@@ -1503,14 +1633,9 @@ initialized through the <code>lldt</code> instruction.</p>
 </tr>
 </tbody>
 </table>
-<div class="paragraph">
-<p>Much like regular segment registers, the LDTR has a 16-bit selector field, in
-addition to the pseudo-descriptor.
-This 16-bit selector points to a LDT descriptor in the GDT.</p>
-</div>
 </div>
 <div class="sect3">
-<h4 id="_memory_protection">3.3.2. Memory protection</h4>
+<h4 id="_memory_protection_and_multitasking">3.3.2. Memory protection and multitasking</h4>
 <div class="paragraph">
 <p>Protected mode introduces new memory protection mechanisms.
 In order to understand these, one must first understand the different privilege
@@ -1541,6 +1666,66 @@ determines the highest CPL allowed to do direct I/O within the current task.</p>
 </li>
 </ul>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 11. 286 <code>flags</code> encoding</caption>
+<colgroup>
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NT</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">IOPL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CF</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p>Certain instructions, such as <code>lgdt</code> can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
@@ -1550,59 +1735,129 @@ segment and reading a execute-only code segment through a <code>cs</code> overri
 <div class="paragraph">
 <p>Before accessing a segment, a segment register must first be set, so the CPU
 can perform most privilege checks at that point.
-<code>ds</code>, <code>es</code> and <code>ss</code> can be directly set.
-<code>cs</code> and <code>ss</code> can be indirectly set through far <code>jmp</code> and <code>call</code> instructions
-and interrupts.
-Following restrictions apply to the types of segments that are loaded:</p>
+The particular privilege level checks depends on how the segment register is
+set and the type of descriptor the selector points to.</p>
+</div>
+<div class="paragraph">
+<p><code>ds</code>, <code>es</code> and <code>ss</code> can be changed directly through <code>mov</code> and <code>pop</code>.
+In general, these registers must be loaded with data segments or readable code
+segments with the DPL higher or equal to the EPL.
+However, different rules may apply (see table, e.g. <code>ss</code> must always point to a
+writable segment with).</p>
+</div>
+<div class="paragraph">
+<p>LDTR and TR can only be changed explicitly in Ring 0 using the <code>lldt</code> and <code>ltr</code>
+instructions.
+The LDT must be loaded with a selector pointing to a valid LDT descriptor in
+the GDT.
+The TR must be loaded with a selector pointing to a valid TSS descriptor in the
+GDT.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 12. Conditions for successful update of segment registers</caption>
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Mechanism</th>
+<th class="tableblock halign-left valign-top">Data segment</th>
+<th class="tableblock halign-left valign-top">Nonconforming code segment</th>
+<th class="tableblock halign-left valign-top">Conforming code segment</th>
+<th class="tableblock halign-left valign-top">Call gate to nonconforming code segment</th>
+<th class="tableblock halign-left valign-top">Call gate to conforming code segment</th>
+<th class="tableblock halign-left valign-top">TSS or task gate</th>
+<th class="tableblock halign-left valign-top">Interrupt or trap gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ds</code> or <code>es</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>DPL &gt;= EPL</code> and readable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">readable</p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ss</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DPL == RPL == CPL</code> and writable</p></td>
+<td class="tableblock halign-left valign-top" colspan="6"><p class="tableblock">Disallowed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>jmp</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="3"><p class="tableblock">Disallowed</p></td>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL == CPL &amp;&amp; RPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL == CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>gate DPL &gt;= tss EPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Disallowed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>call</code> or <code>int</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; cs DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnotedef_6" title="View footnote.">6</a>]</sup></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through <code>retf</code> or <code>iret</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>RPL &gt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Segment registers may be changed implicitly, through instructions (and
+interrupts) that pass control flow to another code segment.
+Not only the <code>cs</code> and <code>ip</code> may be changed.
+If the operation results in a change in CPL, the stack is also switched
+(meaning a change in <code>ss</code> and <code>sp</code>).
+If the operation results in a change in tasks, most CPU registers are also
+changed.
+These include far <code>jmp</code> and <code>call</code>, which provide a far pointer, or an
+interrupt (that can be caused by an <code>int</code> instruction), which provides an
+interrupt number.
+Either way, these point to an unique segment descriptor.
+The segment selector of the far pointer points to a segment descriptor in the
+GDT or LDT, while the interrupt number points to a segment descriptor in the
+IDT.</p>
+</div>
+<div class="paragraph">
+<p><code>jmp</code> and <code>call</code> may target a code segment, call gate or task gate.
+A <code>jmp</code> instruction may not result in a change of CPL (violations of this, i.e.
+through targeting a nonconforming segment with DPL not equal to CPL, result in
+a general protection fault).</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>cs</code> may only be loaded with segment selectors to code segments (which may
-indirectly happen through gates).</p>
+<p>If a code segment is targeted, control is transferred to that code segment at
+the offset provided as the operand of the instruction (assuming no protection
+violations or other faults).
+As with <code>jmp</code> instructions, a <code>call</code> instruction may not target a code
+segment that would result in a change of CPL.
+<code>call</code> behaves similar to real mode, in the sense that it pushes a far
+pointer to stack for <code>retf</code> to pop.</p>
 </li>
 <li>
-<p><code>ds</code> and <code>es</code> may only be loaded with segment selectors to data segments or
-readable code segments (not call gates).</p>
-</li>
-<li>
-<p><code>ss</code> may only be loaded with writable data segments.</p>
+<p>If a call gate is targeted, control is transferred to the code segment at the
+offset provided by the call gate descriptor, the offset provided by the
+instruction is ignored.
+A <code>call</code> to a call gate allows control to be transferred from less privileged
+code to more privileged code (i.e. the CPL gets lower).
+If a change in CPL occurs, a stack switch to the stack corresponding to the
+new protection Ring, as defined in the TSS.
+Note the call gate has following properties:</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>When <code>cs</code> is changed, the CPL is set to the DPL, if the new descriptor is
-nonconforming.
-Otherwise, if the descriptor is conforming, the CPL remains unchanged.
-Segment registers may be modified in following ways with following
-restrictions:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>When <code>ds</code>, <code>es</code> or <code>ss</code> is directly loaded.</p>
-</li>
-<li>
-<p>If a selector to a data segment or nonconforming code segment is loaded,
-the DPL must not be lower than the EPL.</p>
-</li>
-<li>
-<p>Loading a selector to a conforming code segment is always permitted.</p>
-</li>
-<li>
-<p>When <code>cs</code> is modified through a <code>jmp</code> or <code>call</code> instruction.</p>
-</li>
-<li>
-<p>If the target selector points to a nonconforming code segment, the DPL must
-be equal to the CPL and the RPL must not be higher than the CPL.</p>
-</li>
-<li>
-<p>If the target selector points to a conforming code segment, the DPL must
-not be higher than the CPL.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
+<div class="title">TSS structure</div>
 <p>The RPL (and EPL) mechanism serves to prevent privilege escalation (i.e. a
 less privileged program accessing privileged memory indirectly through a system
 call, by passing a pointer to that portion of memory).
@@ -1873,6 +2128,10 @@ that do not yet fully support AVX-512.</p>
   
     <li class="footnote" id="_footnotedef_5">
       5. As in: direct memory reference.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_6">
+      6. Gate DPL is not checked if interrupt not caused by <code>int</code> instruction.
     </li>
   
   </ul>
