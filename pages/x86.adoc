@@ -340,9 +340,8 @@ an 8-bit value and a nibble is a 4-bit value.]
 
 === 8086
 ==== Registers
-The original 8086 had eight word-size general-purpose registers and eight
-byte-sized general-purpose registers.
-These byte registers are aliases for individual bytes of the word-sized
+The 8086 has eight word-sized and eight byte-sized general-purpose registers.
+These byte-sized registers are aliases for individual bytes of the word-sized
 general-purpose registers `ax`, `bx`, `cx` and `dx`.
 The byte register `al` is an alias for the low byte of `ax`, the byte
 register `ah` is an alias for the high byte of `ax`.
@@ -456,7 +455,7 @@ include:
 * `sp` is the stack pointer.
 
 Every instruction involving memory has a default segment and most may be
-overriden using a *segment override prefix*.
+overridden using a *segment override prefix*.
 Most memory operands may have a wide variety of indirect addressing modes.
 Offsets may be determined through a runtime computation of adding up to three
 values:
@@ -512,7 +511,7 @@ Small:: One code segment, one data segment.
 Compact:: One code segment, multiple data segments.
 Medium:: Multiple code segments, one data segment.
 Large:: Multiple code segments, multiple data segments.
-Huge:: Single 1 MiB memory range (see below).
+Huge:: Single memory range up to 1 MiB (see below).
 
 There exist three types of pointers:
 Near pointers:: Word-sized offsets that are used when there is no ambiguity
@@ -537,11 +536,17 @@ mode.
 .8086 memory models
 |===
 | Memory model | Code pointer type | Data pointer type | Segment registers
+
 | Tiny | Near | Near | `cs` = `ds` = `es` = `ss`
+
 | Small | Near | Near | `ds` = `ss`
+
 | Compact | Near | Far |
+
 | Medium | Far | Near | `ds` = `ss`
+
 | Large | Far | Far |
+
 | Huge | Huge | Huge |
 |===
 
@@ -558,7 +563,7 @@ consisting of far pointers.
 
 The routine that is called when an interrupt happens is called the *interrupt
 service routine (ISR)*.
-An ISR may resume the interrupt program through the `iret` instruction.
+An ISR may resume the interrupted program through the `iret` instruction.
 The 8086 generated following CPU exceptions:
 
 * Division by zero (interrupt 0) occurs when a `div` or `idiv` instruction has
@@ -568,6 +573,10 @@ The 8086 generated following CPU exceptions:
   instruction is executed.
 * Overflow (interrupt) is invoked when the `into` (interrupt on overflow)
   instruction is executed and the overflow flag is set.
+
+Intel reserved the first 32 interrupts for future use (i.e. additional CPU
+exceptions).
+IBM did not heed that recommendation, causing compatibility issues.
 
 === 80186
 The 186 and 188 implement all of the new 286 instructions that are not related
@@ -584,7 +593,7 @@ These extensions consist of:
 === 80286
 The introduction of protected mode with the 286 was a major change to the x86
 ISA.
-Protected mode introduced new data structures and mechanisms for virtual memory,
+Protected mode introduced new data structures, mechanisms for virtual memory,
 memory protection and hardware task switching.
 
 Hardware memory protection is primarily enforced through *protection rings*.
@@ -607,6 +616,18 @@ the LDT contains segment descriptors for a specific task.
 Thus, each task can access a global virtual address space, in addition to
 having its own, private address space.
 
+The IVT is replaced by the *Interrupt Descriptor Table (IDT)*.
+The IDT has an identical format to the GDT and LDT, but instead of referring to
+entries in the IDT through segment selectors, each entry in the IDT corresponds
+to an interrupt type (i.e. the first entry corresponds to interrupt 0, the
+second to interrupt 1, and so on), with the descriptor defining the ISR to be
+used.
+
+The 286 includes facilities for managing multiple tasks.
+The state of a task are stored in a *Task State Segment (TSS)*.
+Both LDT and TSS are segments, much regular segments, and have a corresponding
+entry in the GDT.
+
 .Segment selector format
 [cols="16*"]
 |===
@@ -619,11 +640,17 @@ Index:: The index within the descriptor table.
 TI:: The table indicator. Zero for GDT; one for LDT.
 DPL:: The descriptor privilege level.
 
-Descriptor tables are arrays of 8-byte *segment descriptors* that reside in
+Descriptor tables are arrays of 8-byte segment descriptors that reside in
 RAM.
+The first entry of the GDT is reserved.
+Selectors referring to this entry are so-called _null selectors_ and may be
+used as placeholder values for `ds` and `es`, but not `cs` and `ss`.
+Any attempt to access memory through a null selector, will result in a general
+protection fault.
+The IDT may only consist of task, interrupt or trap gates.
 
 .286 segment descriptor format
-[cols="17*"]
+[cols="3,16*"]
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
@@ -653,7 +680,7 @@ DPL:: Descriptor privilege level.
 Present bit:: Zero indicates the segment is invalid (intended for operating
               systems to implement swapping).
 
-.Type field for code and data segment descriptors
+.Code and data segment types
 [cols="4*"]
 |===
 | 43 | 42 | 41 | 40
@@ -662,7 +689,7 @@ Present bit:: Zero indicates the segment is invalid (intended for operating
 |===
 
 Executable bit:: One for code segments; zero for data segments.
-Conforming/expand-down bit:: For code segments: zero for non-conforming code
+Conforming/expand-down bit:: For code segments: zero for nonconforming code
                              segments; one for conforming code segments.
                              For data segments: zero for expand-up data
                              segments; one for expand-down data segments.
@@ -675,33 +702,52 @@ Accessed bit:: This bit is set when a segment is accessed.
                were used.
 
 .286 system segment types
+[cols="4*,5,6"]
 |===
-| 43 | 42 | 41 | 40 | Segment type
+| 43 | 42 | 41 | 40 | Segment type | Descriptor tables
 
-| 0 | 0 | 0 | 0 | Reserved
+| 0 | 0 | 0 | 0 | Reserved | None
 
-| 0 | 0 | 0 | 1 | Available TSS
+| 0 | 0 | 0 | 1 | Available TSS | GDT only
 
-| 0 | 0 | 1 | 0 | LDT descriptor
+| 0 | 0 | 1 | 0 | LDT descriptor | GDT only
 
-| 0 | 0 | 1 | 1 | Busy TSS
+| 0 | 0 | 1 | 1 | Busy TSS | GDT only
 
-| 0 | 1 | 0 | 0 | Call gate
+| 0 | 1 | 0 | 0 | Call gate | All
 
-| 0 | 1 | 0 | 1 | Task gate
+| 0 | 1 | 0 | 1 | Task gate | GDT, LDT
 
-| 0 | 1 | 1 | 0 | Interrupt gate
+| 0 | 1 | 1 | 0 | Interrupt gate | IDT only
 
-| 0 | 1 | 1 | 1 | Trap gate
+| 0 | 1 | 1 | 1 | Trap gate | IDT only
 
-| 1 | x | x | x | Reserved
+| 1 | x | x | x | Reserved | None
 |===
 
-The first entry of the GDT is reserved.
-Selectors referring to this entry are so-called _null selectors_ and may be
-used as placeholder values for `ds` and `es`, but not `cs` and `ss`.
-Any attempt to access memory through a null selector, will result in a general
-protection fault.
+Gates have a different format to other segment descriptors (i.e. code, data,
+LDT and TSS segments).
+
+.286 gate descriptor format
+[cols="3,16*"]
+|===
+| Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| +48 16+| Reserved
+
+| +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Word count
+
+| +16 16+| Segment
+
+| +0 16+| Offset
+|===
+
+Offset:: target offset (unused by task gate)
+Segment:: target segment selector (must point to code segment for call,
+          interrupt and trap gates and TSS for task gates, RPL is ignored by
+          call gates)
+Word count:: amount of words to push (call gates only, reserved for all other
+             kinds of gate)
 
 In addition to the visible 16-bit selectors, all segment registers have an
 invisible _segment descriptor cache_, which contains the segment descriptor
@@ -710,16 +756,26 @@ up the descriptor tables.
 Aside from the performance improvements this has certain side effects.
 Notable among those is unreal mode.
 
-The location of the GDT and LDT is indicated by the _GDT Register (GDTR)_ and
-_LDT Register (LDTR)_ respectively.
-These 48-bit registers are so-called _pseudo-descriptors_, that have a similar
-structure to the regular segment descriptors, in the sense that they contain a
-base and limit field.
-The GDTR can be set through the `lgdt` instruction and the LDTR can be
-initialized through the `lldt` instruction.
+The location of the GDT, LDT, IDT and TSS is indicated by the
+_GDT Register (GDTR)_, _LDT Register (LDTR)_, _IDT Register (IDTR)_ and
+_Task Register (TR)_ respectively.
+The LDTR and TR are similar to regular segment register, as they store a 16-bit
+selector, visible to the programmer, and a hidden descriptor cache.
+The LDTR can be set using the `lldt` instruction and the TR can be set using
+the `ltr` instruction.
+Both of these instructions accept a 16-bit direct operand (register or
+memory) containing selector pointing to the corresponding descriptor in the
+GDT.
+
+The GDT and IDT are not segments and the GDTR and LDTR do not have the visible
+16-bit selector part.
+The GDTR and LDTR are effectively 48-bit registers and may be set using the
+`lgdt` and `lidt` instructions respectively, which take a pointer to a 6 byte
+structure called a _pseudo-descriptor_, that is similar to a regular segment
+descriptor, due to having base and limit fields.
 
 .Pseudo-descriptor format
-[cols="17*"]
+[cols="3,16*"]
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
@@ -730,11 +786,7 @@ initialized through the `lldt` instruction.
 | +0 16+| Limit
 |===
 
-Much like regular segment registers, the LDTR has a 16-bit selector field, in
-addition to the pseudo-descriptor.
-This 16-bit selector points to a LDT descriptor in the GDT.
-
-==== Memory protection
+==== Memory protection and multitasking
 Protected mode introduces new memory protection mechanisms.
 In order to understand these, one must first understand the different privilege
 levels that are taken into account:
@@ -751,6 +803,14 @@ levels that are taken into account:
 * The __I/O privilege level (IOPL)__ is a value in the `flags` register that
   determines the highest CPL allowed to do direct I/O within the current task.
 
+.286 `flags` encoding
+[cols="16*"]
+|===
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
+|===
+
 Certain instructions, such as `lgdt` can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
 checking segment limits, restricting writing a read-only data segment or code
@@ -758,37 +818,98 @@ segment and reading a execute-only code segment through a `cs` override.
 
 Before accessing a segment, a segment register must first be set, so the CPU
 can perform most privilege checks at that point.
-`ds`, `es` and `ss` can be directly set.
-`cs` and `ss` can be indirectly set through far `jmp` and `call` instructions
-and interrupts.
-Following restrictions apply to the types of segments that are loaded:
+The particular privilege level checks depends on how the segment register is
+set and the type of descriptor the selector points to.
 
-* `cs` may only be loaded with segment selectors to code segments (which may
-  indirectly happen through gates).
+`ds`, `es` and `ss` can be changed directly through `mov` and `pop`.
+In general, these registers must be loaded with data segments or readable code
+segments with the DPL higher or equal to the EPL.
+However, different rules may apply (see table, e.g. `ss` must always point to a
+writable segment with).
 
-* `ds` and `es` may only be loaded with segment selectors to data segments or
-  readable code segments (not call gates).
+LDTR and TR can only be changed explicitly in Ring 0 using the `lldt` and `ltr`
+instructions.
+The LDT must be loaded with a selector pointing to a valid LDT descriptor in
+the GDT.
+The TR must be loaded with a selector pointing to a valid TSS descriptor in the
+GDT.
 
-* `ss` may only be loaded with writable data segments.
+.Conditions for successful update of segment registers
+[%header,cols="8"]
+|===
+| Mechanism
+| Data segment
+| Nonconforming code segment
+| Conforming code segment
+| Call gate to nonconforming code segment
+| Call gate to conforming code segment
+| TSS or task gate
+| Interrupt or trap gate
 
-When `cs` is changed, the CPL is set to the DPL, if the new descriptor is
-nonconforming.
-Otherwise, if the descriptor is conforming, the CPL remains unchanged.
-Segment registers may be modified in following ways with following
-restrictions:
+| Updating `ds` or `es`
+2+| `DPL >= EPL` and readable
+| readable
+4+| Disallowed
 
-* When `ds`, `es` or `ss` is directly loaded.
+| Updating `ss`
+| `DPL == RPL == CPL` and writable
+6+| Disallowed
 
-  * If a selector to a data segment or nonconforming code segment is loaded,
-    the DPL must not be lower than the EPL.
-  * Loading a selector to a conforming code segment is always permitted.
+| Updating `cs` through far `jmp`
+.3+| Disallowed
+.2+| `DPL == CPL && RPL \<= CPL`
+.2+| `DPL \<= CPL`
+| `gate DPL >= gate EPL && cs DPL == CPL`
+| `gate DPL >= gate EPL && cs DPL \<= CPL`
+.2+| `gate DPL >= tss EPL`
+1+| Disallowed
 
-* When `cs` is modified through a `jmp` or `call` instruction.
+| Updating `cs` through far `call` or `int`
+2+| `gate DPL >= gate EPL && cs DPL \<= CPL`
+1+| `gate DPL >= CPL && cs DPL \<= CPL` footnote:[Gate DPL is not checked if interrupt not caused by `int` instruction.]
 
-  * If the target selector points to a nonconforming code segment, the DPL must
-    be equal to the CPL and the RPL must not be higher than the CPL.
-  * If the target selector points to a conforming code segment, the DPL must
-    not be higher than the CPL.
+| Updating `cs` through `retf` or `iret`
+2+| `RPL >= CPL`
+4+| Disallowed
+|===
+
+Segment registers may be changed implicitly, through instructions (and
+interrupts) that pass control flow to another code segment.
+Not only the `cs` and `ip` may be changed.
+If the operation results in a change in CPL, the stack is also switched
+(meaning a change in `ss` and `sp`).
+If the operation results in a change in tasks, most CPU registers are also
+changed.
+These include far `jmp` and `call`, which provide a far pointer, or an
+interrupt (that can be caused by an `int` instruction), which provides an
+interrupt number.
+Either way, these point to an unique segment descriptor.
+The segment selector of the far pointer points to a segment descriptor in the
+GDT or LDT, while the interrupt number points to a segment descriptor in the
+IDT.
+
+`jmp` and `call` may target a code segment, call gate or task gate.
+A `jmp` instruction may not result in a change of CPL (violations of this, i.e.
+through targeting a nonconforming segment with DPL not equal to CPL, result in
+a general protection fault).
+
+* If a code segment is targeted, control is transferred to that code segment at
+  the offset provided as the operand of the instruction (assuming no protection
+  violations or other faults).
+  As with `jmp` instructions, a `call` instruction may not target a code
+  segment that would result in a change of CPL.
+  `call` behaves similar to real mode, in the sense that it pushes a far
+  pointer to stack for `retf` to pop.
+* If a call gate is targeted, control is transferred to the code segment at the
+  offset provided by the call gate descriptor, the offset provided by the
+  instruction is ignored.
+  A `call` to a call gate allows control to be transferred from less privileged
+  code to more privileged code (i.e. the CPL gets lower).
+  If a change in CPL occurs, a stack switch to the stack corresponding to the
+  new protection Ring, as defined in the TSS.
+  Note the call gate has following properties:
+
+.TSS structure
 
 The RPL (and EPL) mechanism serves to prevent privilege escalation (i.e. a
 less privileged program accessing privileged memory indirectly through a system
