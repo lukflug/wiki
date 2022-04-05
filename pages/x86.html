@@ -55,6 +55,7 @@
 <li><a href="#_8086">3.1. 8086</a></li>
 <li><a href="#_80186">3.2. 80186</a></li>
 <li><a href="#_80286">3.3. 80286</a></li>
+<li><a href="#_interrupts_and_task_switching">3.4. Interrupts and task switching</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -82,11 +83,11 @@ The iterations of the ISA can be broadly classified by integer width:</p>
 <ul>
 <li>
 <p>16-bit x86, also referred to as <strong>IA-16</strong>, <strong>x86-16</strong> or <strong>x86_16</strong> (introduced
-with the Intel 8086 in 1978)</p>
+with the Intel 8086 in 1978).</p>
 </li>
 <li>
 <p>32-bit x86, also referred to as <strong>IA-32</strong>, <strong>x86-32</strong> or <strong>x86_32</strong> (introduced
-with the Intel 386 in 1985)</p>
+with the Intel 386 in 1985).</p>
 </li>
 <li>
 <p>64-bit x86 (not to be confused with IA-64), also referred to as <strong>x86-64</strong>,
@@ -105,28 +106,28 @@ It is also referred to as <em>EM64T</em>, <em>IA-32e</em> or <em>Intel64</em> by
 <div class="paragraph">
 <p>The first iteration of the x86 architecture was introduced in 1978 with the
 <strong>Intel 8086</strong>.
-The 8086 was a 16-bit CPU, with 16-bit registers, a 16-bit data bus and a
-20-bit address bus.
-Thus it was able to address one megabyte of RAM.
-Although the 8086 had no binary compatibility with the 8080 or 8085, the design
-was such, that all 8080 or 8085 programs could be machine translated to work on
+The 8086 is a 16-bit CPU, with 16-bit registers, a 16-bit data bus and a 20-bit
+address bus.
+Thus it is able to address one megabyte of RAM.
+Although the 8086 has no binary compatibility with the 8080 or 8085, the design
+is such, that all 8080 or 8085 programs could be machine translated to work on
 the 8086.</p>
 </div>
 <div class="paragraph">
-<p>Slightly later, the <strong>Intel 8088</strong> CPU was introduced, which was internally
+<p>Slightly later, the <strong>Intel 8088</strong> CPU was introduced, which is internally
 identical to the 8086, but had a 8-bit data bus.
-The 8088 was used by the original IBM PC, introduced in 1981, which was the
+The 8088 is used by the original IBM PC, introduced in 1981, which is the
 predecessor of all modern PCs.
 Thus, the x86 architecture became the dominant architecture on personal
 computers.</p>
 </div>
 <div class="paragraph">
 <p>Intel also introduced the <strong>Intel 8087</strong> FPU that provides floating-point
-capabilities, and operated in parallel to the main processor.
+capabilities, and operates in parallel to the main processor.
 The Intel 8089 IOP (I/O processor) was also introduced to allow fast I/O
 operations without CPU supervision, allowing for an increasing degree of
 parallelism.
-However, the IBM PC did not use the 8089, instead using the simpler Intel 8237
+However, the IBM PC does not use the 8089, instead using the simpler Intel 8237
 (designed for the 8-bit 8085).
 This meant that no successor to the 8089 was ever made.</p>
 </div>
@@ -136,23 +137,23 @@ This meant that no successor to the 8089 was ever made.</p>
 <div class="paragraph">
 <p>In 1982, Intel introduced the <strong>Intel 80186</strong>, <strong>Intel 80188</strong> and <strong>Intel 80286</strong>
 (also known as the 186, 188 and 286 respectively).
-The 186 and 188 were similar to the 8086 and 8088 respectively, but were
-intended for embedded systems, and included peripherals that were not compatible
-with IBM PCs.</p>
+The 186 and 188 are similar to the 8086 and 8088 respectively, but are intended
+for embedded systems, and integrate peripherals that are not compatible with
+IBM PCs.</p>
 </div>
 <div class="paragraph">
 <p>Although the 8087 is compatible with both the 186 and 187, the <strong>Intel 80187</strong>
 (also known as the 187) was introduced much later as a math coprocessor
 compatible the 186 (but not the 188).
-The 187 was internally more similar to the 387 and supported all the 387
+The 187 is internally more similar to the 387 and supports all the 387
 instructions and was IEEE 754 compliant.</p>
 </div>
 <div class="paragraph">
-<p>The 286, however, was intended for multi-user, multitasking environments.
+<p>The 286, however, is intended for multi-user, multitasking environments.
 Thus the 286 introduced features for multitasking and memory protection and was
 able to address up to 16 MiBs of RAM.
 To preserve compatibility with the 8086, most of the features introduced with
-the 286 could only be used in a mode called <em>protected mode</em>.
+the 286 can only be used in a mode called <em>protected mode</em>.
 The 286 and most subsequent x86 processors start in <em>real mode</em>, which emulates
 the behavior of a 8086.
 The 286 started to gain wide adoption with the introduction of the IBM AT in
@@ -160,7 +161,7 @@ The 286 started to gain wide adoption with the introduction of the IBM AT in
 </div>
 <div class="paragraph">
 <p>The math coprocessor for the 286 is the <strong>Intel 80287</strong> (also known as the 287).
-A later version of the 287, known as the 287XL, was internally similar to the
+A later version of the 287, known as the 287XL, is internally similar to the
 387SX.
 The 287 is also compatible with the 386DX and 386SX.</p>
 </div>
@@ -168,32 +169,32 @@ The 287 is also compatible with the 386DX and 386SX.</p>
 <div class="sect2">
 <h3 id="_nec_v20">1.3. NEC V20</h3>
 <div class="paragraph">
-<p>The <strong>NEC V20</strong> was a pin compatible replacement for the 8088, that was a very
+<p>The <strong>NEC V20</strong> is a pin compatible replacement for the 8088, that was a very
 popular upgrade for XT-class machines, due to being able to execute more
 instructions on average in a smaller amount of time.
-Variants included the <strong>NEC V30</strong>, which was pin compatible with the 8086, the
-<em>NEC V40</em>, which corresponded to the 188, and the <em>NEC V50</em>, which corresponded
+Variants include the <strong>NEC V30</strong>, which is pin compatible with the 8086, the
+<em>NEC V40</em>, which corresponds to the 188, and the <em>NEC V50</em>, which corresponds
 to the 186.
 The <em>NEC V33</em> and its variant, the <em>NEC V53</em>, is a V30 variant with performance
 equivalent to a 286 and can address up to 16 MiB of memory.
 The <em>NEC V25</em> and <em>NEC V35</em> are microcontroller variants of the V20 and V30
 respectively.
-The later V60 series implemented a different ISA, but had a V20 emulation mode.</p>
+The later V60 series implements a different ISA, but has a V20 emulation mode.</p>
 </div>
 <div class="paragraph">
-<p>All these CPUs supported the 186 instruction set and new instructions
-exclusively available on NEC CPUs.
-Among other things, these instructions included nibble and bitwise operations.
-The V25 and V35 implemented additional enhancements, such as eight register
-banks for interrupt handling.</p>
+<p>All these CPUs support the 186 instruction set and new instructions exclusively
+available on NEC CPUs.
+Among other things, these instructions include nibble and bitwise operations.
+The V25 and V35 implement additional enhancements, such as eight register banks
+for interrupt handling.</p>
 </div>
 <div class="paragraph">
 <p>In addition to the enhancements common to all V-series CPUs, the V20, V30, V40
-and V50 featured an <em>8080 emulation mode</em>, whereby 8080 binaries could be
-executed without translation.</p>
+and V50 feature an <em>8080 emulation mode</em>, whereby 8080 binaries can be executed
+without translation.</p>
 </div>
 <div class="paragraph">
-<p>The V33 and V53 implemented <em>expanded addressing mode</em>, which allows the use of
+<p>The V33 and V53 implement <em>expanded addressing mode</em>, which allows the use of
 up to 16 MiB of RAM.
 This mode is essentially real mode with paging of 16 kiB pages.
 The translation table translating the 20-bit linear address to a 24-bit
@@ -207,13 +208,13 @@ physical address is mapped to the I/O ports 0xFF00 to 0xFF7F.</p>
 This new iteration introduced support for 32-bit integers and extended
 protected mode to introduce, among other things, paging and support for up to
 4 GiBs of RAM.
-Later, Intel introduced the <strong>Intel 386SX</strong>, which was internally similar to the
-386DX, but had a 16-bit data bus and 24-bit address bus, rather than 32-bit
+Later, Intel introduced the <strong>Intel 386SX</strong>, which is internally similar to the
+386DX, but has a 16-bit data bus and 24-bit address bus, rather than 32-bit
 busses.</p>
 </div>
 <div class="paragraph">
 <p>In 1987, the <strong>Intel 387DX</strong> was introduced.
-Due to its 32-bit data bus, it was incompatible with the 386SX, which had its
+Due to its 32-bit data bus, it is incompatible with the 386SX, which has its
 own math coprocessor called the <strong>387SX</strong></p>
 </div>
 </div>
@@ -222,7 +223,7 @@ own math coprocessor called the <strong>387SX</strong></p>
 <div class="paragraph">
 <p>In 1989, the <strong>Intel 486DX</strong> was introduced, introducing new features, such as
 tightly coupled (i.e. true) pipelining and an integrated FPU.
-The <strong>Intel 486SX</strong> variant was a version without an integrated FPU.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
+The <strong>Intel 486SX</strong> variant is a version without an integrated FPU.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
 A <strong>Intel 487SX</strong> math coprocessor upgrade was available for 486SX systems.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
 </div>
 </div>
@@ -237,7 +238,7 @@ as <strong>i586</strong>) microarchitecture, which introduced superscalar archit
 <div class="sect2">
 <h3 id="_sixth_generation">1.7. Sixth generation</h3>
 <div class="paragraph">
-<p>The Pentium was followed up by the Pentium Pro in 1995, which was the first
+<p>The Pentium was followed up by the Pentium Pro in 1995, which is the first
 implementation of the <strong>P6</strong> (also known as <strong>i686</strong>) microarchitecture,
 introducing register renaming, out-of-order execution, speculative execution
 and a 36-bit address bus, that allowed for up to 64 GiBs of RAM, that could be
@@ -278,8 +279,8 @@ binary backwards compatibility, all the way back to the original Intel 8086.</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>x86 has a handful of operating modes.
-On x86-64 processors, real mode and protected mode are group together into
-legacy mode.</p>
+On x86-64 processors, real mode and protected mode are grouped together into
+<em>legacy mode</em>.</p>
 </div>
 <div class="sect2">
 <h3 id="_real_mode">2.1. Real mode</h3>
@@ -364,8 +365,8 @@ Ring 0 is often referred to as "kernel mode" and Ring 3 is often referred to as
 "user mode".</p>
 </div>
 <div class="paragraph">
-<p>The 286 originally allowed for up to 16 MiB of RAM, however extensions to
-protected mode introduced with the 386 increased this to 4 GiB.
+<p>The 286 allows for up to 16 MiB of RAM, however extensions to protected mode
+introduced with the 386 increase this to 4 GiB.
 The 386 also introduced optional paging to protected mode, allowing for an
 extra level of translation after segmentation.
 Later extensions, such as PAE and PSE-36, increase the maximum size of physical
@@ -411,7 +412,7 @@ operand size is 32-bit.</p>
 than 64 kiB, as is the case with 16-bit addressing.
 This, along with paging, largely removes the necessity for multiple segments,
 as modern operating systems mostly rely on paging and have one code segment and
-one data segment per Ring per virtual address space, usually having the base
+one data segment per ring per virtual address space, usually having the base
 zero.
 To a 32-bit user program, segmentation is essentially transparent and the
 address space consists of 4 GiB of flat, contiguous memory.</p>
@@ -462,8 +463,8 @@ current code segment.</p>
 <div class="sect3">
 <h4 id="_64_bit_mode">2.4.1. 64-bit mode</h4>
 <div class="paragraph">
-<p>If the current code segment is 64-bit, the code will be interpreted as 64-bit
-code and 64-bit registers may be used.
+<p>If the current code segment is 64-bit, the code is interpreted as 64-bit code
+and 64-bit registers may be used.
 Many legacy features of protected mode, such as segmentation, are largely
 disabled.
 <code>cs</code>, <code>ds</code>, <code>es</code> and <code>ss</code> always have base zero, while <code>fs</code> and <code>gs</code> may have
@@ -474,10 +475,11 @@ No segment limit checks are performed.</p>
 <div class="sect3">
 <h4 id="_compatibility_mode">2.4.2. Compatibility mode</h4>
 <div class="paragraph">
-<p>16-bit and 32-bit segments may coexist with 64-bit segments and are meant to
-provide compatibility with protected mode user programs.
+<p><em>Compatibility mode</em> (not to be confused with legacy mode), is a sub-mode of
+long mode, that allows 16-bit and 32-bit applications to run alongside 64-bit
+applications.
 Segmentation works like in protected mode, but many features only directly
-visible to the operating system, such as paging, system calls and interrupt,
+visible to the operating system, such as paging, system calls and interrupts
 work as they do in 64-bit mode.</p>
 </div>
 <div class="paragraph">
@@ -489,8 +491,8 @@ compatibility mode.</p>
 <div class="paragraph">
 <p>If the current code segment is 16-bit, the code will be interpreted as 16-bit
 code.
-As with 16-bit protected mode, most existing real mode software is not cannot
-be run in 16-bit compatibility mode.</p>
+As with 16-bit protected mode, most existing real mode software cannot be run
+in 16-bit compatibility mode.</p>
 </div>
 </div>
 <div class="sect4">
@@ -537,8 +539,8 @@ The byte register <code>al</code> is an alias for the low byte of <code>ax</code
 register <code>ah</code> is an alias for the high byte of <code>ax</code>.
 Analogous relationships exist between <code>bl</code>, <code>bh</code> and <code>bx</code>, <code>cl</code>, <code>ch</code> and <code>cx</code>,
 and <code>dl</code>, <code>dh</code> and <code>dx</code>.
-The remaining general-purpose registers are <code>si</code> (source index),
-<code>di</code> (destination index), <code>bp</code> (base pointer) and <code>sp</code> (stack pointer).</p>
+The remaining 16-bit general-purpose registers are <code>si</code> (source index), <code>di</code>
+(destination index), <code>bp</code> (base pointer) and <code>sp</code> (stack pointer).</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. 8086 general-purpose registers</caption>
@@ -608,26 +610,11 @@ The remaining general-purpose registers are <code>si</code> (source index),
 registers:
 the code segment <code>cs</code>, the data segment <code>ds</code>, the extra segment <code>es</code> and the
 stack segment <code>ss</code>.
-There are also two registers hidden to the programmer: the 16-bit instruction
-pointer <code>ip</code> and the <code>flags</code> register.</p>
-</div>
-<div class="paragraph">
-<p>The <code>flags</code> register can be directly accessed in two ways:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>lahf</code> and <code>sahf</code> encode a subset of the flags into a byte (compatible with
-the Intel 8080 and 8085).</p>
-</li>
-<li>
-<p><code>pushf</code> and <code>popf</code> encode all the flags in a word, with the low byte
-corresponding to the encoding found in <code>lahf</code> and <code>sahf</code>.</p>
-</li>
-</ul>
+There are also two word-sized registers hidden to the programmer: the 16-bit
+instruction pointer <code>ip</code> and the <code>flags</code> register.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. 8086 <code>flags</code> encoding</caption>
+<caption class="title">Table 2. 8086 <code>flags</code></caption>
 <colgroup>
 <col style="width: 6.25%;">
 <col style="width: 6.25%;">
@@ -756,8 +743,8 @@ The program counter is <code>cs:ip</code> and the stack pointer is <code>ss:sp</
 <div class="paragraph">
 <p>The normal flow of execution is increasing <code>ip</code>.
 <code>cs</code> is not automatically incremented, if <code>ip</code> exceeds the limit of <code>cs</code>,
-instead <code>ip</code> will either wrap around to zero (as is the case on the 8086) or
-an exception will be raised on later CPUs.</p>
+instead <code>ip</code> either wraps around to zero (as is the case on the 8086) or an
+exception is raised on later CPUs.</p>
 </div>
 <div class="paragraph">
 <p>On x86, the stack grows downwards, <code>push</code> decreases <code>sp</code> and <code>pop</code> increases
@@ -800,7 +787,7 @@ include:</p>
 instructions.</p>
 </li>
 <li>
-<p>using <code>bp</code> as the base of the effective address (see below) will result in
+<p>Using <code>bp</code> as the base of the effective address (see below) will result in
 the use of the stack segment.</p>
 </li>
 <li>
@@ -954,7 +941,7 @@ This is done through huge pointers, which are essentially far pointers that are
 normalized, so the offset is always smaller than 16.
 This effectively yields a 20-bit address, if the highest 12 bits of the offset
 are ignored (since they are always zero due to normalization).
-This allows to transparently implement arrays larger than 64 kiB.
+This allows the transparent implementation of arrays larger than 64 kiB.
 The stack, however, may not exceed 64 kiB.
 Due to relying on real mode segment arithmetic, it does not work in protected
 mode.</p>
@@ -1018,12 +1005,12 @@ mode.</p>
 <div class="sect3">
 <h4 id="_interrupts_and_exceptions">3.1.4. Interrupts and exceptions</h4>
 <div class="paragraph">
-<p>The 8086 also supported 256 types of interrupts.
+<p>The 8086 supports 256 types of interrupts.
 Interrupts may be caused by hardware, by a CPU exception or explicitly by
 software through the <code>int</code> instruction.
 When an interrupt is raised, the processor pushes the current state of the
 flags register, current code segment and the offset of the next instruction to
-be executed, when the interrupted program is resumed.
+be executed when the interrupted program is resumed.
 It then determines the address to jump to using the <strong>interrupt vector table
 (IVT)</strong>, a 1 kiB (256 times 4 bytes) table starting at physical address zero,
 consisting of far pointers.</p>
@@ -1032,7 +1019,7 @@ consisting of far pointers.</p>
 <p>The routine that is called when an interrupt happens is called the <strong>interrupt
 service routine (ISR)</strong>.
 An ISR may resume the interrupted program through the <code>iret</code> instruction.
-The 8086 generated following CPU exceptions:</p>
+The 8086 generates following CPU exceptions:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1054,7 +1041,8 @@ instruction is executed and the overflow flag is set.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Intel reserved the first 32 interrupts for future use (i.e. additional CPU
+<p>Interrupt 2 is dispatched when a hardware NMI occurs.
+Intel reserved the first 32 interrupts for future use (i.e. additional CPU
 exceptions).
 IBM did not heed that recommendation, causing compatibility issues.</p>
 </div>
@@ -1104,7 +1092,7 @@ rings with higher number (less privilege) are referred to hereafter as <em>highe
 (i.e. the numeric relation).</p>
 </div>
 <div class="sect3">
-<h4 id="_virtual_memory">3.3.1. Virtual memory</h4>
+<h4 id="_segmentation">3.3.1. Segmentation</h4>
 <div class="paragraph">
 <p>There is no longer a linear relationship between segment address and segment
 base.
@@ -1550,28 +1538,26 @@ kinds of gate)</p>
 </div>
 <div class="paragraph">
 <p>In addition to the visible 16-bit selectors, all segment registers have an
-invisible <em>segment descriptor cache</em>, which contains the segment descriptor
-corresponding to the selector, so that the CPU does not need to constantly look
-up the descriptor tables.
-Aside from the performance improvements this has certain side effects.
-Notable among those is unreal mode.</p>
+invisible <em>segment descriptor cache</em>,<sup class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnotedef_6" title="View footnote.">6</a>]</sup>
+which contains the segment descriptor corresponding to the selector, so that
+the CPU does not need to constantly look up the descriptor tables.</p>
 </div>
 <div class="paragraph">
-<p>The location of the GDT, LDT, IDT and TSS is indicated by the
-<em>GDT Register (GDTR)</em>, <em>LDT Register (LDTR)</em>, <em>IDT Register (IDTR)</em> and
-<em>Task Register (TR)</em> respectively.
-The LDTR and TR are similar to regular segment register, as they store a 16-bit
-selector, visible to the programmer, and a hidden descriptor cache.
-The LDTR can be set using the <code>lldt</code> instruction and the TR can be set using
+<p>The location of the GDT, LDT, IDT and TSS are indicated by the
+<em>GDT Register (<code>gdtr</code>)</em>, <em>LDT Register (<code>ldtr</code>)</em>, <em>IDT Register (<code>idtr</code>)</em> and
+<em>Task Register ( <code>tr</code>)</em> respectively.
+The <code>ldtr</code> and <code>tr</code> are similar to regular segment register, as they store a
+16-bit selector, visible to the programmer, and a hidden descriptor cache.
+The <code>ldtr</code> can be set using the <code>lldt</code> instruction and the TR can be set using
 the <code>ltr</code> instruction.
 Both of these instructions accept a 16-bit direct operand (register or
 memory) containing selector pointing to the corresponding descriptor in the
 GDT.</p>
 </div>
 <div class="paragraph">
-<p>The GDT and IDT are not segments and the GDTR and LDTR do not have the visible
-16-bit selector part.
-The GDTR and LDTR are effectively 48-bit registers and may be set using the
+<p>The GDT and IDT are not segments and the <code>gdtr</code> and <code>ldtr</code> do not have the
+visible 16-bit selector part.
+The <code>gdtr</code> and <code>ldtr</code> are effectively 48-bit registers and may be set using the
 <code>lgdt</code> and <code>lidt</code> instructions respectively, which take a pointer to a 6 byte
 structure called a <em>pseudo-descriptor</em>, that is similar to a regular segment
 descriptor, due to having base and limit fields.</p>
@@ -1635,7 +1621,7 @@ descriptor, due to having base and limit fields.</p>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_memory_protection_and_multitasking">3.3.2. Memory protection and multitasking</h4>
+<h4 id="_memory_protection">3.3.2. Memory protection</h4>
 <div class="paragraph">
 <p>Protected mode introduces new memory protection mechanisms.
 In order to understand these, one must first understand the different privilege
@@ -1667,7 +1653,7 @@ determines the highest CPL allowed to do direct I/O within the current task.</p>
 </ul>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. 286 <code>flags</code> encoding</caption>
+<caption class="title">Table 11. 286 <code>flags</code></caption>
 <colgroup>
 <col style="width: 6.25%;">
 <col style="width: 6.25%;">
@@ -1746,12 +1732,12 @@ However, different rules may apply (see table, e.g. <code>ss</code> must always 
 writable segment with).</p>
 </div>
 <div class="paragraph">
-<p>LDTR and TR can only be changed explicitly in Ring 0 using the <code>lldt</code> and <code>ltr</code>
-instructions.
-The LDT must be loaded with a selector pointing to a valid LDT descriptor in
+<p><code>ldtr</code> and <code>tr</code> can only be changed explicitly in Ring 0 using the <code>lldt</code> and
+<code>ltr</code> instructions.
+The <code>ldtr</code> must be loaded with a selector pointing to a valid LDT descriptor in
 the GDT.
-The TR must be loaded with a selector pointing to a valid TSS descriptor in the
-GDT.</p>
+The <code>tr</code> must be loaded with a selector pointing to a valid TSS descriptor in
+the GDT.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 12. Conditions for successful update of segment registers</caption>
@@ -1765,32 +1751,33 @@ GDT.</p>
 <col style="width: 12.5%;">
 <col style="width: 12.5%;">
 </colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Mechanism</th>
-<th class="tableblock halign-left valign-top">Data segment</th>
-<th class="tableblock halign-left valign-top">Nonconforming code segment</th>
-<th class="tableblock halign-left valign-top">Conforming code segment</th>
-<th class="tableblock halign-left valign-top">Call gate to nonconforming code segment</th>
-<th class="tableblock halign-left valign-top">Call gate to conforming code segment</th>
-<th class="tableblock halign-left valign-top">TSS or task gate</th>
-<th class="tableblock halign-left valign-top">Interrupt or trap gate</th>
-</tr>
-</thead>
 <tbody>
 <tr>
+<th class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Mechanism</p></th>
+<th class="tableblock halign-left valign-top" colspan="6"><p class="tableblock">Target</p></th>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data segment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nonconforming code segment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conforming code segment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Call gate to nonconforming code segment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Call gate to conforming code segment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TSS or task gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interrupt or trap gate</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ds</code> or <code>es</code></p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>DPL &gt;= EPL</code> and readable</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">readable</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ss</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ss</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>DPL == RPL == CPL</code> and writable</p></td>
 <td class="tableblock halign-left valign-top" colspan="6"><p class="tableblock">Disallowed</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>jmp</code></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>jmp</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="3"><p class="tableblock">Disallowed</p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL == CPL &amp;&amp; RPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL &lt;= CPL</code></p></td>
@@ -1798,16 +1785,12 @@ GDT.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>gate DPL &gt;= tss EPL</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Disallowed</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>call</code> or <code>int</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; cs DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnotedef_6" title="View footnote.">6</a>]</sup></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; cs DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through <code>retf</code> or <code>iret</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>RPL &gt;= CPL</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
 </tr>
 </tbody>
 </table>
@@ -1852,12 +1835,153 @@ A <code>call</code> to a call gate allows control to be transferred from less pr
 code to more privileged code (i.e. the CPL gets lower).
 If a change in CPL occurs, a stack switch to the stack corresponding to the
 new protection Ring, as defined in the TSS.
+If a stack switch occurs, the processor first pushes <code>ss</code>, <code>sp</code>, then copies
+the amount of words given in the word count descriptor field to the new stack
+and then pushes <code>cs</code> and <code>ip</code>.
 Note the call gate has following properties:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>It is transparent to the application.
+The application simply does <code>jmp</code> or <code>call</code> as if it was a code segment.</p>
+</li>
+<li>
+<p>The word count mechanism allows for transparent passing of parameters on
+the stack.</p>
+</li>
+<li>
+<p>The offset operand of the <code>jmp</code> or <code>call</code> instruction is ignored.
+This prevents an application from entering the middle of a procedure or a
+procedure it should not enter.</p>
+</li>
+<li>
+<p>The procedure can transparently return via <code>retf</code>.</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>If a TSS or task gate is targeted, the task described by the TSS (or the TSS
+pointed to by the selector in the task gate) is resumed.
+For a procedure invoked via a TSS or task gate to properly return, it must
+use <code>iret</code>, not <code>retf</code>.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<div class="title">TSS structure</div>
+<p>The actions of the <code>retf</code> instruction depends on the segment selector of the
+far return pointer on the stack.
+The selector part of the pointer must point to a valid code segment.
+The RPL of that selector indicates the CPL of the caller.
+If the RPL equals the CPL, no CPL change is necessary and the <code>retf</code>
+instruction behaves like the <code>retf</code> instruction in real mode.
+Otherwise, a stack switch occurs by restoring the caller <code>sp</code> and <code>ss</code> on the
+callee stack.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 13. 286 TSS structure</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Byte offset</th>
+<th class="tableblock halign-left valign-top">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Previous TSS selector</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code> for Ring 0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code>  for Ring 0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code> for Ring 1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code>  for Ring 1</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code> for Ring 2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code>  for Ring 2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">14</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flags</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ax</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cx</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">22</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>dx</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">24</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bx</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">26</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>bp</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>si</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>di</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">34</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>es</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">36</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">38</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">40</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ds</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">42</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ldtr</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
 <p>The RPL (and EPL) mechanism serves to prevent privilege escalation (i.e. a
 less privileged program accessing privileged memory indirectly through a system
 call, by passing a pointer to that portion of memory).
@@ -1878,6 +2002,220 @@ Throughout all the stages, the EPL remains 3, which means a general protection
 fault will be raised, even in Ring 0, since the EPL is larger than the DPL.</p>
 </div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_interrupts_and_task_switching">3.4. Interrupts and task switching</h3>
+<div class="paragraph">
+<p>The interrupts behave in a similar way to the <code>call</code> instruction.
+Its effect depends on the corresponding IDT entry:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>If the target is an interrupt or trap gate, it behaves in a similar way to a
+call gate being invoked by a <code>call</code> instruction.
+The main difference is that no parameters from the caller stack are copied,
+if a privilege change occurs.
+Instead, the flags register is always pushed (in a similar fashion to
+interrupts in real mode).
+The only difference between an interrupt gate and a trap gate is that an
+interrupt gate clears the interrupt flag (much like real mode), while a trap
+gate does not.</p>
+</li>
+<li>
+<p>If the target is a task gate, it resumes the task described by the TSS the
+task gate points to, much like a <code>call</code> instruction.
+The interrupt flag is cleared.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In order to keep track of what interrupts and far calls were serviced by a task
+gate, the CPU maintains a <em>nested task (NT) flag</em>.
+Whenever a task switch due to an interrupt and call occurs, the NT flag of the
+new task is set and the "previous TSS" field of the incoming task is filled
+with the TSS selector of the outgoing task.
+A task switch due to a jump clears the NT flag.</p>
+</div>
+<div class="paragraph">
+<p>In addition, each TSS descriptor maintains a flag indicating whether the task
+is "available" or "busy".
+The currently executing task is always busy, along with the previous caller
+chain.
+Only an available task may be resumed through a task gate, while only a busy
+task may be resumed through <code>iret</code>.
+Entering a task gate results in the incoming task becoming busy.
+While a <code>jmp</code> instruction causes the outgoing task to become available, <code>call</code>
+instructions and interrupts result in the outgoing task remaining busy.
+<code>iret</code> results in the callee becoming available once again.</p>
+</div>
+<div class="paragraph">
+<p>The behavior of <code>iret</code> depends on the NT flag.
+If the NT flag is cleared, <code>iret</code> behaves in a similar way to <code>retf</code>, except
+that the <code>flags</code> register (which was pushed on to the stack) is restored.
+If the NT flag is set, indicating an interrupt or call to a task gate, <code>iret</code>
+causes a task switch to the task pointed to by the selector in the "previous
+TSS" field (i.e. the caller task).</p>
+</div>
+<div class="paragraph">
+<p>The 286 introduced a plethora of new exceptions.
+Protected mode exceptions may push a 16-bit error code on top of the stack.
+Exceptions are classified in three types:<sup class="footnote">[<a id="_footnoteref_8" class="footnote" href="#_footnotedef_8" title="View footnote.">8</a>]</sup></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Fault</dt>
+<dd>
+<p>Indicates an non-critical error has happened.
+These errors can be corrected and the program can be restarted at the
+faulting instruction.</p>
+</dd>
+<dt class="hdlist1">Trap</dt>
+<dd>
+<p>Traps allow a program to be restarted at the instruction following the
+trapping instruction.</p>
+</dd>
+<dt class="hdlist1">Abort</dt>
+<dd>
+<p>Aborts cannot be restarted reliably and indicate a critical error.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>When an exception occurs while a exception handler is being dispatched, the
+result depends on the kind of exceptions.
+It may either handle them serially, dispatch a <strong>dobule fault</strong> or enter a
+<strong>triple fault</strong>.
+When a triple fault occurs, the processor shuts down.
+Depending on the motherboard, this usually causes the computer to be rebooted.</p>
+</div>
+<div class="paragraph">
+<p>Exceptions can be divided in into four relevant classes: benign, contributory,
+page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_9" class="footnote" href="#_footnotedef_9" title="View footnote.">9</a>]</sup></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 14. Double exception handling</caption>
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">First exception</p></th>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 15. 286 exceptions</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Vector</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Class</th>
+<th class="tableblock halign-left valign-top">Error code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Divide by zero</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory<sup class="footnote">[<a id="_footnoteref_10" class="footnote" href="#_footnotedef_10" title="View footnote.">10</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single-step</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Breakpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Overflow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bounds range exceeded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Invalid opcode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor not present</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_11" class="footnote" href="#_footnotedef_11" title="View footnote.">11</a>]</sup></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor segment overrun<sup class="footnote">[<a id="_footnoteref_12" class="footnote" href="#_footnotedef_12" title="View footnote.">12</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Invalid TSS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">11</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Segment not present</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stack fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">General protection fault<sup class="footnote">[<a id="_footnoteref_13" class="footnote" href="#_footnotedef_13" title="View footnote.">13</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -2111,11 +2449,11 @@ that do not yet fully support AVX-512.</p>
   <ul>
   
     <li class="footnote" id="_footnotedef_1">
-      1. Early 486SX chips were actually 486DX chips with the FPU disabled.
+      1. Early 486SX chips are actually 486DX chips with the FPU disabled.
     </li>
   
     <li class="footnote" id="_footnotedef_2">
-      2. The 487SX was actually a full 486DX that disabled the 486SX completely.
+      2. The 487SX is actually a full 486DX that disabled the 486SX completely.
     </li>
   
     <li class="footnote" id="_footnotedef_3">
@@ -2123,7 +2461,7 @@ that do not yet fully support AVX-512.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_4">
-      4. The encoding for displacement zero is used to indicate   a direct offset. This means <code>[bp]</code> is encoded as <code>[bp+0]</code> and is not shorter   than <code>[bp+1]</code> (e.g. the encoding for <code>[si+0]</code> is shorter than <code>[si+1]</code>).
+      4. The encoding for displacement zero is used to indicate   a direct offset.   This means <code>[bp]</code> is encoded as <code>[bp+0]</code> and is not shorter than <code>[bp+1]</code>   (e.g. the encoding for <code>[si+0]</code> is shorter than <code>[si+1]</code>).
     </li>
   
     <li class="footnote" id="_footnotedef_5">
@@ -2131,7 +2469,35 @@ that do not yet fully support AVX-512.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_6">
-      6. Gate DPL is not checked if interrupt not caused by <code>int</code> instruction.
+      6. This also applies to real mode, where the 8086 behavior is emulated by updating the base value with the selector value times 16, instead of looking up a descriptor table. Other values, such as the limit are constant and are set to initial values, in order to replicate 8086 behavior. This means they can be changed by switching to protected mode, loading the segment registers with new descriptors and back to real mode. This is what unreal mode is.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_7">
+      7. Gate DPL is not checked if     interrupt not caused by <code>int</code> instruction.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_8">
+      8. This types terminology was introduced with the 386. The 286 manual differentiates between restartable (faults and traps) and non-restartable exceptions (aborts).
+    </li>
+  
+    <li class="footnote" id="_footnotedef_9">
+      9. The 286 manual does not use this terminology, instead it differentiates between protection violation and other, instead of contributory and benign.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_10">
+      10. This is not a "protection violation", so would be   considered benign, according to the 286 manual.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_11">
+      11. Always zero.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_12">
+      12. 486 and later never dispatch this exception.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_13">
+      13. With the 286, a segment limit overrun   during a string operation and writing into a read-only segment through <code>adc</code>,   <code>sbb</code>, <code>rcl</code> or <code>rcr</code> are not restartable and therefore aborts and not   faults.
     </li>
   
   </ul>
