@@ -56,6 +56,7 @@
 <li><a href="#_80186">3.2. 80186</a></li>
 <li><a href="#_80286">3.3. 80286</a></li>
 <li><a href="#_interrupts_and_task_switching">3.4. Interrupts and task switching</a></li>
+<li><a href="#_i386">3.5. i386</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -66,7 +67,16 @@
 <li><a href="#_avx">4.4. AVX</a></li>
 </ul>
 </li>
-<li><a href="#_external_links">5. External links</a></li>
+<li><a href="#_bit_manipulation_extensions">5. Bit manipulation extensions</a>
+<ul class="sectlevel2">
+<li><a href="#_abm">5.1. ABM</a></li>
+<li><a href="#_bmi1">5.2. BMI1</a></li>
+<li><a href="#_tbm">5.3. TBM</a></li>
+<li><a href="#_bmi2">5.4. BMI2</a></li>
+<li><a href="#_adx">5.5. ADX</a></li>
+</ul>
+</li>
+<li><a href="#_external_links">6. External links</a></li>
 </ul></div>
 <article>
 <h1 class="sect0">x86</h1>
@@ -1046,6 +1056,123 @@ Intel reserved the first 32 interrupts for future use (i.e. additional CPU
 exceptions).
 IBM did not heed that recommendation, causing compatibility issues.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. Near call stack</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2">Before</th>
+<th class="tableblock halign-left valign-top" colspan="2">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 2</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. Real mode far call stack</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2">Before</th>
+<th class="tableblock halign-left valign-top" colspan="2">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 2</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="2"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 4</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. Real mode interrupt stack</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2">Before</th>
+<th class="tableblock halign-left valign-top" colspan="2">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 2</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="3"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flags</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 4</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 6</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -1079,9 +1206,9 @@ These extensions consist of:</p>
 <div class="sect2">
 <h3 id="_80286">3.3. 80286</h3>
 <div class="paragraph">
-<p>The introduction of protected mode with the 286 was a major change to the x86
+<p>The introduction of protected mode with the 286 is a major change to the x86
 ISA.
-Protected mode introduced new data structures, mechanisms for virtual memory,
+Protected mode introduces new data structures, mechanisms for virtual memory,
 memory protection and hardware task switching.</p>
 </div>
 <div class="paragraph">
@@ -1118,12 +1245,12 @@ used.</p>
 </div>
 <div class="paragraph">
 <p>The 286 includes facilities for managing multiple tasks.
-The state of a task are stored in a <strong>Task State Segment (TSS)</strong>.
+The state of a task is stored in a <strong>Task State Segment (TSS)</strong>.
 Both LDT and TSS are segments, much regular segments, and have a corresponding
 entry in the GDT.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Segment selector format</caption>
+<caption class="title">Table 8. Segment selector format</caption>
 <colgroup>
 <col style="width: 6.25%;">
 <col style="width: 6.25%;">
@@ -1192,12 +1319,12 @@ RAM.
 The first entry of the GDT is reserved.
 Selectors referring to this entry are so-called <em>null selectors</em> and may be
 used as placeholder values for <code>ds</code> and <code>es</code>, but not <code>cs</code> and <code>ss</code>.
-Any attempt to access memory through a null selector, will result in a general
+Any attempt to access memory through a null selector results in a general
 protection fault.
-The IDT may only consist of task, interrupt or trap gates.</p>
+The IDT may only contain task, interrupt or trap gates.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. 286 segment descriptor format</caption>
+<caption class="title">Table 9. 286 segment descriptor format</caption>
 <colgroup>
 <col style="width: 15.7894%;">
 <col style="width: 5.2631%;">
@@ -1270,13 +1397,16 @@ This means a limit of 65535 indicates a segment of 65536 bytes, a limit
 of zero indicates a segment of one byte.
 For expand-down segments, it is lowest allowed offset address minus one
 (i.e. exclusive), with the maximum allowed offset being 65535.
+A limit of 65535 indicates an empty segment, a limit of zero indicates
+a segment of 65535 bytes.
 If the present bit is not set, this field may be used for other data.</p>
 </dd>
 <dt class="hdlist1">Base</dt>
 <dd>
-<p>Physical address of first byte of segment (equivalent to offset zero).
+<p>Physical address of the first byte of the segment (equivalent to offset
+zero).
 For expand-down segments, defines the first byte after the last byte
-of the segment (equivalent to offset zero).
+of the segment (also effectively equivalent to offset zero).
 If the present bit is not set, this field may be used for other data.</p>
 </dd>
 <dt class="hdlist1">Type</dt>
@@ -1300,7 +1430,7 @@ systems to implement swapping).</p>
 </dl>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Code and data segment types</caption>
+<caption class="title">Table 10. Code and data segment types</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1353,7 +1483,7 @@ were used.</p>
 </dl>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. 286 system segment types</caption>
+<caption class="title">Table 11. 286 system segment types</caption>
 <colgroup>
 <col style="width: 6.6666%;">
 <col style="width: 6.6666%;">
@@ -1452,7 +1582,7 @@ were used.</p>
 LDT and TSS segments).</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. 286 gate descriptor format</caption>
+<caption class="title">Table 12. 286 gate descriptor format</caption>
 <colgroup>
 <col style="width: 15.7894%;">
 <col style="width: 5.2631%;">
@@ -1526,12 +1656,12 @@ LDT and TSS segments).</p>
 <dt class="hdlist1">Segment</dt>
 <dd>
 <p>target segment selector (must point to code segment for call,
-interrupt and trap gates and TSS for task gates, RPL is ignored by
+interrupt and trap gates and TSS for task gates; RPL is ignored by
 call gates)</p>
 </dd>
 <dt class="hdlist1">Word count</dt>
 <dd>
-<p>amount of words to push (call gates only, reserved for all other
+<p>amount of words to push (call gates only; reserved for all other
 kinds of gate)</p>
 </dd>
 </dl>
@@ -1559,11 +1689,11 @@ GDT.</p>
 visible 16-bit selector part.
 The <code>gdtr</code> and <code>ldtr</code> are effectively 48-bit registers and may be set using the
 <code>lgdt</code> and <code>lidt</code> instructions respectively, which take a pointer to a 6 byte
-structure called a <em>pseudo-descriptor</em>, that is similar to a regular segment
+structure called a <em>pseudo-descriptor</em> that is similar to a regular segment
 descriptor, due to having base and limit fields.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. Pseudo-descriptor format</caption>
+<caption class="title">Table 13. Pseudo-descriptor format</caption>
 <colgroup>
 <col style="width: 15.7894%;">
 <col style="width: 5.2631%;">
@@ -1653,7 +1783,7 @@ determines the highest CPL allowed to do direct I/O within the current task.</p>
 </ul>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. 286 <code>flags</code></caption>
+<caption class="title">Table 14. 286 <code>flags</code></caption>
 <colgroup>
 <col style="width: 6.25%;">
 <col style="width: 6.25%;">
@@ -1713,14 +1843,16 @@ determines the highest CPL allowed to do direct I/O within the current task.</p>
 </tbody>
 </table>
 <div class="paragraph">
-<p>Certain instructions, such as <code>lgdt</code> can only be used if the CPL is 0.
+<p>Certain instructions, such as <code>lgdt</code>, can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
-checking segment limits, restricting writing a read-only data segment or code
-segment and reading a execute-only code segment through a <code>cs</code> override.</p>
+checking segment limits, restricting writing a code segment or read-only data
+segment, and restricting reading an execute-only code segment through a <code>cs</code>
+override.</p>
 </div>
 <div class="paragraph">
-<p>Before accessing a segment, a segment register must first be set, so the CPU
-can perform most privilege checks at that point.
+<p>Before accessing a segment, a segment register must first be set.
+This CPU means the can perform most privilege checks at that point, instead of
+every time memory is read or written.
 The particular privilege level checks depends on how the segment register is
 set and the type of descriptor the selector points to.</p>
 </div>
@@ -1729,7 +1861,7 @@ set and the type of descriptor the selector points to.</p>
 In general, these registers must be loaded with data segments or readable code
 segments with the DPL higher or equal to the EPL.
 However, different rules may apply (see table, e.g. <code>ss</code> must always point to a
-writable segment with).</p>
+writable segment with DPL equal to CPL).</p>
 </div>
 <div class="paragraph">
 <p><code>ldtr</code> and <code>tr</code> can only be changed explicitly in Ring 0 using the <code>lldt</code> and
@@ -1740,7 +1872,7 @@ The <code>tr</code> must be loaded with a selector pointing to a valid TSS descr
 the GDT.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. Conditions for successful update of segment registers</caption>
+<caption class="title">Table 15. Conditions for successful update of segment registers</caption>
 <colgroup>
 <col style="width: 12.5%;">
 <col style="width: 12.5%;">
@@ -1754,30 +1886,30 @@ the GDT.</p>
 <tbody>
 <tr>
 <th class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Mechanism</p></th>
-<th class="tableblock halign-left valign-top" colspan="6"><p class="tableblock">Target</p></th>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data segment</p></td>
+<th class="tableblock halign-left valign-top" colspan="7"><p class="tableblock">Target</p></th>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data segment</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Nonconforming code segment</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Conforming code segment</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Call gate to nonconforming code segment</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Call gate to conforming code segment</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">TSS or task gate</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Interrupt or trap gate</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ds</code> or <code>es</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ds</code> or <code>es</code></p></td>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>DPL &gt;= EPL</code> and readable</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">readable</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ss</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ss</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>DPL == RPL == CPL</code> and writable</p></td>
 <td class="tableblock halign-left valign-top" colspan="6"><p class="tableblock">Disallowed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>jmp</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>jmp</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="3"><p class="tableblock">Disallowed</p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL == CPL &amp;&amp; RPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL &lt;= CPL</code></p></td>
@@ -1785,26 +1917,42 @@ the GDT.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>gate DPL &gt;= tss EPL</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Disallowed</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>call</code> or <code>int</code></p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>call</code> or <code>int</code></p></td>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; cs DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup></p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through <code>retf</code> or <code>iret</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>RPL &gt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
 </tr>
 </tbody>
 </table>
 <div class="paragraph">
-<p>Segment registers may be changed implicitly, through instructions (and
+<p>Segment registers may be changed implicitly through instructions (and
 interrupts) that pass control flow to another code segment.
-Not only the <code>cs</code> and <code>ip</code> may be changed.
+A control transfer to a nonconforming code segment, results in the CPL being
+set to the DPL of the incoming code segment.
+A control transfer to a conforming code segment results in no change in DPL.
+Not just <code>cs</code> and <code>ip</code> may be changed as a result of a transfer to another code
+segment.
 If the operation results in a change in CPL, the stack is also switched
-(meaning a change in <code>ss</code> and <code>sp</code>).
-If the operation results in a change in tasks, most CPU registers are also
-changed.
-These include far <code>jmp</code> and <code>call</code>, which provide a far pointer, or an
-interrupt (that can be caused by an <code>int</code> instruction), which provides an
-interrupt number.
+(meaning a change in <code>ss</code> and <code>sp</code>).</p>
+</div>
+<div class="paragraph">
+<p>Control transfers may also target a TSS, instead of a code segment, resulting
+in a task switch, with the task described by the TSS being resumed and the
+state of the outgoing task being saved in the TSS of the outgoing task.
+This results in most CPU registers (including <code>ldtr</code>) being changed and the
+incoming task resuming at the state described by its TSS (including the CPL,
+which is stored in the RPL field of <code>cs</code> and <code>ss</code>).</p>
+</div>
+<div class="paragraph">
+<p>Operations that result in a change of code segment include far <code>jmp</code> and
+<code>call</code>, which provide a far pointer, or an interrupt (that can be caused by an
+<code>int</code> instruction), which provides an interrupt number.
 Either way, these point to an unique segment descriptor.
 The segment selector of the far pointer points to a segment descriptor in the
 GDT or LDT, while the interrupt number points to a segment descriptor in the
@@ -1822,8 +1970,8 @@ a general protection fault).</p>
 <p>If a code segment is targeted, control is transferred to that code segment at
 the offset provided as the operand of the instruction (assuming no protection
 violations or other faults).
-As with <code>jmp</code> instructions, a <code>call</code> instruction may not target a code
-segment that would result in a change of CPL.
+As with <code>jmp</code> instructions, a <code>call</code> instruction directly targeting a code
+segment may result in a change of CPL (i.e. it must be a "intra-level" call).
 <code>call</code> behaves similar to real mode, in the sense that it pushes a far
 pointer to stack for <code>retf</code> to pop.</p>
 </li>
@@ -1832,7 +1980,7 @@ pointer to stack for <code>retf</code> to pop.</p>
 offset provided by the call gate descriptor, the offset provided by the
 instruction is ignored.
 A <code>call</code> to a call gate allows control to be transferred from less privileged
-code to more privileged code (i.e. the CPL gets lower).
+code to more privileged code (i.e. the CPL gets lower, "inter-level call").
 If a change in CPL occurs, a stack switch to the stack corresponding to the
 new protection Ring, as defined in the TSS.
 If a stack switch occurs, the processor first pushes <code>ss</code>, <code>sp</code>, then copies
@@ -1876,10 +2024,112 @@ The RPL of that selector indicates the CPL of the caller.
 If the RPL equals the CPL, no CPL change is necessary and the <code>retf</code>
 instruction behaves like the <code>retf</code> instruction in real mode.
 Otherwise, a stack switch occurs by restoring the caller <code>sp</code> and <code>ss</code> on the
-callee stack.</p>
+callee stack.
+In addition <code>retf</code> checks the DPL of <code>ds</code> and <code>es</code> and sets them to null
+selectors if they are lower than the caller CPL.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 13. 286 TSS structure</caption>
+<caption class="title">Table 16. 16-bit intra-level far call stack</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2">Before</th>
+<th class="tableblock halign-left valign-top" colspan="2">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 2</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="2"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 4</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 17. 16-bit inter-level call gate stack</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Caller stack</p></th>
+<th class="tableblock halign-left valign-top" rowspan="8"></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Callee stack</p></th>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 10</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 8</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameter 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2" rowspan="2"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 18. 286 TSS structure</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -1999,7 +2249,8 @@ of the selector to 3 (which is the maximum of CPL 3 and RPL 0).
 The procedure with CPL 0 also invokes <code>arpl</code> and the RPL of the selector
 remains 3 (which is the maximum of CPL 2 and RPL 3).
 Throughout all the stages, the EPL remains 3, which means a general protection
-fault will be raised, even in Ring 0, since the EPL is larger than the DPL.</p>
+fault will be raised when accessing this pointer, even in Ring 0, since the EPL
+is larger than the DPL.</p>
 </div>
 </div>
 </div>
@@ -2025,13 +2276,13 @@ gate does not.</p>
 <li>
 <p>If the target is a task gate, it resumes the task described by the TSS the
 task gate points to, much like a <code>call</code> instruction.
-The interrupt flag is cleared.</p>
+The interrupt flag of the incoming task is cleared.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>In order to keep track of what interrupts and far calls were serviced by a task
-gate, the CPU maintains a <em>nested task (NT) flag</em>.
+gate, the CPU maintains the <em>nested task (NT) flag</em>.
 Whenever a task switch due to an interrupt and call occurs, the NT flag of the
 new task is set and the "previous TSS" field of the incoming task is filled
 with the TSS selector of the outgoing task.
@@ -2053,10 +2304,200 @@ instructions and interrupts result in the outgoing task remaining busy.
 <p>The behavior of <code>iret</code> depends on the NT flag.
 If the NT flag is cleared, <code>iret</code> behaves in a similar way to <code>retf</code>, except
 that the <code>flags</code> register (which was pushed on to the stack) is restored.
+The IOPL is only changed, if the callee is at Ring 0.
 If the NT flag is set, indicating an interrupt or call to a task gate, <code>iret</code>
 causes a task switch to the task pointed to by the selector in the "previous
 TSS" field (i.e. the caller task).</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 19. 16-bit intra-level interrupt or trap gate stack (without error code)</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2">Before</th>
+<th class="tableblock halign-left valign-top" colspan="2">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 2</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="4"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flags</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 4</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 6</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 20. 16-bit intra-level interrupt or trap gate stack (with error code)</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2">Before</th>
+<th class="tableblock halign-left valign-top" colspan="2">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 8</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 2</code></p></td>
+<td class="tableblock halign-left valign-top" rowspan="4"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flags</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 4</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 6</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp - 8</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Error code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 21. 16-bit inter-level interrupt or trap gate stack (without error code)</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Caller stack</p></th>
+<th class="tableblock halign-left valign-top" rowspan="8"></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Callee stack</p></th>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 8</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2" rowspan="4"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flags</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 22. 16-bit inter-level interrupt or trap gate stack (with error code)</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Caller stack</p></th>
+<th class="tableblock halign-left valign-top" rowspan="8"></th>
+<th class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Callee stack</p></th>
+</tr>
+<tr>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Content</p></th>
+<th class="tableblock halign-left valign-top"><p class="tableblock">Address</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Caller stack</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 10</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2" rowspan="5"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 8</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>flags</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 6</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 4</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ip</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp + 2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Error code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sp</code></p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p>The 286 introduced a plethora of new exceptions.
 Protected mode exceptions may push a 16-bit error code on top of the stack.
@@ -2066,7 +2507,7 @@ Exceptions are classified in three types:<sup class="footnote">[<a id="_footnote
 <dl>
 <dt class="hdlist1">Fault</dt>
 <dd>
-<p>Indicates an non-critical error has happened.
+<p>Indicates a non-critical error has happened.
 These errors can be corrected and the program can be restarted at the
 faulting instruction.</p>
 </dd>
@@ -2082,8 +2523,8 @@ trapping instruction.</p>
 </dl>
 </div>
 <div class="paragraph">
-<p>When an exception occurs while a exception handler is being dispatched, the
-result depends on the kind of exceptions.
+<p>When an exception occurs while an exception handler is being dispatched, the
+result depends on the kind of exception.
 It may either handle them serially, dispatch a <strong>dobule fault</strong> or enter a
 <strong>triple fault</strong>.
 When a triple fault occurs, the processor shuts down.
@@ -2094,18 +2535,51 @@ Depending on the motherboard, this usually causes the computer to be rebooted.</
 page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_9" class="footnote" href="#_footnotedef_9" title="View footnote.">9</a>]</sup></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 14. Double exception handling</caption>
+<caption class="title">Table 23. Double exception handling</caption>
 <colgroup>
-<col style="width: 100%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
 </colgroup>
 <tbody>
 <tr>
 <th class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">First exception</p></th>
+<th class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Second exception</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triple fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triple fault</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 15. 286 exceptions</caption>
+<caption class="title">Table 24. 286 exceptions</caption>
 <colgroup>
 <col style="width: 20%;">
 <col style="width: 20%;">
@@ -2209,13 +2683,124 @@ page fault (introduced with the 386) and double fault.<sup class="footnote">[<a 
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">13</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">General protection fault<sup class="footnote">[<a id="_footnoteref_13" class="footnote" href="#_footnotedef_13" title="View footnote.">13</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">General protection fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault<sup class="footnote">[<a id="_footnoteref_13" class="footnote" href="#_footnotedef_13" title="View footnote.">13</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
 </tr>
 </tbody>
 </table>
+<div class="sect3">
+<h4 id="_machine_status_word">3.4.1. Machine Status Word</h4>
+<div class="paragraph">
+<p>The 286 also introduced a new register called the <em>Machine Status Word (<code>msw</code>)</em>,
+which can only be read and modified in Ring 0 through the <code>lmsw</code> and <code>smsw</code>
+instructions.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 25. 286 <code>flags</code></caption>
+<colgroup>
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PE</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Protection enabled (PE)</dt>
+<dd>
+<p>Set for protected mode; clear for real mode.
+May not be cleared once set on a 286 (later processors
+allow returning back to real mode)</p>
+</dd>
+<dt class="hdlist1">Monitor coprocessor (MP)</dt>
+<dd>
+<p>Raises coprocessor not present exception (interrupt
+7) on <code>wait</code>.</p>
+</dd>
+<dt class="hdlist1">Emulate coprocessor (EM)</dt>
+<dd>
+<p>Raises coprocessor not present exception on <code>esc</code>
+(i.e. on every floating-point instruction).</p>
+</dd>
+<dt class="hdlist1">Task switched (TS)</dt>
+<dd>
+<p>Raises coprocessor not present exception on <code>esc</code>.
+Automatically set when task is switched, so that the
+operating system is able to switch the x87 context for
+tasks using floating-point instructions.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>MP, EM and TS also affect non-x87 instructions that access x87 and SSE
+registers (i.e. MMX and SSE instructions).</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_i386">3.5. i386</h3>
+<div class="paragraph">
+<p>The 386 introduced 32-bit extensions, paging and the ability to return to real
+mode, in addition to new instructions and operand modes.</p>
+</div>
+<div class="sect3">
+<h4 id="_32_bit_registers_and_addressing">3.5.1. 32-bit registers and addressing</h4>
+
+</div>
 </div>
 </div>
 </div>
@@ -2247,7 +2832,7 @@ that are addressed as <code>st(0)</code> to <code>st(7)</code> relative to the t
 <p><strong>Multimedia Extensions (MMX)</strong> is a SIMD (single instruction; multiple data)
 extension introduced in 1997 with the Pentium MMX.
 AMD first implemented MMX in the K6 in 1997.
-MMX supported only integer math and operated on aliases to the 64-bit
+MMX only supported integer math and operated on aliases to the 64-bit
 significand part of the x87 registers, called <code>mm0</code> to <code>mm7</code>.
 Unlike x87, MMX can addresses those registers directly, without a stack
 pointer.
@@ -2259,16 +2844,12 @@ same time.</p>
 <div class="paragraph">
 <p>In 1998, AMD introduced <strong>3DNow!</strong> with the K6-2.
 This extended MMX to introduce support for operations on 32-bit floating-point
-data.</p>
-</div>
-<div class="paragraph">
-<p>AMD introduced an extended version of 3DNow! in 1999 with the original Athlon.
+data.
+AMD introduced an extended version of 3DNow! in 1999 with the original Athlon.
 This also included a subset of new MMX integer instructions introduced with
-SEE.</p>
-</div>
-<div class="paragraph">
-<p>Starting with AMD "Bulldozer" CPUs, 3DNow! is no longer supported (except for
-two instructions that are also found in newer Intel processors).</p>
+SEE.
+Starting with AMD Bulldozer CPUs, 3DNow! is no longer supported (except for two
+instructions that are also found in newer Intel processors).</p>
 </div>
 </div>
 </div>
@@ -2287,8 +2868,8 @@ can each store four 32-bit floating-point numbers.</p>
 <h4 id="_sse2">4.3.1. SSE2</h4>
 <div class="paragraph">
 <p><strong>SSE2</strong>, also known as <em>Willamette New Instructions (WNI)</em>, was introduced in 2000
-with the Intel Penium 4 and AMD first implemented it with the x86-64 Opteron in
-2003.
+with the Intel Penium 4.
+AMD first implemented it with the x86-64 Opteron in 2003.
 SSE2 adds support for 64-bit floating-point numbers and integers of sizes
 ranging from 8-bit to 64-bit, through MMX-like instructions on SSE registers.
 Thus, it is a full replacement of MMX and a partial replacement for x87 (though
@@ -2303,7 +2884,7 @@ Infact, SSE2 with 16 registers is mandatory for every x86-64 implementation.</p>
 <div class="sect3">
 <h4 id="_sse3">4.3.2. SSE3</h4>
 <div class="paragraph">
-<p><strong>SSE3</strong>, also known as <em>Prescott New Instructions (PNI)</em> was introduced by Intel
+<p><strong>SSE3</strong>, also known as <em>Prescott New Instructions (PNI)</em>, was introduced by Intel
 in 2004 with the Prescott Pentium 4 and by AMD in 2005 with the Athlon XP
 Revision E.
 This extension introduced support for "horizontal" operations between values in
@@ -2314,7 +2895,7 @@ the same register.</p>
 <h4 id="_ssse3">4.3.3. SSSE3</h4>
 <div class="paragraph">
 <p><strong>Supplementary Streaming SMD Extenions 3 (SSSE3)</strong>, also known as <em>Merom New
-Instructions (MNI)</em> was first implemented by Intel in 2006 with Woodcrest Xeons
+Instructions (MNI)</em>, was first implemented by Intel in 2006 with Woodcrest Xeons
 and by AMD with Bulldozer AMD FX CPUs in 2011.
 It is not to be confused with SSE4.</p>
 </div>
@@ -2335,12 +2916,9 @@ SSE4.2 added string search and comparison instructions and a CRC32 instruction.<
 <p>AMD introduced its own subset of SSE4, <strong>SSE4A</strong>, with the K10 in 2007.
 SSE4A introduces four instructions not available on any Intel processor.
 AMD started supporting the full SSE4 instruction set with the Bulldozer
-architecture in 2011.</p>
-</div>
-<div class="paragraph">
-<p>With SSE4, AMD also introduced greater support for operations with misaligned
-data.
-These new instructions were implemented by Intel with AVX.</p>
+architecture in 2011.
+With SSE4A, AMD also introduced greater support for operations with misaligned
+data, which is supported by Intel since AVX.</p>
 </div>
 </div>
 <div class="sect3">
@@ -2375,18 +2953,18 @@ No Intel CPU implemented XOP and AMD dropped support with Zen in 2017.</p>
 <div class="sect3">
 <h4 id="_fma">4.3.8. FMA</h4>
 <div class="paragraph">
-<p>There exist to variants of <strong>Fused Multiply-Add (FMA)</strong>: the three-operand <strong>FMA3</strong>
-and the four-operand <strong>FMA4</strong>.
+<p>There exist two variants of <strong>Fused Multiply-Add (FMA)</strong>: the three-operand
+<strong>FMA3</strong> and the four-operand <strong>FMA4</strong>.
 The original instructions in SSE5 were three-operand DREX-encoded.
 Intel’s original AVX specification specified a VEX-encoded four-operand
 version (FMA4).
 Later, Intel changed it to a three-operand VEX-encoded version (FMA3).</p>
 </div>
 <div class="paragraph">
-<p>AMD first implemented FMA4 with Bulldozer in 2011 and FMA4 with Piledriver in
-2013.
+<p>AMD first implemented FMA4 with Bulldozer in 2011 and FMA3 with Piledriver in
+2012.
 Intel never implemented FMA4 and implemented FMA3 with Haswell in 2013.
-AMD officially dropped support for FMA4 with Zen in 2017.</p>
+AMD dropped official support for FMA4 with Zen in 2017.</p>
 </div>
 </div>
 </div>
@@ -2432,7 +3010,55 @@ that do not yet fully support AVX-512.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_external_links">5. External links</h2>
+<h2 id="_bit_manipulation_extensions">5. Bit manipulation extensions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Newer x86 implementations support non-SIMD <strong>bit manipulation instructions sets
+(BMI)</strong>, that operate on general-purpose registers.</p>
+</div>
+<div class="sect2">
+<h3 id="_abm">5.1. ABM</h3>
+<div class="paragraph">
+<p><strong>Advanced Bit Manipulation (ABM)</strong> consists of the instructions <code>popcnt</code> and
+<code>lzcnt</code>, and was introduced by AMD with SSE4A.
+Intel introduced <code>popcnt</code> as part of SSE4.2 and <code>lzcnt</code> as part of BMI1.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bmi1">5.2. BMI1</h3>
+<div class="paragraph">
+<p><strong>Bit Manipulation Instruction Set 1 (BMI1)</strong> was introduced by AMD with
+Piledriver in 2012 and implemented by Intel with Haswell in 2013.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tbm">5.3. TBM</h3>
+<div class="paragraph">
+<p><strong>Trailing Bit Manipulation (TBM)</strong> was introduced by AMD with Piledriver in 2012
+and was never implemented by Intel.
+Zen-based processors do not support TBM.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_bmi2">5.4. BMI2</h3>
+<div class="paragraph">
+<p><strong>Bit Manipulation Instruction Set 2 (BMI1)</strong> was introduced by Intel with
+Haswell in 2013 and supported by AMD since Excavator in 2015.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adx">5.5. ADX</h3>
+<div class="paragraph">
+<p><strong>Multi-Precision Add-Carry Instruction Extensions (ADX)</strong> is an extension
+introduced by Intel with Broadwell in 2014 and supported by AMD since Zen in
+2017.
+It introduces instructions for the efficient adding of large integers.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_external_links">6. External links</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -2469,7 +3095,7 @@ that do not yet fully support AVX-512.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_6">
-      6. This also applies to real mode, where the 8086 behavior is emulated by updating the base value with the selector value times 16, instead of looking up a descriptor table. Other values, such as the limit are constant and are set to initial values, in order to replicate 8086 behavior. This means they can be changed by switching to protected mode, loading the segment registers with new descriptors and back to real mode. This is what unreal mode is.
+      6. This also applies to real mode, where the 8086 behavior is emulated by updating the base value with the segment address times 16, instead of looking up a descriptor table. Other values, such as the limit are constant and are set to initial values, in order to replicate 8086 behavior. This means they can be changed by switching to protected mode, loading the segment registers with new descriptors and back to real mode. This is what unreal mode is.
     </li>
   
     <li class="footnote" id="_footnotedef_7">
@@ -2497,7 +3123,7 @@ that do not yet fully support AVX-512.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_13">
-      13. With the 286, a segment limit overrun   during a string operation and writing into a read-only segment through <code>adc</code>,   <code>sbb</code>, <code>rcl</code> or <code>rcr</code> are not restartable and therefore aborts and not   faults.
+      13. With the 286, a segment limit overrun during a string   operation and writing into a read-only segment through <code>adc</code>, <code>sbb</code>, <code>rcl</code> or   <code>rcr</code> are not restartable and therefore aborts and not faults.
     </li>
   
   </ul>
