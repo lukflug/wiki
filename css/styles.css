@@ -23,6 +23,7 @@
 	--foreground: var(--white0);
 	--foreground-hc: var(--whitef);
 	--background: var(--black0);
+	--background-alternate: var(--black1);
 	--background-code: var(--black1);
 	--background-active: var(--cyan2);
 	--background-admonition: var(--black1);
@@ -49,6 +50,7 @@ html, body {
 		--foreground-hc: var(--blackf);
 		--background-active: var(--cyan1);
 		--background-admonition: var(--white0);
+		--background-alternate: var(--white0);
 		--background-input: var(--white1);
 		--accent: var(--black1);
 		--links: var(--blue0);
@@ -193,4 +195,17 @@ footer > a {
 
 .admonitionblock.important td.icon {
 	background-color: var(--red0);
+}
+
+table.tableblock tbody > tr:nth-child(odd) {
+	background-color: var(--background-alternate);
+}
+
+table.tableblock,
+table.tableblock th,
+table.tableblock td {
+	margin: 0;
+	padding: 4px;
+	border: 1px solid var(--accent);
+	border-collapse: collapse;
 }
