@@ -459,9 +459,10 @@ values:
 * *displacement* - a constant value (encoding allows either zero, a
   sign-extended byte or a word)
 
-The result of the computation is called the *effective address* (one may write
-`[base + index + displacement]` to refer to the corresponding memory address,
-or `[segment:base + index + displacement]` when using a segment override).
+The result of the computation is called the *effective address (EA)* (one may
+write `[base + index + displacement]` to refer to the corresponding memory
+address, or `[segment:base + index + displacement]` when using a segment
+override).
 The default segment is `ds`, except when the base is `bp`, in which case it is
 `ss`.
 
@@ -718,6 +719,9 @@ DPL:: Descriptor privilege level.
 Present bit:: Zero indicates the segment is invalid (intended for operating
               systems to implement swapping).
 
+The fifth byte of a descriptor (i.e. the type, S, DPL and P fields) is known as
+the *access byte*.
+
 .Code and data segment types
 [cols="4*"]
 |===
@@ -844,7 +848,8 @@ levels that are taken into account:
   segment selector (i.e. bits 0 and 1 of the segment selector).
 * The __effective privilege level (EPL)__ is the maximum of the CPL and RPL.
 * The __I/O privilege level (IOPL)__ is a value in the `flags` register that
-  determines the highest CPL allowed to do direct I/O within the current task.
+  determines the highest CPL allowed to do direct I/O and to set and clear the
+  interrupt flag (`cli` and `sti`) within the current task.
 
 .286 `flags`
 [cols="16*"]
@@ -1323,9 +1328,9 @@ exception.]
 |===
 
 ==== Machine Status Word
-The 286 also introduced a new register called the _Machine Status Word (`msw`)_,
-which can only be read and modified in Ring 0 through the `lmsw` and `smsw`
-instructions.
+The 286 also introduced a new 16-bit register called the _Machine Status Word
+(`msw`)_, which can only be directly modified in Ring 0 through the `lmsw` and
+`clts` instructions.
 
 .286 Machine Status Word
 .286 `flags`
@@ -1338,24 +1343,86 @@ instructions.
 
 Protection enabled (PE):: Set for protected mode; clear for real mode.
                           May not be cleared once set on a 286 (later processors
-                          allow returning back to real mode)
+                          allow returning back to real mode).
 Monitor coprocessor (MP):: Raises coprocessor not present exception (interrupt
-                           7) on `wait`.
+                           7) on `wait`, if MP _and_ TS are set.
 Emulate coprocessor (EM):: Raises coprocessor not present exception on `esc`
-                           (i.e. on every floating-point instruction).
-Task switched (TS):: Raises coprocessor not present exception on `esc`.
+                           (i.e. on every floating-point instruction), if set.
+Task switched (TS):: Raises coprocessor not present exception on `esc`, if set.
                      Automatically set when task is switched, so that the
                      operating system is able to switch the x87 context for
                      tasks using floating-point instructions.
+                     May be cleared again via `clts`.
 
-MP, EM and TS also affect non-x87 instructions that access x87 and SSE
-registers (i.e. MMX and SSE instructions).
+MP, EM and TS also affect most MMX, 3DNow! and SSE instructions on later CPUs.
 
 === i386
 The 386 introduced 32-bit extensions, paging and the ability to return to real
 mode, in addition to new instructions and operand modes.
 
 ==== 32-bit registers and addressing
+The 386 expanded many registers to 32-bit registers.
+These new dword-sized registers have the corresponding word-sized register
+aliased to its lower word.
+The new registers have an "e" prefix, to differentiate them from their 16-bit
+counterpart.
+For example, `eax` is a 32-bit register, with `ax` aliasing to the lower word.
+Similarly `ebx`, `ecx`, `edx`, `esi`, `edi`, `esp`, `ebp`, `eflags` and `eip`
+were added.
+
+Segment registers and selectors remain word-sized, however offset sizes are
+expanded to 32-bit, yielding a 48-bit logical address.
+Two new data segment registers, similar to `ds` and `es`, that can be used with
+the corresponding segment override prefix, were introduced: `fs` and `gs`.
+
+In addition to adding 32-bit variants to certain instructions (such as adding
+`lodsd` to complement `lodsw` and `lodsb`), the 386 introduced new instructions
+and instruction modes, in order to make the instruction set more orthogonal.
+For example, `lss`, `lfs` and `lgs` instructions, in addition to the existing
+`lds` and `les` instructions, new modes for `imul`, and near conditional jumps
+(in addition to existing short conditional jumps) were added.
+Completely new instructions were also added, such as instructions to sign
+extend and zero extend smaller registers into larger registers `movsx` and
+`movzx`.
+
+The 386 decides whether to use 32-bit or 16-bit registers based on the current
+code segment.
+A 32-bit code segment interprets instructions as operations on 32-bit and
+8-bit registers and memory locations and used 32-bit offsets.
+A 16-bit code segment interprets instructions as operations on 16-bit and
+8-bit registers and memory locations and used 16-bit offsets, in the same way
+as previous 16-bit processors of the x86 line.
+16-bit operands and addresses can be used in a 32-bit code segment and vice
+versa using the *operand size prefix* and *address size prefix*.
+
+32-bit effective addresses are significantly more orthogonal as their 16-bit
+counterparts.
+As with 16-bit addresses, 32-bit addresses may have a base, an index and a
+displacement.
+In addition, a *scale* may be added, that is multiplied with the index.
+
+* base - any 32-bit general-purpose register (`eax`, `ebx`, `ecx`, `edx`, `esi`.
+  `edi`, `ebp`, `esp`)
+* index - any 32-bit general-purpose register, except `esp` (`eax`, `ebx`,
+  `ecx`, `edx`, `esi`, `edi`, `ebp`)
+* scale - 1, 2, 4 or 8
+* displacement - zero, 8-bit sign extended value or 32-bit value
+
+Following combinations are allowed:
+
+* `displacement` alone
+* `base` alone
+* `base + displacement`
+* `index * scale + displacement`
+* `base + index + displacement`
+* `base + index * scale + displacement`
+
+The default segment is `ds`, except if the base is `ebp` or `esp`, in which
+case the default segment is `ss`.
+
+=== 32-bit segmentation
+In order to deal with 32-bit addresses and the extended 32-bit physical address
+space, the 386 introduces backwards-compatible changes to segmentation.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
@@ -1524,7 +1591,7 @@ and was never implemented by Intel.
 Zen-based processors do not support TBM.
 
 === BMI2
-*Bit Manipulation Instruction Set 2 (BMI1)* was introduced by Intel with
+*Bit Manipulation Instruction Set 2 (BMI2)* was introduced by Intel with
 Haswell in 2013 and supported by AMD since Excavator in 2015.
 
 === ADX
