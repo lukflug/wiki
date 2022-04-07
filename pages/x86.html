@@ -57,6 +57,7 @@
 <li><a href="#_80286">3.3. 80286</a></li>
 <li><a href="#_interrupts_and_task_switching">3.4. Interrupts and task switching</a></li>
 <li><a href="#_i386">3.5. i386</a></li>
+<li><a href="#_32_bit_segmentation">3.6. 32-bit segmentation</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -827,9 +828,10 @@ sign-extended byte or a word)</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The result of the computation is called the <strong>effective address</strong> (one may write
-<code>[base + index + displacement]</code> to refer to the corresponding memory address,
-or <code>[segment:base + index + displacement]</code> when using a segment override).
+<p>The result of the computation is called the <strong>effective address (EA)</strong> (one may
+write <code>[base + index + displacement]</code> to refer to the corresponding memory
+address, or <code>[segment:base + index + displacement]</code> when using a segment
+override).
 The default segment is <code>ds</code>, except when the base is <code>bp</code>, in which case it is
 <code>ss</code>.</p>
 </div>
@@ -1429,6 +1431,10 @@ systems to implement swapping).</p>
 </dd>
 </dl>
 </div>
+<div class="paragraph">
+<p>The fifth byte of a descriptor (i.e. the type, S, DPL and P fields) is known as
+the <strong>access byte</strong>.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 10. Code and data segment types</caption>
 <colgroup>
@@ -1778,7 +1784,8 @@ segment selector (i.e. bits 0 and 1 of the segment selector).</p>
 </li>
 <li>
 <p>The <em>I/O privilege level (IOPL)</em> is a value in the <code>flags</code> register that
-determines the highest CPL allowed to do direct I/O within the current task.</p>
+determines the highest CPL allowed to do direct I/O and to set and clear the
+interrupt flag (<code>cli</code> and <code>sti</code>) within the current task.</p>
 </li>
 </ul>
 </div>
@@ -2693,9 +2700,9 @@ page fault (introduced with the 386) and double fault.<sup class="footnote">[<a 
 <div class="sect3">
 <h4 id="_machine_status_word">3.4.1. Machine Status Word</h4>
 <div class="paragraph">
-<p>The 286 also introduced a new register called the <em>Machine Status Word (<code>msw</code>)</em>,
-which can only be read and modified in Ring 0 through the <code>lmsw</code> and <code>smsw</code>
-instructions.</p>
+<p>The 286 also introduced a new 16-bit register called the <em>Machine Status Word
+(<code>msw</code>)</em>, which can only be directly modified in Ring 0 through the <code>lmsw</code> and
+<code>clts</code> instructions.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 25. 286 <code>flags</code></caption>
@@ -2764,30 +2771,30 @@ instructions.</p>
 <dd>
 <p>Set for protected mode; clear for real mode.
 May not be cleared once set on a 286 (later processors
-allow returning back to real mode)</p>
+allow returning back to real mode).</p>
 </dd>
 <dt class="hdlist1">Monitor coprocessor (MP)</dt>
 <dd>
 <p>Raises coprocessor not present exception (interrupt
-7) on <code>wait</code>.</p>
+7) on <code>wait</code>, if MP <em>and</em> TS are set.</p>
 </dd>
 <dt class="hdlist1">Emulate coprocessor (EM)</dt>
 <dd>
 <p>Raises coprocessor not present exception on <code>esc</code>
-(i.e. on every floating-point instruction).</p>
+(i.e. on every floating-point instruction), if set.</p>
 </dd>
 <dt class="hdlist1">Task switched (TS)</dt>
 <dd>
-<p>Raises coprocessor not present exception on <code>esc</code>.
+<p>Raises coprocessor not present exception on <code>esc</code>, if set.
 Automatically set when task is switched, so that the
 operating system is able to switch the x87 context for
-tasks using floating-point instructions.</p>
+tasks using floating-point instructions.
+May be cleared again via <code>clts</code>.</p>
 </dd>
 </dl>
 </div>
 <div class="paragraph">
-<p>MP, EM and TS also affect non-x87 instructions that access x87 and SSE
-registers (i.e. MMX and SSE instructions).</p>
+<p>MP, EM and TS also affect most MMX, 3DNow! and SSE instructions on later CPUs.</p>
 </div>
 </div>
 </div>
@@ -2799,7 +2806,105 @@ mode, in addition to new instructions and operand modes.</p>
 </div>
 <div class="sect3">
 <h4 id="_32_bit_registers_and_addressing">3.5.1. 32-bit registers and addressing</h4>
-
+<div class="paragraph">
+<p>The 386 expanded many registers to 32-bit registers.
+These new dword-sized registers have the corresponding word-sized register
+aliased to its lower word.
+The new registers have an "e" prefix, to differentiate them from their 16-bit
+counterpart.
+For example, <code>eax</code> is a 32-bit register, with <code>ax</code> aliasing to the lower word.
+Similarly <code>ebx</code>, <code>ecx</code>, <code>edx</code>, <code>esi</code>, <code>edi</code>, <code>esp</code>, <code>ebp</code>, <code>eflags</code> and <code>eip</code>
+were added.</p>
+</div>
+<div class="paragraph">
+<p>Segment registers and selectors remain word-sized, however offset sizes are
+expanded to 32-bit, yielding a 48-bit logical address.
+Two new data segment registers, similar to <code>ds</code> and <code>es</code>, that can be used with
+the corresponding segment override prefix, were introduced: <code>fs</code> and <code>gs</code>.</p>
+</div>
+<div class="paragraph">
+<p>In addition to adding 32-bit variants to certain instructions (such as adding
+<code>lodsd</code> to complement <code>lodsw</code> and <code>lodsb</code>), the 386 introduced new instructions
+and instruction modes, in order to make the instruction set more orthogonal.
+For example, <code>lss</code>, <code>lfs</code> and <code>lgs</code> instructions, in addition to the existing
+<code>lds</code> and <code>les</code> instructions, new modes for <code>imul</code>, and near conditional jumps
+(in addition to existing short conditional jumps) were added.
+Completely new instructions were also added, such as instructions to sign
+extend and zero extend smaller registers into larger registers <code>movsx</code> and
+<code>movzx</code>.</p>
+</div>
+<div class="paragraph">
+<p>The 386 decides whether to use 32-bit or 16-bit registers based on the current
+code segment.
+A 32-bit code segment interprets instructions as operations on 32-bit and
+8-bit registers and memory locations and used 32-bit offsets.
+A 16-bit code segment interprets instructions as operations on 16-bit and
+8-bit registers and memory locations and used 16-bit offsets, in the same way
+as previous 16-bit processors of the x86 line.
+16-bit operands and addresses can be used in a 32-bit code segment and vice
+versa using the <strong>operand size prefix</strong> and <strong>address size prefix</strong>.</p>
+</div>
+<div class="paragraph">
+<p>32-bit effective addresses are significantly more orthogonal as their 16-bit
+counterparts.
+As with 16-bit addresses, 32-bit addresses may have a base, an index and a
+displacement.
+In addition, a <strong>scale</strong> may be added, that is multiplied with the index.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>base - any 32-bit general-purpose register (<code>eax</code>, <code>ebx</code>, <code>ecx</code>, <code>edx</code>, <code>esi</code>.
+<code>edi</code>, <code>ebp</code>, <code>esp</code>)</p>
+</li>
+<li>
+<p>index - any 32-bit general-purpose register, except <code>esp</code> (<code>eax</code>, <code>ebx</code>,
+<code>ecx</code>, <code>edx</code>, <code>esi</code>, <code>edi</code>, <code>ebp</code>)</p>
+</li>
+<li>
+<p>scale - 1, 2, 4 or 8</p>
+</li>
+<li>
+<p>displacement - zero, 8-bit sign extended value or 32-bit value</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Following combinations are allowed:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>displacement</code> alone</p>
+</li>
+<li>
+<p><code>base</code> alone</p>
+</li>
+<li>
+<p><code>base + displacement</code></p>
+</li>
+<li>
+<p><code>index * scale + displacement</code></p>
+</li>
+<li>
+<p><code>base + index + displacement</code></p>
+</li>
+<li>
+<p><code>base + index * scale + displacement</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The default segment is <code>ds</code>, except if the base is <code>ebp</code> or <code>esp</code>, in which
+case the default segment is <code>ss</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_32_bit_segmentation">3.6. 32-bit segmentation</h3>
+<div class="paragraph">
+<p>In order to deal with 32-bit addresses and the extended 32-bit physical address
+space, the 386 introduces backwards-compatible changes to segmentation.</p>
 </div>
 </div>
 </div>
@@ -3042,7 +3147,7 @@ Zen-based processors do not support TBM.</p>
 <div class="sect2">
 <h3 id="_bmi2">5.4. BMI2</h3>
 <div class="paragraph">
-<p><strong>Bit Manipulation Instruction Set 2 (BMI1)</strong> was introduced by Intel with
+<p><strong>Bit Manipulation Instruction Set 2 (BMI2)</strong> was introduced by Intel with
 Haswell in 2013 and supported by AMD since Excavator in 2015.</p>
 </div>
 </div>
