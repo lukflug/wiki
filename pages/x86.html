@@ -55,9 +55,7 @@
 <li><a href="#_8086">3.1. 8086</a></li>
 <li><a href="#_80186">3.2. 80186</a></li>
 <li><a href="#_80286">3.3. 80286</a></li>
-<li><a href="#_interrupts_and_task_switching">3.4. Interrupts and task switching</a></li>
-<li><a href="#_i386">3.5. i386</a></li>
-<li><a href="#_32_bit_segmentation">3.6. 32-bit segmentation</a></li>
+<li><a href="#_i386">3.4. i386</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -1682,7 +1680,7 @@ the CPU does not need to constantly look up the descriptor tables.</p>
 <p>The location of the GDT, LDT, IDT and TSS are indicated by the
 <em>GDT Register (<code>gdtr</code>)</em>, <em>LDT Register (<code>ldtr</code>)</em>, <em>IDT Register (<code>idtr</code>)</em> and
 <em>Task Register ( <code>tr</code>)</em> respectively.
-The <code>ldtr</code> and <code>tr</code> are similar to regular segment register, as they store a
+The <code>ldtr</code> and <code>tr</code> are similar to regular segment registers, as they store a
 16-bit selector, visible to the programmer, and a hidden descriptor cache.
 The <code>ldtr</code> can be set using the <code>lldt</code> instruction and the TR can be set using
 the <code>ltr</code> instruction.
@@ -1907,7 +1905,7 @@ the GDT.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>ds</code> or <code>es</code></p></td>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>DPL &gt;= EPL</code> and readable</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">readable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Readable</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Disallowed</p></td>
 </tr>
 <tr>
@@ -1920,15 +1918,15 @@ the GDT.</p>
 <td class="tableblock halign-left valign-top" rowspan="3"><p class="tableblock">Disallowed</p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL == CPL &amp;&amp; RPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>DPL &lt;= CPL</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL == CPL</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; target DPL == CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; target DPL &lt;= CPL</code></p></td>
 <td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><code>gate DPL &gt;= tss EPL</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Disallowed</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>call</code> or <code>int</code></p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; cs DPL &lt;= CPL</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; cs DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; target DPL &lt;= CPL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; target DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through <code>retf</code> or <code>iret</code></p></td>
@@ -2260,9 +2258,8 @@ fault will be raised when accessing this pointer, even in Ring 0, since the EPL
 is larger than the DPL.</p>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_interrupts_and_task_switching">3.4. Interrupts and task switching</h3>
+<div class="sect3">
+<h4 id="_interrupts_and_task_switching">3.3.3. Interrupts and task switching</h4>
 <div class="paragraph">
 <p>The interrupts behave in a similar way to the <code>call</code> instruction.
 Its effect depends on the corresponding IDT entry:</p>
@@ -2697,8 +2694,9 @@ page fault (introduced with the 386) and double fault.<sup class="footnote">[<a 
 </tr>
 </tbody>
 </table>
+</div>
 <div class="sect3">
-<h4 id="_machine_status_word">3.4.1. Machine Status Word</h4>
+<h4 id="_machine_status_word">3.3.4. Machine Status Word</h4>
 <div class="paragraph">
 <p>The 286 also introduced a new 16-bit register called the <em>Machine Status Word
 (<code>msw</code>)</em>, which can only be directly modified in Ring 0 through the <code>lmsw</code> and
@@ -2799,13 +2797,13 @@ May be cleared again via <code>clts</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_i386">3.5. i386</h3>
+<h3 id="_i386">3.4. i386</h3>
 <div class="paragraph">
 <p>The 386 introduced 32-bit extensions, paging and the ability to return to real
 mode, in addition to new instructions and operand modes.</p>
 </div>
 <div class="sect3">
-<h4 id="_32_bit_registers_and_addressing">3.5.1. 32-bit registers and addressing</h4>
+<h4 id="_32_bit_registers_and_addressing">3.4.1. 32-bit registers and addressing</h4>
 <div class="paragraph">
 <p>The 386 expanded many registers to 32-bit registers.
 These new dword-sized registers have the corresponding word-sized register
@@ -2899,12 +2897,12 @@ In addition, a <strong>scale</strong> may be added, that is multiplied with the 
 case the default segment is <code>ss</code>.</p>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_32_bit_segmentation">3.6. 32-bit segmentation</h3>
+<div class="sect3">
+<h4 id="_32_bit_segmentation">3.4.2. 32-bit segmentation</h4>
 <div class="paragraph">
 <p>In order to deal with 32-bit addresses and the extended 32-bit physical address
 space, the 386 introduces backwards-compatible changes to segmentation.</p>
+</div>
 </div>
 </div>
 </div>
