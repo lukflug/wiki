@@ -806,7 +806,7 @@ the CPU does not need to constantly look up the descriptor tables.
 The location of the GDT, LDT, IDT and TSS are indicated by the
 _GDT Register (`gdtr`)_, _LDT Register (`ldtr`)_, _IDT Register (`idtr`)_ and
 _Task Register ( `tr`)_ respectively.
-The `ldtr` and `tr` are similar to regular segment register, as they store a
+The `ldtr` and `tr` are similar to regular segment registers, as they store a
 16-bit selector, visible to the programmer, and a hidden descriptor cache.
 The `ldtr` can be set using the `lldt` instruction and the TR can be set using
 the `ltr` instruction.
@@ -900,7 +900,7 @@ the GDT.
 
 | Updating `ds` or `es`
 2+| `DPL >= EPL` and readable
-| readable
+| Readable
 4+| Disallowed
 
 | Updating `ss`
@@ -911,14 +911,14 @@ the GDT.
 .3+| Disallowed
 .2+| `DPL == CPL && RPL \<= CPL`
 .2+| `DPL \<= CPL`
-| `gate DPL >= gate EPL && cs DPL == CPL`
-| `gate DPL >= gate EPL && cs DPL \<= CPL`
+| `gate DPL >= gate EPL && target DPL == CPL`
+| `gate DPL >= gate EPL && target DPL \<= CPL`
 .2+| `gate DPL >= tss EPL`
 1+| Disallowed
 
 | Updating `cs` through far `call` or `int`
-2+| `gate DPL >= gate EPL && cs DPL \<= CPL`
-1+| `gate DPL >= CPL && cs DPL \<= CPL` footnote:[Gate DPL is not checked if
+2+| `gate DPL >= gate EPL && target DPL \<= CPL`
+1+| `gate DPL >= CPL && target DPL \<= CPL` footnote:[Gate DPL is not checked if
     interrupt not caused by `int` instruction.]
 
 | Updating `cs` through `retf` or `iret`
@@ -1106,7 +1106,7 @@ Throughout all the stages, the EPL remains 3, which means a general protection
 fault will be raised when accessing this pointer, even in Ring 0, since the EPL
 is larger than the DPL.
 
-=== Interrupts and task switching
+==== Interrupts and task switching
 The interrupts behave in a similar way to the `call` instruction.
 Its effect depends on the corresponding IDT entry:
 
@@ -1420,7 +1420,7 @@ Following combinations are allowed:
 The default segment is `ds`, except if the base is `ebp` or `esp`, in which
 case the default segment is `ss`.
 
-=== 32-bit segmentation
+==== 32-bit segmentation
 In order to deal with 32-bit addresses and the extended 32-bit physical address
 space, the 386 introduces backwards-compatible changes to segmentation.
 
