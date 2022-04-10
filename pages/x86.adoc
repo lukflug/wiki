@@ -770,26 +770,29 @@ Accessed bit:: This bit is set when a segment is accessed.
 Gates have a different format to other segment descriptors (i.e. code, data,
 LDT and TSS segments).
 
-.286 gate descriptor format
+.Gate descriptor format
 [cols="3,16*"]
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| +48 16+| Reserved
+| +48 16+| Offset (31:16)footnote:[Reserved on 286.]
 
 | +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Word count
 
 | +16 16+| Segment
 
-| +0 16+| Offset
+| +0 16+| Offset (15:0)
 |===
 
-Offset:: target offset (unused by task gate)
-Segment:: target segment selector (must point to code segment for call,
-          interrupt and trap gates and TSS for task gates; RPL is ignored by
-          call gates)
-Word count:: amount of words to push (call gates only; reserved for all other
-             kinds of gate)
+Offset:: Target offset (unused by task gate).
+         The higher word of the offset is reserved on the 286 and is only used
+         by 32-bit gates introduced with the 386.
+Segment:: Target segment selector.
+          Must point to code segment for call, interrupt and trap gates and to
+          a TSS for task gates.
+          The RPL field is ignored by call, interrupt and trap gates.
+Word count:: Amount of words to push.
+             Call gates only; reserved for all other kinds of gate.
 
 In addition to the visible 16-bit selectors, all segment registers have an
 invisible _segment descriptor cache_,footnote:[This also applies to real mode,
@@ -826,7 +829,7 @@ descriptor, due to having base and limit fields.
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| +32 16+| Base (31:16)
+| +32 16+| Base (31:16)footnote:[Higher byte reserved on 286.]
 
 | +16 16+| Base (15:0)
 
@@ -990,17 +993,6 @@ a general protection fault).
   For a procedure invoked via a TSS or task gate to properly return, it must
   use `iret`, not `retf`.
 
-The actions of the `retf` instruction depends on the segment selector of the
-far return pointer on the stack.
-The selector part of the pointer must point to a valid code segment.
-The RPL of that selector indicates the CPL of the caller.
-If the RPL equals the CPL, no CPL change is necessary and the `retf`
-instruction behaves like the `retf` instruction in real mode.
-Otherwise, a stack switch occurs by restoring the caller `sp` and `ss` on the
-callee stack.
-In addition `retf` checks the DPL of `ds` and `es` and sets them to null
-selectors if they are lower than the caller CPL.
-
 .16-bit intra-level far call stack
 |===
 2+h| Before 2+h| After
@@ -1037,6 +1029,17 @@ h| Address h| Content h| Content h| Address
 
 | `ip` | `sp`
 |===
+
+The actions of the `retf` instruction depends on the segment selector of the
+far return pointer on the stack.
+The selector part of the pointer must point to a valid code segment.
+The RPL of that selector indicates the CPL of the caller.
+If the RPL equals the CPL, no CPL change is necessary and the `retf`
+instruction behaves like the `retf` instruction in real mode.
+Otherwise, a stack switch occurs by restoring the caller `sp` and `ss` on the
+callee stack.
+In addition `retf` checks the DPL of `ds` and `es` and sets them to null
+selectors if they are lower than the caller CPL.
 
 .286 TSS structure
 |===
@@ -1229,6 +1232,20 @@ Protected mode exceptions may push a 16-bit error code on top of the stack,
 usually indicating a descriptor entry related to the exception (the exact
 descriptor entry depends on the exact kind of exception).
 The error may also be zero.
+
+.Error code format
+[cols="16*"]
+|===
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+13+| Index 2+| TI | I | EX
+|===
+
+Index:: The index within the descriptor table.
+TI:: The table indicator. Zero for GDT; one for LDT.
+I:: Zero for GDT or LDT; one for IDT.
+EX: Set, if exception caused by external interrupt.
+
 Exceptions are classified in three types:footnote:[This types terminology was
 introduced with the 386.
 The 286 manual differentiates between restartable (faults and traps) and
@@ -1240,6 +1257,66 @@ Fault:: Indicates a non-critical error has happened.
 Trap:: Traps allow a program to be restarted at the instruction following the
        trapping instruction.
 Abort:: Aborts cannot be restarted reliably and indicate a critical error.
+
+.286 exceptions
+|===
+| Vector | Name | Type | Class | Error code
+
+| 0
+| Divide by zero
+| Fault
+| Contributoryfootnote:[This is not a "protection violation", so would be
+  considered benign, according to the 286 manual.]
+| No
+
+| 1
+| Debug
+| Trapfootnote:[Debug features in the 386 and later may dispatch a fault rather
+  than a trap, as is the case for exceptions caused by the trap flag.]
+| Benign
+| No
+
+| 3 | Breakpoint | Trap | Benign | No
+
+| 4 | Overflow | Trap | Benign | No
+
+| 5 | Bounds range exceeded | Fault | Benign | No
+
+| 6 | Invalid opcode | Fault | Benign | No
+
+| 7 | Coprocessor not present | Fault | Benign | No
+
+| 8 | Double fault | Abort | Benign | Yesfootnote:[Always zero.]
+
+| 9
+| Coprocessor segment overrunfootnote:[486 and later never dispatch this
+exception.]
+| Abort
+| Contributory
+| No
+
+| 10
+| Invalid TSSfootnote:[May not be restartable on 386 and 486, if it happens
+  when dispatching an interrupt.]
+| Fault
+| Contributory
+| Yes
+
+| 11 | Segment not present | Fault | Contributory | Yes
+
+| 12 | Stack fault | Fault | Contributory | Yes
+
+| 13
+| General protection fault
+| Faultfootnote:[With the 286, a segment limit overrun during a string
+  operation, a general protection fault during a coprocessor segment overrun,
+  and writing into a read-only segment through `adc`, `sbb`, `rcl` or `rcr` are
+  not restartable.
+  On later processors, a general protection fault is always restartable, but if
+  it was caused while dispatching an interrupt, the interrupt may be lost.]
+| Contributory
+| Yes
+|===
 
 When an exception occurs while an exception handler is being dispatched, the
 result depends on the kind of exception.
@@ -1284,74 +1361,6 @@ violation and other, instead of contributory and benign.]
 | Triple fault
 |===
 
-.286 exceptions
-|===
-| Vector | Name | Type | Class | Error code
-
-| 0
-| Divide by zero
-| Fault
-| Contributoryfootnote:[This is not a "protection violation", so would be
-  considered benign, according to the 286 manual.]
-| No
-
-| 1 | Single-step | Trap | Benign | No
-
-| 3 | Breakpoint | Trap | Benign | No
-
-| 4 | Overflow | Trap | Benign | No
-
-| 5 | Bounds range exceeded | Fault | Benign | No
-
-| 6 | Invalid opcode | Fault | Benign | No
-
-| 7 | Coprocessor not present | Fault | Benign | No
-
-| 8 | Double fault | Abort | Benign | Yesfootnote:[Always zero.]
-
-| 9
-| Coprocessor segment overrunfootnote:[486 and later never dispatch this
-exception.]
-| Abort
-| Contributory
-| No
-
-| 10
-| Invalid TSSfootnote:[May not be restartable on 386 and 486, if it happens
-  when dispatching an interrupt.]
-| Fault
-| Contributory
-| Yes
-
-| 11 | Segment not present | Fault | Contributory | Yes
-
-| 12 | Stack fault | Fault | Contributory | Yes
-
-| 13
-| General protection fault
-| Faultfootnote:[With the 286, a segment limit overrun during a string
-  operation, a general protection fault during a coprocessor segment overrun,
-  and writing into a read-only segment through `adc`, `sbb`, `rcl` or `rcr` are
-  not restartable.
-  On later processors, a general protection fault is always restartable, but if
-  it was caused while dispatching an interrupt, the interrupt may be lost.]
-| Contributory
-| Yes
-|===
-
-.Error code format
-[cols="16*"]
-|===
-| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-
-13+| Index 2+| TI | I | EX
-|===
-
-Index:: The index within the descriptor table.
-TI:: The table indicator. Zero for GDT; one for LDT.
-I:: Zero for GDT or LDT; one for IDT.
-EX: Set, if exception caused by external interrupt.
-
 ==== Machine Status Word
 The 286 also introduced a new 16-bit register called the _Machine Status Word
 (`msw`)_, which can only be directly modified in Ring 0 through the `lmsw` and
@@ -1394,6 +1403,16 @@ counterpart.
 For example, `eax` is a 32-bit register, with `ax` aliasing to the lower word.
 Similarly `ebx`, `ecx`, `edx`, `esi`, `edi`, `esp`, `ebp`, `eflags` and `eip`
 were added.
+
+.386 `eflags`
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| | | | | | | | | | | | | | | VM | RF
+| | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
+|===
 
 Segment registers and selectors remain word-sized, however offset sizes are
 expanded to 32-bit, yielding a 48-bit logical address.
@@ -1487,30 +1506,188 @@ G flag:: Granularity flag. If set, limit is given in 4 kiB units, rather than
 |===
 | 43 | 42 | 41 | 40 | Segment type | Descriptor tables
 
-| 1 | 0 | 0 | 1 | Available TSS | GDT only
+| 1 | 0 | 0 | 1 | Available 32-bit TSS | GDT only
 
-| 1 | 0 | 1 | 1 | Busy TSS | GDT only
+| 1 | 0 | 1 | 1 | Busy 32-bit TSS | GDT only
 
-| 1 | 1 | 0 | 0 | Call gate | All
+| 1 | 1 | 0 | 0 | 32-bit call gate | All
 
-| 1 | 1 | 1 | 0 | Interrupt gate | IDT only
+| 1 | 1 | 1 | 0 | 32-bit interrupt gate | IDT only
 
-| 1 | 1 | 1 | 1 | Trap gate | IDT only
+| 1 | 1 | 1 | 1 | 32-bit trap gate | IDT only
 |===
 
-.386 gate descriptor format
-[cols="3,16*"]
+Aside from the new 32-bit segments and gates, 386 segmentation fundamentally
+works the same as on the 286.
+Even the behavior of the stack for 32-bit calls and interrupts work essentially
+the same, except that 32-bit registers are pushed, instead of 16-bit registers,
+and 16-bit selectors and error codes are padded with an extra high word, in
+order to become 32-bit.
+The bit size of calls and interrupts is determined by the operand size for
+calls directly targeting code segments and by the type of gate for calls and
+interrupts through gates.
+
+Thus, 16-bit and 32-bit segments and gates can be largely mixed.
+However, the size of the return instructions must match the size of the call
+instructions and a 16-bit call from a 32-bit segment will truncate `eip`.
+For a 16-bit call to work as expected, it must be called from the first 64 kiB
+of a segment, and can only target the first 64 kiB.
+
+It is not recommended to mix 16-bit and 32-bit task state segments, due to
+unintended side-effects of missing fields.
+In particular, a 32-bit TSS stores the state of `cr3` (also know as the Page
+Directory Base Register `pdbr`) and the new registers introduced with the 386.
+
+.386 TSS structure
+[cols="1,1,1"]
 |===
-| Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+| Byte offset | +2 | +0
 
-| +48 16+| Offset (31:16)
+| 0 | Reserved | Previous TSS
 
-| +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Word count
+| 4 2+| `esp0`
 
-| +16 16+| Segment
+| 8 | Reserved | `ss0`
 
-| +0 16+| Offset (15:0)
+| 12 2+| `esp1`
+
+| 16 | Reserved | `ss1`
+
+| 20 2+| `esp2`
+
+| 24 | Reserved | `ss2`
+
+| 28 2+| `cr0` (`pdbr`)
+
+| 32 2+| `eip`
+
+| 36 2+| `eflags`
+
+| 40 2+| `eax`
+
+| 44 2+| `ecx`
+
+| 48 2+| `edx`
+
+| 52 2+| `ebx`
+
+| 56 2+| `esp`
+
+| 60 2+| `ebp`
+
+| 64 2+| `esi`
+
+| 68 2+| `edi`
+
+| 72 | Reserved | `es`
+
+| 76 | Reserved | `cs`
+
+| 80 | Reserved | `ss`
+
+| 84 | Reserved | `ds`
+
+| 88 | Reserved | `fs`
+
+| 92 | Reserved | `gs`
+
+| 96 | Reserved | `ldtr`
+
+| 100 | I/O map base | T flag
 |===
+
+I/O map base:: Base offset of a bitmap in the TSS.
+               This allows code running at a CPL higher than the IOPL to have
+               limited access to I/O.
+               In particular, each bit corresponds to an I/O port.
+               If the bit is cleared, code at any CPL may access that I/O port.
+               The TSS does not need to contain a complete I/O port bitmap,
+               bits beyond the limit of the TSS are treated as being set,
+               thereby preventing unprivileged access to the corresponding
+               ports.footnote:[Word or dword I/O to unaligned ports may cross a
+               byte boundary, meaning two bytes need to be loaded.
+               Thus it is recommended to have an extra byte after the highest
+               I/O port that is accessed, with numerical value 255.]
+T flag:: Bit 0 of the corresponding word in the table.
+         All other bits are reserved.
+         If set, will raise a debug trap (interrupt 1), when switching to the
+         task.
+
+==== Paging
+The 386 added support for paging as an extra translation layer, in addition to
+segmentation.
+With paging enabled, segments are not contiguous ranges in physical address
+space, but rather _virtual address space_.
+In particular, the base of segments is treated as a _linear address_, rather
+than a physical address.
+Segmentation translates a logical address, consisting of a 16-bit segment
+address and a 32-bit offset, to a 32-bit linear address.
+Paging is responsible for converting this linear address to a physical address.
+
+This is achieved, by divided both virtual and physical 4 GiB address spaces
+into 1048576 aligned pages of 4096 bytes.
+Paging maps pages of physical memory to certain spots in virtual memory.
+This effectively creates a flat address space that is isolated from physical
+memory, allowing for greater isolation of software.
+
+Protected mode segmentation allows for a similar degree of isolation.
+Segments however need to be contiguous and have variable size.
+Pages have fixed size and are invisible to application programs, allowing for
+memory to be arbitrarily fragmented and swapped out in chunks of 4096 bytes.
+
+Entries in the translation table are 32-bit, so instead of having a single page
+table of 2 MiB (more RAM than many systems had at the time), the 386 employs a
+two-level paging system.
+The root page table is the *page directory (PD)*, which has entries pointing to
+individual *page tables (PT)*, which consists of entries pointing to the
+physical base address of individual pages.
+
+Both of these tables occupy 4 kiB and thus have 1024 entries.
+This means each page table (corresponding to one entry in the page directory)
+contains the mapping for 2 MiB of virtual memory.
+Each entry in the page table determines the mapping of a 4 kiB page.
+
+Thus, the linear address is split into three parts.
+The most significant bits determines what PT within the PD to look up (PD
+index).
+The middle part determines what page entry to look up within the PT (PT entry).
+The least significant part is the offset within the page itself.
+
+.32-bit non-PAE linear address
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+10+| PD index (0-1023) 10+| PT index (0-1023) 12+| Offset (0-4095)
+|===
+
+The physical address of the PD is given by `cr3` (also known as the `pdbr`, or
+Page Directory Base Register).
+Since the PD must be aligned with page boundaries (thereby occupying a page in
+physical memory), the lower 12 bits of `cr3` are reserved (thus it has a
+similar structure to a page entry).
+
+.386 page entry
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+20+| Physical address (31:12) 12+|
+|===
+
+Physical address:: The physical address of the page (for a PT entry) or PT (for
+                   a PD entry).
+                   Since pages and PDs must be aligned, the lower 12 bits have
+                   a different meaning, and are effectively zero when
+                   determining the 32-bit physical base address.
+                   The 20-bit field could also be treated as the index of the
+                   page in physical memory.
+
+CPUs have a _translation look-aside buffer (TLB)_, that is effectively a cache
+of page entries, so the CPU does not have to constantly fetch pages entries
+from the PD and PT.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
