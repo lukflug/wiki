@@ -1586,7 +1586,7 @@ were used.</p>
 LDT and TSS segments).</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. 286 gate descriptor format</caption>
+<caption class="title">Table 12. Gate descriptor format</caption>
 <colgroup>
 <col style="width: 15.7894%;">
 <col style="width: 5.2631%;">
@@ -1630,7 +1630,7 @@ LDT and TSS segments).</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">+48</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Offset (31:16)<sup class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnotedef_6" title="View footnote.">6</a>]</sup></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">+32</p></td>
@@ -1647,7 +1647,7 @@ LDT and TSS segments).</p>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">+0</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Offset</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Offset (15:0)</p></td>
 </tr>
 </tbody>
 </table>
@@ -1655,24 +1655,27 @@ LDT and TSS segments).</p>
 <dl>
 <dt class="hdlist1">Offset</dt>
 <dd>
-<p>target offset (unused by task gate)</p>
+<p>Target offset (unused by task gate).
+The higher word of the offset is reserved on the 286 and is only used
+by 32-bit gates introduced with the 386.</p>
 </dd>
 <dt class="hdlist1">Segment</dt>
 <dd>
-<p>target segment selector (must point to code segment for call,
-interrupt and trap gates and TSS for task gates; RPL is ignored by
-call gates)</p>
+<p>Target segment selector.
+Must point to code segment for call, interrupt and trap gates and to
+a TSS for task gates.
+The RPL field is ignored by call, interrupt and trap gates.</p>
 </dd>
 <dt class="hdlist1">Word count</dt>
 <dd>
-<p>amount of words to push (call gates only; reserved for all other
-kinds of gate)</p>
+<p>Amount of words to push.
+Call gates only; reserved for all other kinds of gate.</p>
 </dd>
 </dl>
 </div>
 <div class="paragraph">
 <p>In addition to the visible 16-bit selectors, all segment registers have an
-invisible <em>segment descriptor cache</em>,<sup class="footnote">[<a id="_footnoteref_6" class="footnote" href="#_footnotedef_6" title="View footnote.">6</a>]</sup>
+invisible <em>segment descriptor cache</em>,<sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup>
 which contains the segment descriptor corresponding to the selector, so that
 the CPU does not need to constantly look up the descriptor tables.</p>
 </div>
@@ -1741,7 +1744,7 @@ descriptor, due to having base and limit fields.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">+32</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Base (31:16)</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Base (31:16)<sup class="footnote">[<a id="_footnoteref_8" class="footnote" href="#_footnotedef_8" title="View footnote.">8</a>]</sup></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">+16</p></td>
@@ -1926,7 +1929,7 @@ the GDT.</p>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through far <code>call</code> or <code>int</code></p></td>
 <td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>gate DPL &gt;= gate EPL &amp;&amp; target DPL &lt;= CPL</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; target DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_7" class="footnote" href="#_footnotedef_7" title="View footnote.">7</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gate DPL &gt;= CPL &amp;&amp; target DPL &lt;= CPL</code> <sup class="footnote">[<a id="_footnoteref_9" class="footnote" href="#_footnotedef_9" title="View footnote.">9</a>]</sup></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Updating <code>cs</code> through <code>retf</code> or <code>iret</code></p></td>
@@ -2020,18 +2023,6 @@ For a procedure invoked via a TSS or task gate to properly return, it must
 use <code>iret</code>, not <code>retf</code>.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>The actions of the <code>retf</code> instruction depends on the segment selector of the
-far return pointer on the stack.
-The selector part of the pointer must point to a valid code segment.
-The RPL of that selector indicates the CPL of the caller.
-If the RPL equals the CPL, no CPL change is necessary and the <code>retf</code>
-instruction behaves like the <code>retf</code> instruction in real mode.
-Otherwise, a stack switch occurs by restoring the caller <code>sp</code> and <code>ss</code> on the
-callee stack.
-In addition <code>retf</code> checks the DPL of <code>ds</code> and <code>es</code> and sets them to null
-selectors if they are lower than the caller CPL.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 16. 16-bit intra-level far call stack</caption>
@@ -2133,6 +2124,18 @@ selectors if they are lower than the caller CPL.</p>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>The actions of the <code>retf</code> instruction depends on the segment selector of the
+far return pointer on the stack.
+The selector part of the pointer must point to a valid code segment.
+The RPL of that selector indicates the CPL of the caller.
+If the RPL equals the CPL, no CPL change is necessary and the <code>retf</code>
+instruction behaves like the <code>retf</code> instruction in real mode.
+Otherwise, a stack switch occurs by restoring the caller <code>sp</code> and <code>ss</code> on the
+callee stack.
+In addition <code>retf</code> checks the DPL of <code>ds</code> and <code>es</code> and sets them to null
+selectors if they are lower than the caller CPL.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 18. 286 TSS structure</caption>
 <colgroup>
@@ -2508,198 +2511,10 @@ The NT flag of the callee (outgoing) task is subsequently cleared.</p>
 Protected mode exceptions may push a 16-bit error code on top of the stack,
 usually indicating a descriptor entry related to the exception (the exact
 descriptor entry depends on the exact kind of exception).
-The error may also be zero.
-Exceptions are classified in three types:<sup class="footnote">[<a id="_footnoteref_8" class="footnote" href="#_footnotedef_8" title="View footnote.">8</a>]</sup></p>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Fault</dt>
-<dd>
-<p>Indicates a non-critical error has happened.
-These errors can be corrected and the program can be restarted at the
-faulting instruction.</p>
-</dd>
-<dt class="hdlist1">Trap</dt>
-<dd>
-<p>Traps allow a program to be restarted at the instruction following the
-trapping instruction.</p>
-</dd>
-<dt class="hdlist1">Abort</dt>
-<dd>
-<p>Aborts cannot be restarted reliably and indicate a critical error.</p>
-</dd>
-</dl>
-</div>
-<div class="paragraph">
-<p>When an exception occurs while an exception handler is being dispatched, the
-result depends on the kind of exception.
-It may either handle them serially, dispatch a <strong>dobule fault</strong> or enter a
-<strong>triple fault</strong>.
-When a triple fault occurs, the processor shuts down.
-Depending on the motherboard, this usually causes the computer to be rebooted.</p>
-</div>
-<div class="paragraph">
-<p>Exceptions can be divided in into four relevant classes: benign, contributory,
-page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_9" class="footnote" href="#_footnotedef_9" title="View footnote.">9</a>]</sup></p>
+The error may also be zero.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 23. Double exception handling</caption>
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<tbody>
-<tr>
-<th class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">First exception</p></th>
-<th class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Second exception</p></th>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Triple fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Triple fault</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 24. 286 exceptions</caption>
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Vector</th>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Class</th>
-<th class="tableblock halign-left valign-top">Error code</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Divide by zero</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory<sup class="footnote">[<a id="_footnoteref_10" class="footnote" href="#_footnotedef_10" title="View footnote.">10</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Single-step</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Breakpoint</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Overflow</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bounds range exceeded</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Invalid opcode</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">7</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor not present</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_11" class="footnote" href="#_footnotedef_11" title="View footnote.">11</a>]</sup></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">9</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor segment overrun<sup class="footnote">[<a id="_footnoteref_12" class="footnote" href="#_footnotedef_12" title="View footnote.">12</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Invalid TSS<sup class="footnote">[<a id="_footnoteref_13" class="footnote" href="#_footnotedef_13" title="View footnote.">13</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">11</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Segment not present</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">12</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stack fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">13</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">General protection fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Fault<sup class="footnote">[<a id="_footnoteref_14" class="footnote" href="#_footnotedef_14" title="View footnote.">14</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 25. Error code format</caption>
+<caption class="title">Table 23. Error code format</caption>
 <colgroup>
 <col style="width: 6.25%;">
 <col style="width: 6.25%;">
@@ -2763,6 +2578,196 @@ EX: Set, if exception caused by external interrupt.</p>
 </dd>
 </dl>
 </div>
+<div class="paragraph">
+<p>Exceptions are classified in three types:<sup class="footnote">[<a id="_footnoteref_10" class="footnote" href="#_footnotedef_10" title="View footnote.">10</a>]</sup></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Fault</dt>
+<dd>
+<p>Indicates a non-critical error has happened.
+These errors can be corrected and the program can be restarted at the
+faulting instruction.</p>
+</dd>
+<dt class="hdlist1">Trap</dt>
+<dd>
+<p>Traps allow a program to be restarted at the instruction following the
+trapping instruction.</p>
+</dd>
+<dt class="hdlist1">Abort</dt>
+<dd>
+<p>Aborts cannot be restarted reliably and indicate a critical error.</p>
+</dd>
+</dl>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 24. 286 exceptions</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Vector</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Class</th>
+<th class="tableblock halign-left valign-top">Error code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Divide by zero</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory<sup class="footnote">[<a id="_footnoteref_11" class="footnote" href="#_footnotedef_11" title="View footnote.">11</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Debug</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap<sup class="footnote">[<a id="_footnoteref_12" class="footnote" href="#_footnotedef_12" title="View footnote.">12</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Breakpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Overflow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Trap</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bounds range exceeded</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Invalid opcode</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor not present</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_13" class="footnote" href="#_footnotedef_13" title="View footnote.">13</a>]</sup></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">9</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor segment overrun<sup class="footnote">[<a id="_footnoteref_14" class="footnote" href="#_footnotedef_14" title="View footnote.">14</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Invalid TSS<sup class="footnote">[<a id="_footnoteref_15" class="footnote" href="#_footnotedef_15" title="View footnote.">15</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">11</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Segment not present</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Stack fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">13</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">General protection fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault<sup class="footnote">[<a id="_footnoteref_16" class="footnote" href="#_footnotedef_16" title="View footnote.">16</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>When an exception occurs while an exception handler is being dispatched, the
+result depends on the kind of exception.
+It may either handle them serially, dispatch a <strong>dobule fault</strong> or enter a
+<strong>triple fault</strong>.
+When a triple fault occurs, the processor shuts down.
+Depending on the motherboard, this usually causes the computer to be rebooted.</p>
+</div>
+<div class="paragraph">
+<p>Exceptions can be divided in into four relevant classes: benign, contributory,
+page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_17" class="footnote" href="#_footnotedef_17" title="View footnote.">17</a>]</sup></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 25. Double exception handling</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<th class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">First exception</p></th>
+<th class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Second exception</p></th>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Handled serially</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triple fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Triple fault</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_machine_status_word">3.3.4. Machine Status Word</h4>
@@ -2883,6 +2888,114 @@ For example, <code>eax</code> is a 32-bit register, with <code>ax</code> aliasin
 Similarly <code>ebx</code>, <code>ecx</code>, <code>edx</code>, <code>esi</code>, <code>edi</code>, <code>esp</code>, <code>ebp</code>, <code>eflags</code> and <code>eip</code>
 were added.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 27. 386 <code>eflags</code></caption>
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NT</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">IOPL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PF</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CF</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p>Segment registers and selectors remain word-sized, however offset sizes are
 expanded to 32-bit, yielding a 48-bit logical address.
@@ -2973,7 +3086,7 @@ case the default segment is <code>ss</code>.</p>
 space, the 386 introduces backwards-compatible changes to segmentation.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 27. 386 segment descriptor format</caption>
+<caption class="title">Table 28. 386 segment descriptor format</caption>
 <colgroup>
 <col style="width: 15.7894%;">
 <col style="width: 5.2631%;">
@@ -3090,7 +3203,7 @@ Allows for segments of up to 4 GiB.</p>
 </dl>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 28. New 386 system segment types</caption>
+<caption class="title">Table 29. New 386 system segment types</caption>
 <colgroup>
 <col style="width: 6.6666%;">
 <col style="width: 6.6666%;">
@@ -3115,7 +3228,7 @@ Allows for segments of up to 4 GiB.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Available TSS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Available 32-bit TSS</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GDT only</p></td>
 </tr>
 <tr>
@@ -3123,7 +3236,7 @@ Allows for segments of up to 4 GiB.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Busy TSS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Busy 32-bit TSS</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GDT only</p></td>
 </tr>
 <tr>
@@ -3131,7 +3244,7 @@ Allows for segments of up to 4 GiB.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Call gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32-bit call gate</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">All</p></td>
 </tr>
 <tr>
@@ -3139,7 +3252,7 @@ Allows for segments of up to 4 GiB.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Interrupt gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32-bit interrupt gate</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">IDT only</p></td>
 </tr>
 <tr>
@@ -3147,35 +3260,293 @@ Allows for segments of up to 4 GiB.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Trap gate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32-bit trap gate</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">IDT only</p></td>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>Aside from the new 32-bit segments and gates, 386 segmentation fundamentally
+works the same as on the 286.
+Even the behavior of the stack for 32-bit calls and interrupts work essentially
+the same, except that 32-bit registers are pushed, instead of 16-bit registers,
+and 16-bit selectors and error codes are padded with an extra high word, in
+order to become 32-bit.
+The bit size of calls and interrupts is determined by the operand size for
+calls directly targeting code segments and by the type of gate for calls and
+interrupts through gates.</p>
+</div>
+<div class="paragraph">
+<p>Thus, 16-bit and 32-bit segments and gates can be largely mixed.
+However, the size of the return instructions must match the size of the call
+instructions and a 16-bit call from a 32-bit segment will truncate <code>eip</code>.
+For a 16-bit call to work as expected, it must be called from the first 64 kiB
+of a segment, and can only target the first 64 kiB.</p>
+</div>
+<div class="paragraph">
+<p>It is not recommended to mix 16-bit and 32-bit task state segments, due to
+unintended side-effects of missing fields.
+In particular, a 32-bit TSS stores the state of <code>cr3</code> (also know as the Page
+Directory Base Register <code>pdbr</code>) and the new registers introduced with the 386.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 29. 386 gate descriptor format</caption>
+<caption class="title">Table 30. 386 TSS structure</caption>
 <colgroup>
-<col style="width: 15.7894%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2631%;">
-<col style="width: 5.2641%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Offset</th>
+<th class="tableblock halign-left valign-top">Byte offset</th>
+<th class="tableblock halign-left valign-top">+2</th>
+<th class="tableblock halign-left valign-top">+0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Previous TSS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>esp0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss0</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>esp1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss1</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>esp2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">24</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss2</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>cr0</code> (<code>pdbr</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>eip</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">36</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>eflags</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">40</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>eax</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">44</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>ecx</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">48</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>edx</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">52</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>ebx</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">56</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>esp</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">60</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>ebp</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">64</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>esi</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">68</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>edi</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">72</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>es</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">76</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cs</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">80</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ss</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">84</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ds</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">88</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>fs</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">92</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>gs</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">96</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ldtr</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">100</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">I/O map base</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">T flag</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">I/O map base</dt>
+<dd>
+<p>Base offset of a bitmap in the TSS.
+This allows code running at a CPL higher than the IOPL to have
+limited access to I/O.
+In particular, each bit corresponds to an I/O port.
+If the bit is cleared, code at any CPL may access that I/O port.
+The TSS does not need to contain a complete I/O port bitmap,
+bits beyond the limit of the TSS are treated as being set,
+thereby preventing unprivileged access to the corresponding
+ports.<sup class="footnote">[<a id="_footnoteref_18" class="footnote" href="#_footnotedef_18" title="View footnote.">18</a>]</sup></p>
+</dd>
+<dt class="hdlist1">T flag</dt>
+<dd>
+<p>Bit 0 of the corresponding word in the table.
+All other bits are reserved.
+If set, will raise a debug trap (interrupt 1), when switching to the
+task.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_paging">3.4.3. Paging</h4>
+<div class="paragraph">
+<p>The 386 added support for paging as an extra translation layer, in addition to
+segmentation.
+With paging enabled, segments are not contiguous ranges in physical address
+space, but rather <em>virtual address space</em>.
+In particular, the base of segments is treated as a <em>linear address</em>, rather
+than a physical address.
+Segmentation translates a logical address, consisting of a 16-bit segment
+address and a 32-bit offset, to a 32-bit linear address.
+Paging is responsible for converting this linear address to a physical address.</p>
+</div>
+<div class="paragraph">
+<p>This is achieved, by divided both virtual and physical 4 GiB address spaces
+into 1048576 aligned pages of 4096 bytes.
+Paging maps pages of physical memory to certain spots in virtual memory.
+This effectively creates a flat address space that is isolated from physical
+memory, allowing for greater isolation of software.</p>
+</div>
+<div class="paragraph">
+<p>Protected mode segmentation allows for a similar degree of isolation.
+Segments however need to be contiguous and have variable size.
+Pages have fixed size and are invisible to application programs, allowing for
+memory to be arbitrarily fragmented and swapped out in chunks of 4096 bytes.</p>
+</div>
+<div class="paragraph">
+<p>Entries in the translation table are 32-bit, so instead of having a single page
+table of 2 MiB (more RAM than many systems had at the time), the 386 employs a
+two-level paging system.
+The root page table is the <strong>page directory (PD)</strong>, which has entries pointing to
+individual <strong>page tables (PT)</strong>, which consists of entries pointing to the
+physical base address of individual pages.</p>
+</div>
+<div class="paragraph">
+<p>Both of these tables occupy 4 kiB and thus have 1024 entries.
+This means each page table (corresponding to one entry in the page directory)
+contains the mapping for 2 MiB of virtual memory.
+Each entry in the page table determines the mapping of a 4 kiB page.</p>
+</div>
+<div class="paragraph">
+<p>Thus, the linear address is split into three parts.
+The most significant bits determines what PT within the PD to look up (PD
+index).
+The middle part determines what page entry to look up within the PT (PT entry).
+The least significant part is the offset within the page itself.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 31. 32-bit non-PAE linear address</caption>
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
 <th class="tableblock halign-left valign-top">15</th>
 <th class="tableblock halign-left valign-top">14</th>
 <th class="tableblock halign-left valign-top">13</th>
@@ -3196,28 +3567,117 @@ Allows for segments of up to 4 GiB.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">+48</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Offset (31:16)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">+32</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">DPL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S</p></td>
-<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Reserved</p></td>
-<td class="tableblock halign-left valign-top" colspan="5"><p class="tableblock">Word count</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">+16</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Segment</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">+0</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Offset (15:0)</p></td>
+<td class="tableblock halign-left valign-top" colspan="10"><p class="tableblock">PD index (0-1023)</p></td>
+<td class="tableblock halign-left valign-top" colspan="10"><p class="tableblock">PT index (0-1023)</p></td>
+<td class="tableblock halign-left valign-top" colspan="12"><p class="tableblock">Offset (0-4095)</p></td>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>The physical address of the PD is given by <code>cr3</code> (also known as the <code>pdbr</code>, or
+Page Directory Base Register).
+Since the PD must be aligned with page boundaries (thereby occupying a page in
+physical memory), the lower 12 bits of <code>cr3</code> are reserved (thus it has a
+similar structure to a page entry).</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 32. 386 page entry</caption>
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="12"></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Physical address</dt>
+<dd>
+<p>The physical address of the page (for a PT entry) or PT (for
+a PD entry).
+Since pages and PDs must be aligned, the lower 12 bits have
+a different meaning, and are effectively zero when
+determining the 32-bit physical base address.
+The 20-bit field could also be treated as the index of the
+page in physical memory.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>CPUs have a <em>translation look-aside buffer (TLB)</em>, that is effectively a cache
+of page entries, so the CPU does not have to constantly fetch pages entries
+from the PD and PT.</p>
+</div>
 </div>
 </div>
 </div>
@@ -3513,39 +3973,55 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_6">
-      6. This also applies to real mode, where the 8086 behavior is emulated by updating the base value with the segment address times 16, instead of looking up a descriptor table. Other values, such as the limit are constant and are set to initial values, in order to replicate 8086 behavior. This means they can be changed by switching to protected mode, loading the segment registers with new descriptors and back to real mode. This is what unreal mode is.
+      6. Reserved on 286.
     </li>
   
     <li class="footnote" id="_footnotedef_7">
-      7. Gate DPL is not checked if     interrupt not caused by <code>int</code> instruction.
+      7. This also applies to real mode, where the 8086 behavior is emulated by updating the base value with the segment address times 16, instead of looking up a descriptor table. Other values, such as the limit are constant and are set to initial values, in order to replicate 8086 behavior. This means they can be changed by switching to protected mode, loading the segment registers with new descriptors and back to real mode. This is what unreal mode is.
     </li>
   
     <li class="footnote" id="_footnotedef_8">
-      8. This types terminology was introduced with the 386. The 286 manual differentiates between restartable (faults and traps) and non-restartable exceptions (aborts).
+      8. Higher byte reserved on 286.
     </li>
   
     <li class="footnote" id="_footnotedef_9">
-      9. The 286 manual does not use this terminology, instead it differentiates between protection violation and other, instead of contributory and benign.
+      9. Gate DPL is not checked if     interrupt not caused by <code>int</code> instruction.
     </li>
   
     <li class="footnote" id="_footnotedef_10">
-      10. This is not a "protection violation", so would be   considered benign, according to the 286 manual.
+      10. This types terminology was introduced with the 386. The 286 manual differentiates between restartable (faults and traps) and non-restartable exceptions (aborts).
     </li>
   
     <li class="footnote" id="_footnotedef_11">
-      11. Always zero.
+      11. This is not a "protection violation", so would be   considered benign, according to the 286 manual.
     </li>
   
     <li class="footnote" id="_footnotedef_12">
-      12. 486 and later never dispatch this exception.
+      12. Debug features in the 386 and later may dispatch a fault rather   than a trap, as is the case for exceptions caused by the trap flag.
     </li>
   
     <li class="footnote" id="_footnotedef_13">
-      13. May not be restartable on 386 and 486, if it happens   when dispatching an interrupt.
+      13. Always zero.
     </li>
   
     <li class="footnote" id="_footnotedef_14">
-      14. With the 286, a segment limit overrun during a string   operation, a general protection fault during a coprocessor segment overrun,   and writing into a read-only segment through <code>adc</code>, <code>sbb</code>, <code>rcl</code> or <code>rcr</code> are   not restartable.   On later processors, a general protection fault is always restartable, but if   it was caused while dispatching an interrupt, the interrupt may be lost.
+      14. 486 and later never dispatch this exception.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_15">
+      15. May not be restartable on 386 and 486, if it happens   when dispatching an interrupt.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_16">
+      16. With the 286, a segment limit overrun during a string   operation, a general protection fault during a coprocessor segment overrun,   and writing into a read-only segment through <code>adc</code>, <code>sbb</code>, <code>rcl</code> or <code>rcr</code> are   not restartable.   On later processors, a general protection fault is always restartable, but if   it was caused while dispatching an interrupt, the interrupt may be lost.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_17">
+      17. The 286 manual does not use this terminology, instead it differentiates between protection violation and other, instead of contributory and benign.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_18">
+      18. Word or dword I/O to unaligned ports may cross a byte boundary, meaning two bytes need to be loaded. Thus it is recommended to have an extra byte after the highest I/O port that is accessed, with numerical value 255.
     </li>
   
   </ul>
