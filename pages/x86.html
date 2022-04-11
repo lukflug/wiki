@@ -536,6 +536,20 @@ instruction set.</p>
 <p>In the context of x86 a <em>word</em> is a 16-bit value, a <em>dword</em> is a 32-bit value
 and a <em>qword</em> is a 64-bit value.<sup class="footnote">[<a id="_footnoteref_3" class="footnote" href="#_footnotedef_3" title="View footnote.">3</a>]</sup></p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+If a cell of a table describing the structure of a register is left empty, this
+usually indicates that this bit is reserved and should be ignored.
+Software should avoid modifying the value of this bit.
+</td>
+</tr>
+</table>
+</div>
 <div class="sect2">
 <h3 id="_8086">3.1. 8086</h3>
 <div class="sect3">
@@ -1422,7 +1436,7 @@ code or data segment descriptor.</p>
 <dd>
 <p>Descriptor privilege level.</p>
 </dd>
-<dt class="hdlist1">Present bit</dt>
+<dt class="hdlist1">Present bit (P)</dt>
 <dd>
 <p>Zero indicates the segment is invalid (intended for operating
 systems to implement swapping).</p>
@@ -1460,29 +1474,27 @@ the <strong>access byte</strong>.</p>
 </table>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Executable bit</dt>
+<dt class="hdlist1">Executable bit (X)</dt>
 <dd>
 <p>One for code segments; zero for data segments.</p>
 </dd>
-<dt class="hdlist1">Conforming/expand-down bit</dt>
+<dt class="hdlist1">Conforming/expand-down bit (CE)</dt>
 <dd>
-<p>For code segments: zero for nonconforming code
-segments; one for conforming code segments.
-For data segments: zero for expand-up data
-segments; one for expand-down data segments.</p>
+<p>For code segments: zero for nonconforming
+                                  code segments; one for conforming code
+                                  segments.
+                                  For data segments: zero for expand-up data
+                                  segments; one for expand-down data segments.
+Readable/writable bit: (RW): For code segments: zero for execute-only code
+                             segments; one for readable code segments.
+                             For data segments: zero for read-only data
+                             segments; one for writable data segments.</p>
 </dd>
-<dt class="hdlist1">Readable/writable bit</dt>
-<dd>
-<p>For code segments: zero for execute-only code segments;
-one for readable code segments.
-For data segments: zero for read-only data segments;
-one for writable data segments.</p>
-</dd>
-<dt class="hdlist1">Accessed bit</dt>
+<dt class="hdlist1">Accessed bit (A)</dt>
 <dd>
 <p>This bit is set when a segment is accessed.
-This way the operating system can keep track of which segments
-were used.</p>
+This way the operating system can keep track of which
+segments were used.</p>
 </dd>
 </dl>
 </div>
@@ -2567,14 +2579,14 @@ The error may also be zero.</p>
 <dd>
 <p>The index within the descriptor table.</p>
 </dd>
-<dt class="hdlist1">TI</dt>
+<dt class="hdlist1">Table indicator (TI)</dt>
 <dd>
-<p>The table indicator. Zero for GDT; one for LDT.</p>
+<p>Zero for GDT; one for LDT.</p>
 </dd>
-<dt class="hdlist1">I</dt>
+<dt class="hdlist1">Interrupt (I)</dt>
 <dd>
 <p>Zero for GDT or LDT; one for IDT.
-EX: Set, if exception caused by external interrupt.</p>
+External (EX): Set, if exception caused by external interrupt.</p>
 </dd>
 </dl>
 </div>
@@ -2710,6 +2722,13 @@ trapping instruction.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Coprocessor error<sup class="footnote">[<a id="_footnoteref_17" class="footnote" href="#_footnotedef_17" title="View footnote.">17</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
 </tbody>
 </table>
 <div class="paragraph">
@@ -2722,7 +2741,7 @@ Depending on the motherboard, this usually causes the computer to be rebooted.</
 </div>
 <div class="paragraph">
 <p>Exceptions can be divided in into four relevant classes: benign, contributory,
-page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_17" class="footnote" href="#_footnotedef_17" title="View footnote.">17</a>]</sup></p>
+page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_18" class="footnote" href="#_footnotedef_18" title="View footnote.">18</a>]</sup></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 25. Double exception handling</caption>
@@ -2777,7 +2796,7 @@ page fault (introduced with the 386) and double fault.<sup class="footnote">[<a 
 <code>clts</code> instructions.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 26. 286 <code>flags</code></caption>
+<caption class="title">Table 26. 286 Machine Status Word</caption>
 <colgroup>
 <col style="width: 6.25%;">
 <col style="width: 6.25%;">
@@ -2848,12 +2867,16 @@ allow returning back to real mode).</p>
 <dt class="hdlist1">Monitor coprocessor (MP)</dt>
 <dd>
 <p>Raises coprocessor not present exception (interrupt
-7) on <code>wait</code>, if MP <em>and</em> TS are set.</p>
+7) on <code>wait</code>, if MP <em>and</em> TS are set.
+Should be set, if a physical coprocessor is present
+(i.e. the results become available asynchronously).</p>
 </dd>
 <dt class="hdlist1">Emulate coprocessor (EM)</dt>
 <dd>
 <p>Raises coprocessor not present exception on <code>esc</code>
-(i.e. on every floating-point instruction), if set.</p>
+(i.e. on every floating-point instruction), if set.
+Intended for emulating an FPU, if a physical one is
+not present.</p>
 </dd>
 <dt class="hdlist1">Task switched (TS)</dt>
 <dd>
@@ -3166,11 +3189,11 @@ limit of up to 1 MiB (or 4 GiB using the G-flag).</p>
 <dd>
 <p>Extended to 32-bit.</p>
 </dd>
-<dt class="hdlist1">AVL</dt>
+<dt class="hdlist1">Available (A)</dt>
 <dd>
 <p>Available for use by the operating system.</p>
 </dd>
-<dt class="hdlist1">DB flag</dt>
+<dt class="hdlist1">DB</dt>
 <dd>
 <p>Set for 32-bit segment; clear for 16-bit segment.
 Called the D flag for code segments and the B flag for data segments.
@@ -3193,12 +3216,12 @@ whether to use <code>ss</code> or all of <code>esp</code> for stack operations).
 </ul>
 </div>
 </dd>
-<dt class="hdlist1">G flag</dt>
+<dt class="hdlist1">Granularity flag (G)</dt>
 <dd>
-<p>Granularity flag. If set, limit is given in 4 kiB units, rather than
-units of one byte.
+<p>If set, limit is given in 4 kiB units, rather than units
+of one byte.
 The effective limit is <code>limit * 4096 + 4095</code>.
-Allows for segments of up to 4 GiB.</p>
+ Allows for segments of up to 4 GiB.</p>
 </dd>
 </dl>
 </div>
@@ -3286,8 +3309,9 @@ of a segment, and can only target the first 64 kiB.</p>
 <div class="paragraph">
 <p>It is not recommended to mix 16-bit and 32-bit task state segments, due to
 unintended side-effects of missing fields.
-In particular, a 32-bit TSS stores the state of <code>cr3</code> (also know as the Page
-Directory Base Register <code>pdbr</code>) and the new registers introduced with the 386.</p>
+In particular, a 32-bit TSS stores the state of <code>cr3</code> (i.e. the Page Directory
+Base Register <code>pdbr</code>) and the new general-purpose registers introduced with the
+386.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 30. 386 TSS structure</caption>
@@ -3338,7 +3362,7 @@ Directory Base Register <code>pdbr</code>) and the new registers introduced with
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">28</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>cr0</code> (<code>pdbr</code>)</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock"><code>cr3</code> (<code>pdbr</code>)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">32</p></td>
@@ -3434,7 +3458,7 @@ If the bit is cleared, code at any CPL may access that I/O port.
 The TSS does not need to contain a complete I/O port bitmap,
 bits beyond the limit of the TSS are treated as being set,
 thereby preventing unprivileged access to the corresponding
-ports.<sup class="footnote">[<a id="_footnoteref_18" class="footnote" href="#_footnotedef_18" title="View footnote.">18</a>]</sup></p>
+ports.<sup class="footnote">[<a id="_footnoteref_19" class="footnote" href="#_footnotedef_19" title="View footnote.">19</a>]</sup></p>
 </dd>
 <dt class="hdlist1">T flag</dt>
 <dd>
@@ -3494,7 +3518,7 @@ The middle part determines what page entry to look up within the PT (PT entry).
 The least significant part is the offset within the page itself.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 31. 32-bit non-PAE linear address</caption>
+<caption class="title">Table 31. 32-bit linear address</caption>
 <colgroup>
 <col style="width: 3.125%;">
 <col style="width: 3.125%;">
@@ -3574,11 +3598,15 @@ The least significant part is the offset within the page itself.</p>
 </tbody>
 </table>
 <div class="paragraph">
-<p>The physical address of the PD is given by <code>cr3</code> (also known as the <code>pdbr</code>, or
-Page Directory Base Register).
-Since the PD must be aligned with page boundaries (thereby occupying a page in
-physical memory), the lower 12 bits of <code>cr3</code> are reserved (thus it has a
-similar structure to a page entry).</p>
+<p>The physical address of the PD is given by <code>cr3</code>.
+Both <code>cr3</code> and entries in the PD and PT are 32-bit physical addresses pointing
+to a PD, PT or page respectively.
+Since all these structures must be aligned with page boundaries, the lower
+12 bits of the physical address are always zero and are used for other
+purposes.
+All of these 12 bits are reserved in <code>cr3</code> and should be zero.
+The upper 20 bits of <code>cr3</code> are known as the <code>pdbr</code>, or <em>Page Directory Base
+Register</em>.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 32. 386 page entry</caption>
@@ -3655,7 +3683,14 @@ similar structure to a page entry).</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Physical address (31:12)</p></td>
-<td class="tableblock halign-left valign-top" colspan="12"></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
 </tr>
 </tbody>
 </table>
@@ -3663,20 +3698,442 @@ similar structure to a page entry).</p>
 <dl>
 <dt class="hdlist1">Physical address</dt>
 <dd>
-<p>The physical address of the page (for a PT entry) or PT (for
-a PD entry).
-Since pages and PDs must be aligned, the lower 12 bits have
-a different meaning, and are effectively zero when
+<p>The physical address of the page (for a PT entry), PT (for a
+PD entry) or PD (for <code>cr3</code>).
+Since pages, PTs and PDs must be aligned, the lower 12 bits
+have a different meaning, and are effectively zero when
 determining the 32-bit physical base address.
-The 20-bit field could also be treated as the index of the
-page in physical memory.</p>
+Alternatively, one can thinking of the 20-bit field as the
+index of the page in physical memory.</p>
+</dd>
+<dt class="hdlist1">Available</dt>
+<dd>
+<p>These bits are available for use by the operating system.</p>
+</dd>
+<dt class="hdlist1">Dirty bit (D)</dt>
+<dd>
+<p>PT entries only.
+The CPU automatically sets this bit when the corresponding page
+is written to.</p>
+</dd>
+<dt class="hdlist1">Accessed bit (A)</dt>
+<dd>
+<p>Not in <code>cr3</code>.
+The CPU automatically sets this bit when the corresponding
+page, or a page mapped in the corresponding PT, is read or
+written to.</p>
+</dd>
+<dt class="hdlist1">User/supervisor flag (U/S)</dt>
+<dd>
+<p>Not in <code>cr3</code>.
+Zero for supervisor; one for user.
+User pages may be accessed by code at CPL 3.
+Supervisor pages may only be accessed by Rings 0,
+1 and 2.</p>
+</dd>
+<dt class="hdlist1">Read/write flag (R/W)</dt>
+<dd>
+<p>Not in <code>cr3</code>.
+Zero for read-only; one for read-write; .
+Read-only pages may not be written to by code at CPL 3.</p>
+</dd>
+<dt class="hdlist1">Present bit (P)</dt>
+<dd>
+<p>Not in <code>cr3</code>.
+One indicates the entry may be used.
+If zero, accessing the corresponding page or PT will cause a
+page fault and all the other bits may be used by the
+operating system.</p>
 </dd>
 </dl>
 </div>
 <div class="paragraph">
-<p>CPUs have a <em>translation look-aside buffer (TLB)</em>, that is effectively a cache
+<p>Page protection violations result in a page fault.
+Both PT and PD entries hold permission bits.
+For a page to be a user page, the U/S flag must be set in the corresponding PT
+<em>and</em> PD entry.
+For a page to be a read-only page, the R/W flag must also be set both in the PT
+<em>and</em> in the PD.
+This effectively means, the PD entry serves as an override to the corresponding
+PT entries, that restricts permissions further.</p>
+</div>
+<div class="paragraph">
+<p>The present bit works in a similar way in relation to whether the page may be
+accessed.
+If the PT itself is not present (indicated by a zero in the present bit of the
+corresponding entry in the PD), the PD may not be accessed.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+CPUs have a <em>translation look-aside buffer (TLB)</em>, that is effectively a cache
 of page entries, so the CPU does not have to constantly fetch pages entries
-from the PD and PT.</p>
+from the PD and PT.
+This is mostly transparent to the operating system, however the TLB should be
+flushed when a page entry is changed that results in some form of more
+restricted access compared to the previous state (relaxing access control
+does not need a TLB flush, since the processor will load the entry again before
+throwing a page fault).
+The TLB can be flushed by writing to <code>cr3</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Due to 32-bit addressing, a single segment can now span all of the 4 GiB
+virtual address space.
+This means programs no longer need to be split into multiple segments, instead
+having a single flat segment starting at linear address zero, similar to the
+tiny memory model.
+Most modern operating systems on the x86 architecture employ this <strong>flat memory
+model</strong> and use paging, rather than segmentation, as the primary mechanism for
+virtual memory.
+This means the GDT only contains a handful of actual segments and the LDT is
+completely ignored.</p>
+</div>
+<div class="paragraph">
+<p>In this scheme, each process has its own, isolated virtual address space.
+This is facilitated by the fact that the TSS has an entry for <code>cr3</code>.
+Another advantage of the two-level paging scheme is that common areas of
+virtual memories can be mapped in only one set of page tables, that can be then
+mapped in the page directory of each individual process, instead of each
+process having a its own set of identical page tables for the common area of
+virtual memory.</p>
+</div>
+<div class="paragraph">
+<p>One disadvantage of paging is that it has less fine control over access
+permissions.
+Pages are aligned 4 kiB blocks, and effectively only have two privilege levels.
+Many operating system, however, only use Ring 0 and Ring 3 anyways.
+Another problem is that there is no way to restrict execution of pages, while
+still allowing it to be read or written.</p>
+</div>
+<div class="paragraph">
+<p>Modern operating systems implement context switching in software, rather than
+using the hardware context switching facilities.
+Modern processors no longer optimize hardware context switching.
+In particular, this means there is a fixed amount of task state segments,
+meaning, in combination with the flat memory model, that modern operating
+systems typically have a fixed amount of entries in the GDT.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_page_fault">3.4.4. Page fault</h4>
+<div class="paragraph">
+<p>The 386 introduces a new exception:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 33. New 386 exceptions</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vector</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Class</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Error code</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">14</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>This new exception is special in certain regards:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Double exception handling is different.
+If a page fault occurs during a contributory exception, the fault and
+exception are handled serially.
+However, if a contributory exception occurs during a page fault, a double
+fault is raised.</p>
+</li>
+<li>
+<p>The error code does not provide an entry in a segment descriptor table.
+Instead it consists of flags indicating the nature of the memory access that
+caused the page fault.
+<code>cr2</code> stores the target linear address that caused the page fault.</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 34. Page fault error code</caption>
+<colgroup>
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+<col style="width: 6.25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="12"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RSVD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">W/R</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Present (P)</dt>
+<dd>
+<p>Zero for a fault caused by a non-present page; one for a
+protection violation.</p>
+</dd>
+<dt class="hdlist1">Write/read flag (W/R)</dt>
+<dd>
+<p>Zero for a fault caused by a read; one for a fault
+caused by a write.</p>
+</dd>
+<dt class="hdlist1">User/supervisor flag (U/S)</dt>
+<dd>
+<p>Zero for a fault caused by a process in user mode;
+one for a fault caused by a process in supervisor
+mode.</p>
+</dd>
+<dt class="hdlist1">Reserved flag (RSVD)</dt>
+<dd>
+<p>One if the fault was caused by a reserved bit set to
+one.
+P6 and later.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_control_registers">3.4.5. Control registers</h4>
+<div class="paragraph">
+<p>The 386 introduced eight 32-bit control registers <code>cr0</code> to <code>cr7</code>, that can be
+accessed through a regular <code>mov</code> instruction to or from a general-purpose
+register.</p>
+</div>
+<div class="paragraph">
+<p><code>cr0</code> is a 32-bit extension to the 16-bit <code>msw</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PG</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PE</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Paging (PG)</dt>
+<dd>
+<p>Zero disables paging; one enables paging.
+Must not be set, if PE is zero.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><code>cr1</code> and <code>cr4</code> to <code>cr7</code> are reserved for future use and cause an undefined
+opcode exception.</p>
+</div>
+<div class="paragraph">
+<p><code>cr2</code> stores the linear address of the memory location that triggered a page
+fault.</p>
+</div>
+<div class="paragraph">
+<p><code>cr3</code> contains the Page Directory Base Table (<code>pdbr</code>), the physical address of
+the page directory.
+Since the page directory must be page-aligned, the lower 12 bits are reserved.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_debugging">3.4.6. Debugging</h4>
+<div class="paragraph">
+<p>Previous x86 CPUs already have certain debugging facilities:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Interrupt 1, that is invoked on every instruction when the trap flag (TF) is
+set.
+This feature allows for single-stepping.</p>
+</li>
+<li>
+<p>Interrupt 3, that can be invoked by the one-byte instruction <code>int3</code>, allowing
+for breakpoints.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition, the 386 introduces the ability to trap a task through a flag in
+the TSS and to invoke interrupt 1 via the one-byte <code>int1</code> instruction.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Intel reserves <code>int1</code> for debugging hardware, while software debuggers should
+use <code>int3</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The 386 also introduces eight debug registers <code>dr0</code> to <code>dr7</code>.
+Much like <code>cr1</code>, <code>dr4</code> and <code>dr5</code> are reserved and cause an undefined opcode
+exception when accessed.</p>
+</div>
+<div class="paragraph">
+<p><code>dr0</code> to <code>dr3</code> contain the linear address of breakpoints zero through three.
+<code>dr6</code> is known as the <em>Debug Status Register</em> and <code>dr7</code> is known as the <em>Debug
+Control Register</em>.</p>
 </div>
 </div>
 </div>
@@ -4017,11 +4474,15 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_17">
-      17. The 286 manual does not use this terminology, instead it differentiates between protection violation and other, instead of contributory and benign.
+      17. Motherboards may wire this interrupt somewhere   else.   XT-class PCs wired the FPU error pin to NMI.   The IBM AT and most AT-class machines wire this to IRQ13, with the BIOS then   redirecting it to NMI for compatibility.   Some manufacturers wire it to NMI or to interrupt 16, causing compatibility   problems.   CPUs with integrated FPUs (i.e. 486 and later) have a flag on whether to   route the instruction externally through the motherboard, or whether to use   interrupt 16 internally.
     </li>
   
     <li class="footnote" id="_footnotedef_18">
-      18. Word or dword I/O to unaligned ports may cross a byte boundary, meaning two bytes need to be loaded. Thus it is recommended to have an extra byte after the highest I/O port that is accessed, with numerical value 255.
+      18. The 286 manual does not use this terminology, instead it differentiates between protection violation and other, instead of contributory and benign.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_19">
+      19. Word or dword I/O to unaligned ports may cross a byte boundary, meaning two bytes need to be loaded. Thus it is recommended to have an extra byte after the highest I/O port that is accessed, with numerical value 255.
     </li>
   
   </ul>
