@@ -339,6 +339,11 @@ In the context of x86 a _word_ is a 16-bit value, a _dword_ is a 32-bit value
 and a _qword_ is a 64-bit value.footnote:[As is convention elsewhere, a byte is
 an 8-bit value and a nibble is a 4-bit value.]
 
+[NOTE]
+If a cell of a table describing the structure of a register is left empty, this
+usually indicates that this bit is reserved and should be ignored.
+Software should avoid modifying the value of this bit.
+
 === 8086
 ==== Registers
 The 8086 has eight word-sized and eight byte-sized general-purpose registers.
@@ -716,8 +721,8 @@ Type:: Meaning depends on the whether it is a system segment descriptor or a
        code or data segment descriptor.
 S flag:: Zero for system segment descriptors; one for code or data descriptors.
 DPL:: Descriptor privilege level.
-Present bit:: Zero indicates the segment is invalid (intended for operating
-              systems to implement swapping).
+Present bit (P):: Zero indicates the segment is invalid (intended for operating
+                  systems to implement swapping).
 
 The fifth byte of a descriptor (i.e. the type, S, DPL and P fields) is known as
 the *access byte*.
@@ -730,18 +735,19 @@ the *access byte*.
 | X | CE | RW | A
 |===
 
-Executable bit:: One for code segments; zero for data segments.
-Conforming/expand-down bit:: For code segments: zero for nonconforming code
-                             segments; one for conforming code segments.
-                             For data segments: zero for expand-up data
-                             segments; one for expand-down data segments.
-Readable/writable bit:: For code segments: zero for execute-only code segments;
-                        one for readable code segments.
-                        For data segments: zero for read-only data segments;
-                        one for writable data segments.
-Accessed bit:: This bit is set when a segment is accessed.
-               This way the operating system can keep track of which segments
-               were used.
+Executable bit (X):: One for code segments; zero for data segments.
+Conforming/expand-down bit (CE):: For code segments: zero for nonconforming
+                                  code segments; one for conforming code
+                                  segments.
+                                  For data segments: zero for expand-up data
+                                  segments; one for expand-down data segments.
+Readable/writable bit: (RW): For code segments: zero for execute-only code
+                             segments; one for readable code segments.
+                             For data segments: zero for read-only data
+                             segments; one for writable data segments.
+Accessed bit (A):: This bit is set when a segment is accessed.
+                   This way the operating system can keep track of which
+                   segments were used.
 
 .286 system segment types
 [cols="4*,5,6"]
@@ -1242,9 +1248,9 @@ The error may also be zero.
 |===
 
 Index:: The index within the descriptor table.
-TI:: The table indicator. Zero for GDT; one for LDT.
-I:: Zero for GDT or LDT; one for IDT.
-EX: Set, if exception caused by external interrupt.
+Table indicator (TI):: Zero for GDT; one for LDT.
+Interrupt (I):: Zero for GDT or LDT; one for IDT.
+External (EX): Set, if exception caused by external interrupt.
 
 Exceptions are classified in three types:footnote:[This types terminology was
 introduced with the 386.
@@ -1316,6 +1322,21 @@ exception.]
   it was caused while dispatching an interrupt, the interrupt may be lost.]
 | Contributory
 | Yes
+
+| 16
+| Coprocessor errorfootnote:[Motherboards may wire this interrupt somewhere
+  else.
+  XT-class PCs wired the FPU error pin to NMI.
+  The IBM AT and most AT-class machines wire this to IRQ13, with the BIOS then
+  redirecting it to NMI for compatibility.
+  Some manufacturers wire it to NMI or to interrupt 16, causing compatibility
+  problems.
+  CPUs with integrated FPUs (i.e. 486 and later) have a flag on whether to
+  route the instruction externally through the motherboard, or whether to use
+  interrupt 16 internally.]
+| Fault
+| Benign
+| No
 |===
 
 When an exception occurs while an exception handler is being dispatched, the
@@ -1367,7 +1388,6 @@ The 286 also introduced a new 16-bit register called the _Machine Status Word
 `clts` instructions.
 
 .286 Machine Status Word
-.286 `flags`
 [cols="16*"]
 |===
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
@@ -1380,8 +1400,12 @@ Protection enabled (PE):: Set for protected mode; clear for real mode.
                           allow returning back to real mode).
 Monitor coprocessor (MP):: Raises coprocessor not present exception (interrupt
                            7) on `wait`, if MP _and_ TS are set.
+                           Should be set, if a physical coprocessor is present
+                           (i.e. the results become available asynchronously).
 Emulate coprocessor (EM):: Raises coprocessor not present exception on `esc`
                            (i.e. on every floating-point instruction), if set.
+                           Intended for emulating an FPU, if a physical one is
+                           not present.
 Task switched (TS):: Raises coprocessor not present exception on `esc`, if set.
                      Automatically set when task is switched, so that the
                      operating system is able to switch the x87 context for
@@ -1485,21 +1509,21 @@ space, the 386 introduces backwards-compatible changes to segmentation.
 Limit:: The Limit field has been extended from 16-bit to 20-bit, allowing a
         limit of up to 1 MiB (or 4 GiB using the G-flag).
 Base:: Extended to 32-bit.
-AVL:: Available for use by the operating system.
-DB flag:: Set for 32-bit segment; clear for 16-bit segment.
-          Called the D flag for code segments and the B flag for data segments.
-          Meaning depends on type of segment:
-          * For a code segment, it defines the default operand and address
-            size.
-          * For a stack segment, it defines the size of the stack pointer (i.e.
-            whether to use `ss` or all of `esp` for stack operations).
-          * For a expand-down segment, it defines the upper bound.
-            16-bit expand-down segments have an upper bound of 0xFFFF.
-            32-bit expand-down segments have an upper bound of 0xFFFFFFFF.
-G flag:: Granularity flag. If set, limit is given in 4 kiB units, rather than
-         units of one byte.
-         The effective limit is `limit * 4096 + 4095`.
-         Allows for segments of up to 4 GiB.
+Available (A):: Available for use by the operating system.
+DB:: Set for 32-bit segment; clear for 16-bit segment.
+     Called the D flag for code segments and the B flag for data segments.
+     Meaning depends on type of segment:
+     * For a code segment, it defines the default operand and address
+       size.
+     * For a stack segment, it defines the size of the stack pointer (i.e.
+       whether to use `ss` or all of `esp` for stack operations).
+     * For a expand-down segment, it defines the upper bound.
+       16-bit expand-down segments have an upper bound of 0xFFFF.
+       32-bit expand-down segments have an upper bound of 0xFFFFFFFF.
+Granularity flag (G):: If set, limit is given in 4 kiB units, rather than units
+                       of one byte.
+                       The effective limit is `limit * 4096 + 4095`.
+                        Allows for segments of up to 4 GiB.
 
 .New 386 system segment types
 [cols="4*,5,6"]
@@ -1535,8 +1559,9 @@ of a segment, and can only target the first 64 kiB.
 
 It is not recommended to mix 16-bit and 32-bit task state segments, due to
 unintended side-effects of missing fields.
-In particular, a 32-bit TSS stores the state of `cr3` (also know as the Page
-Directory Base Register `pdbr`) and the new registers introduced with the 386.
+In particular, a 32-bit TSS stores the state of `cr3` (i.e. the Page Directory
+Base Register `pdbr`) and the new general-purpose registers introduced with the
+386.
 
 .386 TSS structure
 [cols="1,1,1"]
@@ -1557,7 +1582,7 @@ Directory Base Register `pdbr`) and the new registers introduced with the 386.
 
 | 24 | Reserved | `ss2`
 
-| 28 2+| `cr0` (`pdbr`)
+| 28 2+| `cr3` (`pdbr`)
 
 | 32 2+| `eip`
 
@@ -1653,7 +1678,7 @@ index).
 The middle part determines what page entry to look up within the PT (PT entry).
 The least significant part is the offset within the page itself.
 
-.32-bit non-PAE linear address
+.32-bit linear address
 [%header,cols="32*"]
 |===
 | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
@@ -1662,11 +1687,15 @@ The least significant part is the offset within the page itself.
 10+| PD index (0-1023) 10+| PT index (0-1023) 12+| Offset (0-4095)
 |===
 
-The physical address of the PD is given by `cr3` (also known as the `pdbr`, or
-Page Directory Base Register).
-Since the PD must be aligned with page boundaries (thereby occupying a page in
-physical memory), the lower 12 bits of `cr3` are reserved (thus it has a
-similar structure to a page entry).
+The physical address of the PD is given by `cr3`.
+Both `cr3` and entries in the PD and PT are 32-bit physical addresses pointing
+to a PD, PT or page respectively.
+Since all these structures must be aligned with page boundaries, the lower
+12 bits of the physical address are always zero and are used for other
+purposes.
+All of these 12 bits are reserved in `cr3` and should be zero.
+The upper 20 bits of `cr3` are known as the `pdbr`, or _Page Directory Base
+Register_.
 
 .386 page entry
 [%header,cols="32*"]
@@ -1674,20 +1703,188 @@ similar structure to a page entry).
 | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-20+| Physical address (31:12) 12+|
+20+| Physical address (31:12) 3+| Available 2+| 0 | D | A 2+| 0 | U/S | R/W | P
 |===
 
-Physical address:: The physical address of the page (for a PT entry) or PT (for
-                   a PD entry).
-                   Since pages and PDs must be aligned, the lower 12 bits have
-                   a different meaning, and are effectively zero when
+Physical address:: The physical address of the page (for a PT entry), PT (for a
+                   PD entry) or PD (for `cr3`).
+                   Since pages, PTs and PDs must be aligned, the lower 12 bits
+                   have a different meaning, and are effectively zero when
                    determining the 32-bit physical base address.
-                   The 20-bit field could also be treated as the index of the
-                   page in physical memory.
+                   Alternatively, one can thinking of the 20-bit field as the
+                   index of the page in physical memory.
+Available:: These bits are available for use by the operating system.
+Dirty bit (D):: PT entries only.
+                The CPU automatically sets this bit when the corresponding page
+                is written to.
+Accessed bit (A):: Not in `cr3`.
+                   The CPU automatically sets this bit when the corresponding
+                   page, or a page mapped in the corresponding PT, is read or
+                   written to.
+User/supervisor flag (U/S):: Not in `cr3`.
+                             Zero for supervisor; one for user.
+                             User pages may be accessed by code at CPL 3.
+                             Supervisor pages may only be accessed by Rings 0,
+                             1 and 2.
+Read/write flag (R/W):: Not in `cr3`.
+                        Zero for read-only; one for read-write; .
+                        Read-only pages may not be written to by code at CPL 3.
+Present bit (P):: Not in `cr3`.
+                  One indicates the entry may be used.
+                  If zero, accessing the corresponding page or PT will cause a
+                  page fault and all the other bits may be used by the
+                  operating system.
 
+Page protection violations result in a page fault.
+Both PT and PD entries hold permission bits.
+For a page to be a user page, the U/S flag must be set in the corresponding PT
+_and_ PD entry.
+For a page to be a read-only page, the R/W flag must also be set both in the PT
+_and_ in the PD.
+This effectively means, the PD entry serves as an override to the corresponding
+PT entries, that restricts permissions further.
+
+The present bit works in a similar way in relation to whether the page may be
+accessed.
+If the PT itself is not present (indicated by a zero in the present bit of the
+corresponding entry in the PD), the PD may not be accessed.
+
+[NOTE]
 CPUs have a _translation look-aside buffer (TLB)_, that is effectively a cache
 of page entries, so the CPU does not have to constantly fetch pages entries
 from the PD and PT.
+This is mostly transparent to the operating system, however the TLB should be
+flushed when a page entry is changed that results in some form of more
+restricted access compared to the previous state (relaxing access control
+does not need a TLB flush, since the processor will load the entry again before
+throwing a page fault).
+The TLB can be flushed by writing to `cr3`.
+
+Due to 32-bit addressing, a single segment can now span all of the 4 GiB
+virtual address space.
+This means programs no longer need to be split into multiple segments, instead
+having a single flat segment starting at linear address zero, similar to the
+tiny memory model.
+Most modern operating systems on the x86 architecture employ this *flat memory
+model* and use paging, rather than segmentation, as the primary mechanism for
+virtual memory.
+This means the GDT only contains a handful of actual segments and the LDT is
+completely ignored.
+
+In this scheme, each process has its own, isolated virtual address space.
+This is facilitated by the fact that the TSS has an entry for `cr3`.
+Another advantage of the two-level paging scheme is that common areas of
+virtual memories can be mapped in only one set of page tables, that can be then
+mapped in the page directory of each individual process, instead of each
+process having a its own set of identical page tables for the common area of
+virtual memory.
+
+One disadvantage of paging is that it has less fine control over access
+permissions.
+Pages are aligned 4 kiB blocks, and effectively only have two privilege levels.
+Many operating system, however, only use Ring 0 and Ring 3 anyways.
+Another problem is that there is no way to restrict execution of pages, while
+still allowing it to be read or written.
+
+Modern operating systems implement context switching in software, rather than
+using the hardware context switching facilities.
+Modern processors no longer optimize hardware context switching.
+In particular, this means there is a fixed amount of task state segments,
+meaning, in combination with the flat memory model, that modern operating
+systems typically have a fixed amount of entries in the GDT.
+
+==== Page fault ====
+The 386 introduces a new exception:
+
+.New 386 exceptions
+|===
+| Vector | Name | Type | Class | Error code
+| 14 | Page fault | Fault | Page fault | Yes
+|===
+
+This new exception is special in certain regards:
+
+* Double exception handling is different.
+  If a page fault occurs during a contributory exception, the fault and
+  exception are handled serially.
+  However, if a contributory exception occurs during a page fault, a double
+  fault is raised.
+
+* The error code does not provide an entry in a segment descriptor table.
+  Instead it consists of flags indicating the nature of the memory access that
+  caused the page fault.
+  `cr2` stores the target linear address that caused the page fault.
+
+.Page fault error code
+[cols="16*"]
+|===
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+12+| Reserved | RSVD | U/S | W/R | P
+|===
+
+Present (P):: Zero for a fault caused by a non-present page; one for a
+              protection violation.
+Write/read flag (W/R):: Zero for a fault caused by a read; one for a fault
+                        caused by a write.
+User/supervisor flag (U/S):: Zero for a fault caused by a process in user mode;
+                             one for a fault caused by a process in supervisor
+                             mode.
+Reserved flag (RSVD):: One if the fault was caused by a reserved bit set to
+                       one.
+                       P6 and later.
+
+==== Control registers ====
+The 386 introduced eight 32-bit control registers `cr0` to `cr7`, that can be
+accessed through a regular `mov` instruction to or from a general-purpose
+register.
+
+`cr0` is a 32-bit extension to the 16-bit `msw`.
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| PG | | | | | | | | | | | | | | |
+| | | | | | | | | | | | | TS | EM | MP | PE
+|===
+
+Paging (PG):: Zero disables paging; one enables paging.
+              Must not be set, if PE is zero.
+
+`cr1` and `cr4` to `cr7` are reserved for future use and cause an undefined
+opcode exception.
+
+`cr2` stores the linear address of the memory location that triggered a page
+fault.
+
+`cr3` contains the Page Directory Base Table (`pdbr`), the physical address of
+the page directory.
+Since the page directory must be page-aligned, the lower 12 bits are reserved.
+
+==== Debugging ====
+Previous x86 CPUs already have certain debugging facilities:
+
+* Interrupt 1, that is invoked on every instruction when the trap flag (TF) is
+  set.
+  This feature allows for single-stepping.
+* Interrupt 3, that can be invoked by the one-byte instruction `int3`, allowing
+  for breakpoints.
+
+In addition, the 386 introduces the ability to trap a task through a flag in
+the TSS and to invoke interrupt 1 via the one-byte `int1` instruction.
+
+[NOTE]
+Intel reserves `int1` for debugging hardware, while software debuggers should
+use `int3`.
+
+The 386 also introduces eight debug registers `dr0` to `dr7`.
+Much like `cr1`, `dr4` and `dr5` are reserved and cause an undefined opcode
+exception when accessed.
+
+`dr0` to `dr3` contain the linear address of breakpoints zero through three.
+`dr6` is known as the _Debug Status Register_ and `dr7` is known as the _Debug
+Control Register_.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
