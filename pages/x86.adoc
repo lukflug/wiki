@@ -198,7 +198,7 @@ starting from zero, if segment zero is used.
 ===== Huge real mode
 _Huge real mode_, also known as _huge unreal mode_, sets the limit of code
 segments to 4 GiB, in addition to changing the data segment limit.
-However, the high 16 bits of `eip` are not saved by real mode interrupts,
+However, the high 16 bits of EIP are not saved by real mode interrupts,
 making it difficult to use.
 
 === Protected mode
@@ -299,7 +299,7 @@ If the current code segment is 64-bit, the code is interpreted as 64-bit code
 and 64-bit registers may be used.
 Many legacy features of protected mode, such as segmentation, are largely
 disabled.
-`cs`, `ds`, `es` and `ss` always have base zero, while `fs` and `gs` may have
+CS, DS, ES and SS always have base zero, while FS and GS may have
 a non-zero base.
 No segment limit checks are performed.
 
@@ -340,118 +340,129 @@ and a _qword_ is a 64-bit value.footnote:[As is convention elsewhere, a byte is
 an 8-bit value and a nibble is a 4-bit value.]
 
 [NOTE]
-If a cell of a table describing the structure of a register is left empty, this
-usually indicates that this bit is reserved and should be ignored.
-Software should avoid modifying the value of this bit.
+Cells of tables describing a data structure may be left empty, labeled
+"reserved", "0" or "1", in order to indicate this field is reserved.
+Software should make no assumption about the value of these fields.
+Modifying reserved bits of CPU registers should be avoided.
+Memory fields marked as "reserved" should be set to zero.
 
 === 8086
 ==== Registers
 The 8086 has eight word-sized and eight byte-sized general-purpose registers.
 These byte-sized registers are aliases for individual bytes of the word-sized
-general-purpose registers `ax`, `bx`, `cx` and `dx`.
-The byte register `al` is an alias for the low byte of `ax`, the byte
-register `ah` is an alias for the high byte of `ax`.
-Analogous relationships exist between `bl`, `bh` and `bx`, `cl`, `ch` and `cx`,
-and `dl`, `dh` and `dx`.
-The remaining 16-bit general-purpose registers are `si` (source index), `di`
-(destination index), `bp` (base pointer) and `sp` (stack pointer).
-
-.8086 general-purpose registers
-|===
-| Register name | Purpose | High byte alias | Low byte alias
-
-| `ax` | Accumulator | `ah` | `al`
-
-| `bx` | Base address | `bh` | `bl`
-
-| `cx` | Counter | `ch` | `cl`
-
-| `dx` | Auxiliary accumulator | `dh` | `dl`
-
-| `si` | Source index 2+| _None_
-
-| `di` | Destination index 2+| _None_
-
-| `bp` | Base pointer 2+| _None_
-
-| `sp` | Stack pointer 2+| _None_
-|===
+general-purpose registers AX, BX, CX and DX.
+The byte register AL is an alias for the low byte of AX, the byte register AH
+is an alias for the high byte of AX.
+Analogous relationships exist between BL, BH and BX, CL, CH and CX, and DL, DH
+and DX.
+The remaining 16-bit general-purpose registers are SI (source index), DI
+(destination index), BP (base pointer) and SP (stack pointer).
 
 In addition to the general purpose registers, there are four word-sized segment
 registers:
-the code segment `cs`, the data segment `ds`, the extra segment `es` and the
-stack segment `ss`.
-There are also two word-sized registers hidden to the programmer: the 16-bit
-instruction pointer `ip` and the `flags` register.
+the code segment CS, the data segment DS, the extra segment ES and the
+stack segment SS.
+There are also two word-sized registers that are only indirectly accessible to
+the programmer: the 16-bit instruction pointer IP and the FLAGS register.
 
-.8086 `flags`
-[cols="16*"]
+.8086 registers
+[%collapsible]
+====
+[%header,cols="6,16*"]
 |===
+| Register name
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| | | | | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
+| AX (accumulator) 8+| AH 8+| AL
+
+| CX (counter) 8+| CH 8+| CL
+
+| DX (auxiliary accumulator) 8+| DH 8+| DL
+
+| BX (base address) 8+| BH 8+| BL
+
+| SP (stack pointer) 16+| SP
+
+| BP (base pointer) 16+| BP
+
+| SI (source index) 16+| SI
+
+| DI (destination index) 16+| DI
+
+| IP (instruction pointer) 16+| IP
+
+| FLAGS | 1 | 1 | 1 | 1 | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
+
+| ES (extra segment) 16+| ES
+
+| CS (code segment) 16+| CS
+
+| SS (stack segment) 16+| SS
+
+| DS (data segment) 16+| DS
 |===
+====
 
 The 8086 has following flags:
 
-Carry flag `cf`:: Indicates an arithmetic carry for unsigned operations.
-Parity flag `pf`:: Is set if the parity of the result of an arithmetic
+Carry flag (CF):: Indicates an arithmetic carry for unsigned operations.
+Parity flag (PF):: Is set if the parity of the result of an arithmetic
                    operation is even.
-Adjust flag (or auxiliary carry flag) `af`:: Indicates a carry out of the first
+Adjust flag (or auxiliary carry flag, AF):: Indicates a carry out of the first
                                              nibble of an arithmetic operation.
-Zero flag `zf`:: Is set if the result is zero.
-Sign flag `sf`:: Indicates a negative value as the result of a signed
+Zero flag (ZF):: Is set if the result is zero.
+Sign flag (SF):: Indicates a negative value as the result of a signed
                  arithmetic operation.
-Trap flag `tf`:: If set, interrupt 1 (see below) is raised on each instruction
+Trap flag (TF):: If set, interrupt 1 (see below) is raised on each instruction
                  that is executed.
                  The trap flag is automatically cleared when an interrupt is
                  dispatched.
-Interrupt flag `if`:: If cleared, all hardware interrupts are disabled, except
+Interrupt flag (IF):: If cleared, all hardware interrupts are disabled, except
                       for NMI.
                       The interrupt flag is automatically cleared when an
                       interrupt is dispatched.
-Direction flag `df`:: Determines the direction of string operations.
-                      If it is cleared, the indices (`si` or `di`) involved are
+Direction flag (DF):: Determines the direction of string operations.
+                      If it is cleared, the indices (SI or DI) involved are
                       increased.
                       If it is set, the indices are decreased.
-Overflow flag `of`:: Is set, if a signed arithmetic operation results in an
+Overflow flag (OF):: Is set, if a signed arithmetic operation results in an
                      overflow.
 
 ==== Instruction modes
 Since memory is accessed through a segment address (which is always the value
 of one of the segment registers), in addition to an offset (the notation
-`segment:offset` is used), the program counter and stack pointer consist of two
+segment:offset is used), the program counter and stack pointer consist of two
 16-bit registers.
-The program counter is `cs:ip` and the stack pointer is `ss:sp`.
+The program counter is CS:IP and the stack pointer is SS:SP.
 
-The normal flow of execution is increasing `ip`.
-`cs` is not automatically incremented, if `ip` exceeds the limit of `cs`,
-instead `ip` either wraps around to zero (as is the case on the 8086) or an
+The normal flow of execution is increasing IP.
+CS is not automatically incremented, if IP exceeds the limit of CS,
+instead IP either wraps around to zero (as is the case on the 8086) or an
 exception is raised on later CPUs.
 
-On x86, the stack grows downwards, `push` decreases `sp` and `pop` increases
-`sp`.
+On x86, the stack grows downwards, `push` decreases SP and `pop` increases
+SP.
 As with the program counter, exceeding the limits of the stack segment does not
-result in a change in `ss`.
+result in a change in SS.
 
 Despite having eight general-purpose registers, the 8086 instruction set is not
 very orthogonal.
 Every 16-bit register has a special role in at least one instruction, examples
 include:
 
-* `al` is the 8-bit accumulator and is used to store the quotient of a
+* AL is the 8-bit accumulator and is used to store the quotient of a
   `div byte` instruction.
-* `ah` is used to store the remainder of a `div byte` instruction.
-* `ax` is used to store the quotient of a `div word` instruction.
-* `bx` is used as the table base address for the `xlat` instruction.
-* `cx` is used as a counter for the `loop` instruction.
-* `dx` is used to store the remainder of a `div word` instruction.
-* `si` is used as the source address for the `movsb` and `movsw` instructions.
-* `di` is used as the destination address for the `movsb` and `movsw`
+* AH is used to store the remainder of a `div byte` instruction.
+* AX is used to store the quotient of a `div word` instruction.
+* BX is used as the table base address for the `xlat` instruction.
+* CX is used as a counter for the `loop` instruction.
+* DX is used to store the remainder of a `div word` instruction.
+* SI is used as the source address for the `movsb` and `movsw` instructions.
+* DI is used as the destination address for the `movsb` and `movsw`
   instructions.
-* Using `bp` as the base of the effective address (see below) will result in
+* Using BP as the base of the effective address (see below) will result in
   the use of the stack segment.
-* `sp` is the stack pointer.
+* SP is the stack pointer.
 
 Every instruction involving memory has a default segment and most may be
 overridden using a *segment override prefix*.
@@ -459,8 +470,8 @@ Most memory operands may have a wide variety of indirect addressing modes.
 Offsets may be determined through a runtime computation of adding up to three
 values:
 
-* *base* - either zero, `bx` or `bp`
-* *index* - either zero, `si` or `di`
+* *base* - either zero, BX or BP
+* *index* - either zero, SI or DI
 * *displacement* - a constant value (encoding allows either zero, a
   sign-extended byte or a word)
 
@@ -468,35 +479,34 @@ The result of the computation is called the *effective address (EA)* (one may
 write `[base + index + displacement]` to refer to the corresponding memory
 address, or `[segment:base + index + displacement]` when using a segment
 override).
-The default segment is `ds`, except when the base is `bp`, in which case it is
-`ss`.
+The default segment is DS, except when the base is BP, in which case it is SS.
 
 .8086 addressing modes
 |===
 | Effective address | Displacement formats | Default segment
 
-| `bx + si + disp` | Zero, byte or word | `ds`
+| `bx + si + disp` | Zero, byte or word | DS
 
-| `bx + di + disp` | Zero, byte or word | `ds`
+| `bx + di + disp` | Zero, byte or word | DS
 
-| `bp + si + disp` | Zero, byte or word | `ss`
+| `bp + si + disp` | Zero, byte or word | SS
 
-| `bp + di + disp` | Zero, byte or word | `ss`
+| `bp + di + disp` | Zero, byte or word | SS
 
-| `si + disp` | Zero, byte or word | `ds`
+| `si + disp` | Zero, byte or word | DS
 
-| `di + disp` | Zero, byte or word | `ds`
+| `di + disp` | Zero, byte or word | DS
 
 | `bp + disp`
 | Byte or wordfootnote:[The encoding for displacement zero is used to indicate
   a direct offset.
   This means `[bp\]` is encoded as `[bp+0\]` and is not shorter than `[bp+1\]`
   (e.g. the encoding for `[si+0\]` is shorter than `[si+1\]`).]
-| `ss`
+| SS
 
-| `disp` footnote:[As in: direct memory reference.] | Word | `ds`
+| `disp` footnote:[As in: direct memory reference.] | Word | DS
 
-| `di + disp` | Zero, byte or word | `ds`
+| `di + disp` | Zero, byte or word | DS
 |===
 
 ==== Memory models
@@ -538,13 +548,13 @@ mode.
 |===
 | Memory model | Code pointer type | Data pointer type | Segment registers
 
-| Tiny | Near | Near | `cs` = `ds` = `es` = `ss`
+| Tiny | Near | Near | CS = DS = ES = SS
 
-| Small | Near | Near | `ds` = `ss`
+| Small | Near | Near | DS = SS
 
 | Compact | Near | Far |
 
-| Medium | Far | Near | `ds` = `ss`
+| Medium | Far | Near | DS = SS
 
 | Large | Far | Far |
 
@@ -581,6 +591,8 @@ exceptions).
 IBM did not heed that recommendation, causing compatibility issues.
 
 .Near call stack
+[%collapsible]
+====
 |===
 2+h| Before 2+h| After
 
@@ -590,8 +602,11 @@ h| Address 2+h| Content h| Address
 
 | `sp - 2` | | `ip` | `sp`
 |===
+====
 
 .Real mode far call stack
+[%collapsible]
+====
 |===
 2+h| Before 2+h| After
 
@@ -599,12 +614,15 @@ h| Address 2+h| Content h| Address
 
 | `sp` | Caller stack | Caller stack | `sp + 4`
 
-| `sp - 2` .2+| | `cs` | `sp + 2`
+| `sp - 2` .2+| | CS | `sp + 2`
 
-| `sp - 4` | `ip` | `sp`
+| `sp - 4` | IP | `sp`
 |===
+====
 
 .Real mode interrupt stack
+[%collapsible]
+====
 |===
 2+h| Before 2+h| After
 
@@ -612,12 +630,13 @@ h| Address 2+h| Content h| Address
 
 | `sp` | Caller stack | Caller stack | `sp + 6`
 
-| `sp - 2` .3+| | `flags` | `sp + 4`
+| `sp - 2` .3+| | FLAGS | `sp + 4`
 
-| `sp - 4` | `cs` | `sp + 2`
+| `sp - 4` | CS | `sp + 2`
 
-| `sp - 6` | `ip` | `sp`
+| `sp - 6` | IP | `sp`
 |===
+====
 
 === 80186
 The 186 and 188 implement all of the new 286 instructions that are not related
@@ -631,6 +650,11 @@ These extensions consist of:
 * shorthands `enter`, `leave`, `pusha`, `popa`
 * invalid opcode and coprocessor not present exceptions
 
+[NOTE]
+The 186 and 188 are still very similar to the 8086 and 8088.
+No new registers are added and the behavior of `push sp` and `pushf` are the
+same as with the 8086.
+
 === 80286
 The introduction of protected mode with the 286 is a major change to the x86
 ISA.
@@ -642,6 +666,78 @@ Ring 0 is the most privileged and Ring 3 is the least privileged.
 Rings with lower number (more privilege) are referred to hereafter as _lower_,
 rings with higher number (less privilege) are referred to hereafter as _higher_
 (i.e. the numeric relation).
+
+.286 registers
+[%collapsible]
+====
+[%header,cols="3,16*"]
+|===
+| Register
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| AX (accumulator) 8+| AH 8+| AL
+
+| CX (counter) 8+| CH 8+| CL
+
+| DX (auxiliary accumulator) 8+| DH 8+| DL
+
+| BX (base address) 8+| BH 8+| BL
+
+| SP (stack pointer) 16+| SP
+
+| BP 16+| BP
+
+| SI 16+| SI
+
+| DI 16+| DI
+
+| IP 16+| IP
+
+| FLAGS
+| 0 | *NT* 2+| *IOPL* | OF | DF | IF | TF | SF | ZF | 0 | AF | 0 | PF | 1 | CF
+
+| MSW
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | *TS* | *EM* | *MP* | *PE*
+
+.4+| ES 16+| ES (visible selector)
+8+| _Access byte_ 8+| _Base (23:16)_
+16+| _Base (15:0)_
+16+| _Limit_
+
+.4+| CS 14+| (visible CS selector) 2+| CPL
+8+| _Access byte_ 8+| _Base (23:16)_
+16+| _Base (15:0)_
+16+| _Limit_
+
+.4+| SS 14+| (visible SS selector) 2+| CPL
+8+| _Access byte_ 8+| _Base (23:16)_
+16+| _Base (15:0)_
+16+| _Limit_
+
+.4+| DS 16+| DS (visible selector)
+8+| _Access byte_ 8+| _Base (23:16)_
+16+| _Base (15:0)_
+16+| _Limit_
+
+.4+| TR 16+| TR (visible selector)
+8+| 8+| _Base (23:16)_
+16+| _Base (15:0)_
+16+| _Limit_
+
+.4+| LDTR 16+| LDTR (visible selector)
+8+| 8+| _Base (23:16)_
+16+| _Base (15:0)_
+16+| _Limit_
+
+.3+| GDTR 8+| 8+| Base (23:16)
+16+| Base (15:0)
+16+| Limit
+
+.3+| IDTR 8+| 8+| Base (23:16)
+16+| Base (15:0)
+16+| Limit
+|===
+====
 
 ==== Segmentation
 There is no longer a linear relationship between segment address and segment
@@ -685,12 +781,12 @@ Descriptor tables are arrays of 8-byte segment descriptors that reside in
 RAM.
 The first entry of the GDT is reserved.
 Selectors referring to this entry are so-called _null selectors_ and may be
-used as placeholder values for `ds` and `es`, but not `cs` and `ss`.
+used as placeholder values for DS and ES, but not CS and SS.
 Any attempt to access memory through a null selector results in a general
 protection fault.
 The IDT may only contain task, interrupt or trap gates.
 
-.286 segment descriptor format
+.286 segment descriptor
 [cols="3,16*"]
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
@@ -741,7 +837,7 @@ Conforming/expand-down bit (CE):: For code segments: zero for nonconforming
                                   segments.
                                   For data segments: zero for expand-up data
                                   segments; one for expand-down data segments.
-Readable/writable bit: (RW): For code segments: zero for execute-only code
+Readable/writable bit (RW):: For code segments: zero for execute-only code
                              segments; one for readable code segments.
                              For data segments: zero for read-only data
                              segments; one for writable data segments.
@@ -776,23 +872,21 @@ Accessed bit (A):: This bit is set when a segment is accessed.
 Gates have a different format to other segment descriptors (i.e. code, data,
 LDT and TSS segments).
 
-.Gate descriptor format
+.16-bit gate descriptor
 [cols="3,16*"]
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| +48 16+| Offset (31:16)footnote:[Reserved on 286.]
+| +48 16+| Reserved
 
 | +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Word count
 
 | +16 16+| Segment
 
-| +0 16+| Offset (15:0)
+| +0 16+| Offset
 |===
 
 Offset:: Target offset (unused by task gate).
-         The higher word of the offset is reserved on the 286 and is only used
-         by 32-bit gates introduced with the 386.
 Segment:: Target segment selector.
           Must point to code segment for call, interrupt and trap gates and to
           a TSS for task gates.
@@ -813,29 +907,29 @@ which contains the segment descriptor corresponding to the selector, so that
 the CPU does not need to constantly look up the descriptor tables.
 
 The location of the GDT, LDT, IDT and TSS are indicated by the
-_GDT Register (`gdtr`)_, _LDT Register (`ldtr`)_, _IDT Register (`idtr`)_ and
-_Task Register ( `tr`)_ respectively.
-The `ldtr` and `tr` are similar to regular segment registers, as they store a
+_GDT Register (GDTR)_, _LDT Register (LDTR)_, _IDT Register (IDTR)_ and
+_Task Register (TR)_ respectively.
+The LDTR and TR are similar to regular segment registers, as they store a
 16-bit selector, visible to the programmer, and a hidden descriptor cache.
-The `ldtr` can be set using the `lldt` instruction and the TR can be set using
+The LDTR can be set using the `lldt` instruction and the TR can be set using
 the `ltr` instruction.
 Both of these instructions accept a 16-bit direct operand (register or
 memory) containing selector pointing to the corresponding descriptor in the
 GDT.
 
-The GDT and IDT are not segments and the `gdtr` and `ldtr` do not have the
-visible 16-bit selector part.
-The `gdtr` and `ldtr` are effectively 48-bit registers and may be set using the
+The GDT and IDT are not segments and the GDTR and LDTR do not have the visible
+16-bit selector part.
+The GDTR and LDTR are effectively 48-bit registers and may be set using the
 `lgdt` and `lidt` instructions respectively, which take a pointer to a 6 byte
 structure called a _pseudo-descriptor_ that is similar to a regular segment
 descriptor, due to having base and limit fields.
 
-.Pseudo-descriptor format
+.286 pseudo-descriptor format
 [cols="3,16*"]
 |===
 | Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| +32 16+| Base (31:16)footnote:[Higher byte reserved on 286.]
+| +32 8+| Reserved 8+| Base (23:16)
 
 | +16 16+| Base (15:0)
 
@@ -849,29 +943,21 @@ levels that are taken into account:
 
 * The __current privilege level (CPL)_ is the privilege level of the current
   task.
-  It corresponds to the RPL field of the segment selectors stored in `cs` and
-  `ss` (i.e. bits 0 and 1 of the visible 16-bit values of `cs` and `ss`).
+  It corresponds to the RPL field of the segment selectors stored in CS and
+  SS (i.e. bits 0 and 1 of the visible 16-bit values of CS and SS).
 * The __descriptor privilege level (DPL)__ is the privilege level of the
   segment being accessed (determined in the segment descriptor).
 * The __requested privilege level (RPL)__ is the privilege level given by the
   segment selector (i.e. bits 0 and 1 of the segment selector).
 * The __effective privilege level (EPL)__ is the maximum of the CPL and RPL.
-* The __I/O privilege level (IOPL)__ is a value in the `flags` register that
+* The __I/O privilege level (IOPL)__ is a value in the FLAGS register that
   determines the highest CPL allowed to do direct I/O and to set and clear the
   interrupt flag (`cli` and `sti`) within the current task.
-
-.286 `flags`
-[cols="16*"]
-|===
-| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-
-| | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
-|===
 
 Certain instructions, such as `lgdt`, can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
 checking segment limits, restricting writing a code segment or read-only data
-segment, and restricting reading an execute-only code segment through a `cs`
+segment, and restricting reading an execute-only code segment through a CS
 override.
 
 Before accessing a segment, a segment register must first be set.
@@ -880,18 +966,18 @@ every time memory is read or written.
 The particular privilege level checks depends on how the segment register is
 set and the type of descriptor the selector points to.
 
-`ds`, `es` and `ss` can be changed directly through `mov` and `pop`.
+DS, ES and SS can be changed directly through `mov` and `pop`.
 In general, these registers must be loaded with data segments or readable code
 segments with the DPL higher or equal to the EPL.
 However, different rules may apply (see table, e.g. `ss` must always point to a
 writable segment with DPL equal to CPL).
 
-`ldtr` and `tr` can only be changed explicitly in Ring 0 using the `lldt` and
+LDTR and TR can only be changed explicitly in Ring 0 using the `lldt` and
 `ltr` instructions.
-The `ldtr` must be loaded with a selector pointing to a valid LDT descriptor in
+The LDTR must be loaded with a selector pointing to a valid LDT descriptor in
 the GDT.
-The `tr` must be loaded with a selector pointing to a valid TSS descriptor in
-the GDT.
+The TR must be loaded with a selector pointing to a valid TSS descriptor in the
+GDT.
 
 .Conditions for successful update of segment registers
 [cols="8"]
@@ -907,16 +993,16 @@ the GDT.
 | TSS or task gate
 | Interrupt or trap gate
 
-| Updating `ds` or `es`
+| Updating DS or ES
 2+| `DPL >= EPL` and readable
 | Readable
 4+| Disallowed
 
-| Updating `ss`
+| Updating SS
 | `DPL == RPL == CPL` and writable
 6+| Disallowed
 
-| Updating `cs` through far `jmp`
+| Updating CS through far `jmp`
 .3+| Disallowed
 .2+| `DPL == CPL && RPL \<= CPL`
 .2+| `DPL \<= CPL`
@@ -925,12 +1011,12 @@ the GDT.
 .2+| `gate DPL >= tss EPL`
 1+| Disallowed
 
-| Updating `cs` through far `call` or `int`
+| Updating CS through far `call` or `int`
 2+| `gate DPL >= gate EPL && target DPL \<= CPL`
 1+| `gate DPL >= CPL && target DPL \<= CPL` footnote:[Gate DPL is not checked if
     interrupt not caused by `int` instruction.]
 
-| Updating `cs` through `retf` or `iret`
+| Updating CS through `retf` or `iret`
 2+| `RPL >= CPL`
 4+| Disallowed
 |===
@@ -940,17 +1026,17 @@ interrupts) that pass control flow to another code segment.
 A control transfer to a nonconforming code segment, results in the CPL being
 set to the DPL of the incoming code segment.
 A control transfer to a conforming code segment results in no change in DPL.
-Not just `cs` and `ip` may be changed as a result of a transfer to another code
+Not just CS and IP may be changed as a result of a transfer to another code
 segment.
 If the operation results in a change in CPL, the stack is also switched
-(meaning a change in `ss` and `sp`).
+(meaning a change in SS and SP).
 
 Control transfers may also target a TSS, instead of a code segment, resulting
 in a task switch, with the task described by the TSS being resumed and the
 state of the outgoing task being saved in the TSS of the outgoing task.
-This results in most CPU registers (including `ldtr`) being changed and the
+This results in most CPU registers (including LDTR) being changed and the
 incoming task resuming at the state described by its TSS (including the CPL,
-which is stored in the RPL field of `cs` and `ss`).
+which is stored in the RPL field of CS and SS).
 
 Operations that result in a change of code segment include far `jmp` and
 `call`, which provide a far pointer, or an interrupt (that can be caused by an
@@ -980,9 +1066,9 @@ a general protection fault).
   code to more privileged code (i.e. the CPL gets lower, "inter-level call").
   If a change in CPL occurs, a stack switch to the stack corresponding to the
   new protection Ring, as defined in the TSS.
-  If a stack switch occurs, the processor first pushes `ss`, `sp`, then copies
-  the amount of words given in the word count descriptor field to the new stack
-  and then pushes `cs` and `ip`.
+  If a stack switch occurs, the processor first pushes SS, SP, then copies the
+  amount of words given in the word count descriptor field to the new stack and
+  then pushes CS and IP.
   Note the call gate has following properties:
 
   . It is transparent to the application.
@@ -1000,6 +1086,8 @@ a general protection fault).
   use `iret`, not `retf`.
 
 .16-bit intra-level far call stack
+[%collapsible]
+====
 |===
 2+h| Before 2+h| After
 
@@ -1009,12 +1097,15 @@ h| Address 2+h| Content h| Address
 
 | `sp` | Parameter 1 | Parameter 1 | `sp + 4`
 
-| `sp - 2` .2+| | `cs` | `sp + 2`
+| `sp - 2` .2+| | CS | `sp + 2`
 
-| `sp - 4` | `ip` | `sp`
+| `sp - 4` | IP | `sp`
 |===
+====
 
 .16-bit inter-level call gate stack
+[%collapsible]
+====
 [cols="5*"]
 |===
 2+h| Caller stack
@@ -1023,18 +1114,19 @@ h| Address 2+h| Content h| Address
 
 h| Address h| Content h| Content h| Address
 
-| `sp + 6` .2+| Caller stack | `ss` | `sp + 10`
+| `sp + 6` .2+| Caller stack | SS | `sp + 10`
 
-| `sp + 4`| `sp` | `sp + 8`
+| `sp + 4`| SP | `sp + 8`
 
 | `sp + 2` | Parameter 2 | Parameter 2 | `sp + 6`
 
 | `sp` | Parameter 1 | Parameter 1 | `sp + 4`
 
-2.2+| | `cs` | `sp + 2`
+2.2+| | CS | `sp + 2`
 
-| `ip` | `sp`
+| IP | `sp`
 |===
+====
 
 The actions of the `retf` instruction depends on the segment selector of the
 far return pointer on the stack.
@@ -1042,59 +1134,64 @@ The selector part of the pointer must point to a valid code segment.
 The RPL of that selector indicates the CPL of the caller.
 If the RPL equals the CPL, no CPL change is necessary and the `retf`
 instruction behaves like the `retf` instruction in real mode.
-Otherwise, a stack switch occurs by restoring the caller `sp` and `ss` on the
+Otherwise, a stack switch occurs by restoring the caller SP and SS on the
 callee stack.
-In addition `retf` checks the DPL of `ds` and `es` and sets them to null
-selectors if they are lower than the caller CPL.
+In addition `retf` checks the DPL of DS and ES and sets them to null selectors
+if they are lower than the caller CPL.
 
-.286 TSS structure
+.16-bit TSS structure
+[%collapsible]
+====
+[%header,cols="5,16*"]
 |===
-| Byte offset | Content
+| Byte offset
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| 0 | Previous TSS selector
+| 0 16+| Previous TSS selector backlink
 
-| 2 | `sp` for Ring 0 (`sp0`)
+| 2 16+| SP for Ring 0 (SP0)
 
-| 4 | `ss`  for Ring 0 (`ss0`)
+| 4 16+| SS  for Ring 0 (SS0)
 
-| 6 | `sp` for Ring 1 (`sp1`)
+| 6 16+| SP for Ring 1 (SP1)
 
-| 8 | `ss`  for Ring 1 (`ss1`)
+| 8 16+| SS  for Ring 1 (SS1)
 
-| 10 | `sp` for Ring 2 (`sp2`)
+| 10 16+| SP for Ring 2 (SP2)
 
-| 12 | `ss`  for Ring 2 (`ss2`)
+| 12 16+| SS  for Ring 2 (SS2)
 
-| 14 | `ip`
+| 14 16+| IP
 
-| 16 | `flags`
+| 16 16+| FLAGS
 
-| 18 | `ax`
+| 18 16+| AX
 
-| 20 | `cx`
+| 20 16+| CX
 
-| 22 | `dx`
+| 22 16+| DX
 
-| 24 | `bx`
+| 24 16+| BX
 
-| 26 | `sp`
+| 26 16+| SP
 
-| 28 | `bp`
+| 28 16+| BP
 
-| 30 | `si`
+| 30 16+| SI
 
-| 32 | `di`
+| 32 16+| DI
 
-| 34 | `es`
+| 34 16+| ES
 
-| 36 | `cs`
+| 36 16+| CS
 
-| 38 | `ss`
+| 38 16+| SS
 
-| 40 | `ds`
+| 40 16+| DS
 
-| 42 | `ldtr`
+| 42 16+| LDTR
 |===
+====
 
 The RPL (and EPL) mechanism serves to prevent privilege escalation (i.e. a
 less privileged program accessing privileged memory indirectly through a system
@@ -1152,7 +1249,7 @@ instructions and interrupts result in the outgoing task remaining busy.
 
 The behavior of `iret` depends on the NT flag.
 If the NT flag is cleared, `iret` behaves in a similar way to `retf`, except
-that the `flags` register (which was pushed on to the stack) is restored.
+that the FLAGS register (which was pushed on to the stack) is restored.
 The IOPL is only changed, if the callee is at Ring 0.
 If the NT flag is set, indicating an interrupt or call to a task gate, `iret`
 causes a task switch to the task pointed to by the selector in the "previous
@@ -1160,6 +1257,8 @@ TSS" field (i.e. the caller task).
 The NT flag of the callee (outgoing) task is subsequently cleared.
 
 .16-bit intra-level interrupt or trap gate stack (without error code)
+[%collapsible]
+====
 |===
 2+h| Before 2+h| After
 
@@ -1167,14 +1266,17 @@ h| Address 2+h| Content h| Address
 
 | `sp` | Caller stack | Caller stack | `sp + 6`
 
-| `sp - 2` .4+| | `flags` | `sp + 4`
+| `sp - 2` .4+| | FLAGS | `sp + 4`
 
-| `sp - 4` | `cs` | `sp + 2`
+| `sp - 4` | CS | `sp + 2`
 
-| `sp - 6` | `ip` | `sp`
+| `sp - 6` | IP | `sp`
 |===
+====
 
 .16-bit intra-level interrupt or trap gate stack (with error code)
+[%collapsible]
+====
 |===
 2+h| Before 2+h| After
 
@@ -1182,16 +1284,19 @@ h| Address 2+h| Content h| Address
 
 | `sp` | Caller stack | Caller stack | `sp + 8`
 
-| `sp - 2` .4+| | `flags` | `sp + 6`
+| `sp - 2` .4+| | FLAGS | `sp + 6`
 
-| `sp - 4` | `cs` | `sp + 4`
+| `sp - 4` | CS | `sp + 4`
 
-| `sp - 6` | `ip` | `sp + 2`
+| `sp - 6` | IP | `sp + 2`
 
 | `sp - 8` | Error code | `sp`
 |===
+====
 
 .16-bit inter-level interrupt or trap gate stack (without error code)
+[%collapsible]
+====
 [cols="5*"]
 |===
 2+h| Caller stack
@@ -1200,17 +1305,21 @@ h| Address 2+h| Content h| Address
 
 h| Address h| Content h| Content h| Address
 
-| `sp` | Caller stack | `ss` | `sp + 8`
+| `sp` | Caller stack | SS | `sp + 8`
 
-2.4+| | `sp` | `sp + 6`
+2.4+| | SP | `sp + 6`
 
-| `flags` | `sp + 4`
+| FLAGS | `sp + 4`
 
-| `cs` | `sp + 2`
+| CS | `sp + 2`
 
-| `ip` | `sp`
+| IP | `sp`
 |===
+====
 
+.16-bit inter-level interrupt or trap gate stack (with error code)
+[%collapsible]
+====
 .16-bit inter-level interrupt or trap gate stack (with error code)
 [cols="5*"]
 |===
@@ -1220,18 +1329,19 @@ h| Address h| Content h| Content h| Address
 
 h| Address h| Content h| Content h| Address
 
-| `sp` | Caller stack | `ss` | `sp + 10`
+| `sp` | Caller stack | SS | `sp + 10`
 
-2.5+| | `sp` | `sp + 8`
+2.5+| | SP | `sp + 8`
 
-| `flags` | `sp + 6`
+| FLAGS | `sp + 6`
 
-| `cs` | `sp + 4`
+| CS | `sp + 4`
 
-| `ip` | `sp + 2`
+| IP | `sp + 2`
 
 | Error code | `sp`
 |===
+====
 
 The 286 introduced a plethora of new exceptions.
 Protected mode exceptions may push a 16-bit error code on top of the stack,
@@ -1252,7 +1362,7 @@ Table indicator (TI):: Zero for GDT; one for LDT.
 Interrupt (I):: Zero for GDT or LDT; one for IDT.
 External (EX): Set, if exception caused by external interrupt.
 
-Exceptions are classified in three types:footnote:[This types terminology was
+Exceptions are classified in three types:footnote:[This terminology was
 introduced with the 386.
 The 286 manual differentiates between restartable (faults and traps) and
 non-restartable exceptions (aborts).]
@@ -1384,16 +1494,8 @@ violation and other, instead of contributory and benign.]
 
 ==== Machine Status Word
 The 286 also introduced a new 16-bit register called the _Machine Status Word
-(`msw`)_, which can only be directly modified in Ring 0 through the `lmsw` and
+(MSW)_, which can only be directly modified in Ring 0 through the `lmsw` and
 `clts` instructions.
-
-.286 Machine Status Word
-[cols="16*"]
-|===
-| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-
-| | | | | | | | | | | | | TS | EM | MP | PE
-|===
 
 Protection enabled (PE):: Set for protected mode; clear for real mode.
                           May not be cleared once set on a 286 (later processors
@@ -1415,8 +1517,10 @@ Task switched (TS):: Raises coprocessor not present exception on `esc`, if set.
 MP, EM and TS also affect most MMX, 3DNow! and SSE instructions on later CPUs.
 
 === i386
-The 386 introduced 32-bit extensions, paging and the ability to return to real
-mode, in addition to new instructions and operand modes.
+The 386 introduced 32-bit extensions, paging, virtual 8086 mode and the ability
+to return to real mode, in addition to new instructions and operand modes.
+It also allows software to change the base and limit of the real mode IVT
+through the IDTR.
 
 ==== 32-bit registers and addressing
 The 386 expanded many registers to 32-bit registers.
@@ -1424,24 +1528,85 @@ These new dword-sized registers have the corresponding word-sized register
 aliased to its lower word.
 The new registers have an "e" prefix, to differentiate them from their 16-bit
 counterpart.
-For example, `eax` is a 32-bit register, with `ax` aliasing to the lower word.
-Similarly `ebx`, `ecx`, `edx`, `esi`, `edi`, `esp`, `ebp`, `eflags` and `eip`
-were added.
-
-.386 `eflags`
-[%header,cols="32*"]
-|===
-| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
-| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-
-| | | | | | | | | | | | | | | VM | RF
-| | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | | AF | | PF | | CF
-|===
+For example, EAX is a 32-bit register, with AX aliasing to the lower word.
+Similarly EBX, ECX, EDX, ESI, EDI, EBP, ESP, EIP and EFLAGS were added.
 
 Segment registers and selectors remain word-sized, however offset sizes are
 expanded to 32-bit, yielding a 48-bit logical address.
-Two new data segment registers, similar to `ds` and `es`, that can be used with
-the corresponding segment override prefix, were introduced: `fs` and `gs`.
+Two new data segment registers, similar to DS and ES, that can be used with
+the corresponding segment override prefix, were introduced: FS and GS.
+
+.386 registers
+[%collapsible]
+====
+[%header,cols="3,32*"]
+|===
+| Register
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| EAX 16+| (EAX) 8+| AH (AX) 8+| AL (AX)
+
+| ECX 16+| (ECX) 8+| CH (CX) 8+| CL (CX)
+
+| EDX 16+| (EDX) 8+| DH (DX) 8+| DL (DX)
+
+| EBX 16+| (EBX) 8+| BH (BX) 8+| BL (BX)
+
+| ESP 16+| (ESP) 16+| SP
+
+| EBP 16+| (EBP) 16+| BP
+
+| ESI 16+| (ESI) 16+| SI
+
+| EDI 16+| (EDI) 16+| DI
+
+| EIP 16+| (EIP) 16+| IP
+
+| EFLAGS
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | *VM* | *RF*
+| 0 | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | 0 | AF | 0 | PF | 1 | CF
+
+| CR0
+| *PG* | | | | | | | | | | | | | | |
+| | | | | | | | | | | | *ET* | TS | EM | MP | PE
+
+| CR2 32+| Page fault linear address
+
+| CR3 20+| Page Directory Base Register (PDBR)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+
+.3+| ES footnote:[The arrangement of fields in the hidden descriptor caches
+     is arbitrary.]
+12+| _Atrributes_ 4+| 16+| ES (visible selector)
+32+| _Base_ 32+| _Limit_
+
+.3+| CS 12+| _Attributes_ 4+| 14+| (visible CS selector) 2+| CPL
+32+| _Base_ 32+| _Limit_
+
+.3+| SS 12+| _Attributes_ 4+| 14+| (visible SS selector) 2+| CPL
+32+| _Base_ 32+| _Limit_
+
+.3+| DS 12+| _Attributes_ 4+| 16+| DS (visible selector)
+32+| _Base_ 32+| _Limit_
+
+.3+| FS 12+| _Attributes_ 4+| 16+| FS (visible selector)
+32+| _Base_ 32+| _Limit_
+
+.3+| GS 12+| _Attributes_ 4+| 16+| GS (visible selector)
+32+| _Base_ 32+| _Limit_
+
+.3+| TR 16+| 16+| TR (visible selector)
+32+| _Base_ 12+| _Attributes_ 4+| 16+| _Limit_
+
+.3+| LDTR 16+| 16+| LDTR (visible selector)
+32+| _Base_ 16+| 16+| _Limit_
+
+.2+| GDTR 32+| Base 16+| 16+| Limit
+
+.2+| IDR 32+| Base 16+| 16+| Limit
+|===
+====
 
 In addition to adding 32-bit variants to certain instructions (such as adding
 `lodsd` to complement `lodsw` and `lodsb`), the 386 introduced new instructions
@@ -1469,10 +1634,10 @@ As with 16-bit addresses, 32-bit addresses may have a base, an index and a
 displacement.
 In addition, a *scale* may be added, that is multiplied with the index.
 
-* base - any 32-bit general-purpose register (`eax`, `ebx`, `ecx`, `edx`, `esi`.
-  `edi`, `ebp`, `esp`)
-* index - any 32-bit general-purpose register, except `esp` (`eax`, `ebx`,
-  `ecx`, `edx`, `esi`, `edi`, `ebp`)
+* base - any 32-bit general-purpose register (EAX, EBX, ECX, EDX, ESI, EDI,
+  EBP, ESP)
+* index - any 32-bit general-purpose register, except ESP (EAX, EBX, ECX, EDX,
+  ESI, EDI, EBP)
 * scale - 1, 2, 4 or 8
 * displacement - zero, 8-bit sign extended value or 32-bit value
 
@@ -1485,8 +1650,8 @@ Following combinations are allowed:
 * `base + index + displacement`
 * `base + index * scale + displacement`
 
-The default segment is `ds`, except if the base is `ebp` or `esp`, in which
-case the default segment is `ss`.
+The default segment is DS, except if the base is EBP or ESP, in which
+case the default segment is SS.
 
 ==== 32-bit segmentation
 In order to deal with 32-bit addresses and the extended 32-bit physical address
@@ -1516,7 +1681,7 @@ DB:: Set for 32-bit segment; clear for 16-bit segment.
      * For a code segment, it defines the default operand and address
        size.
      * For a stack segment, it defines the size of the stack pointer (i.e.
-       whether to use `ss` or all of `esp` for stack operations).
+       whether to use just SP or all of ESP for stack operations).
      * For a expand-down segment, it defines the upper bound.
        16-bit expand-down segments have an upper bound of 0xFFFF.
        32-bit expand-down segments have an upper bound of 0xFFFFFFFF.
@@ -1551,19 +1716,50 @@ The bit size of calls and interrupts is determined by the operand size for
 calls directly targeting code segments and by the type of gate for calls and
 interrupts through gates.
 
+.32-bit gate descriptor
+[cols="3,16*"]
+|===
+| Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| +48 16+| Offset (31:16)
+
+| +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Word count
+
+| +16 16+| Segment
+
+| +0 16+| Offset (15:0)
+|===
+
 Thus, 16-bit and 32-bit segments and gates can be largely mixed.
 However, the size of the return instructions must match the size of the call
-instructions and a 16-bit call from a 32-bit segment will truncate `eip`.
+instructions and a 16-bit call from a 32-bit segment will truncate EIP.
 For a 16-bit call to work as expected, it must be called from the first 64 kiB
 of a segment, and can only target the first 64 kiB.
 
+The `lgdt` and `lidt` instructions work identically to the 286, except that the
+reserved byte is now used to extend the base address field to 32 bits.
+
+.386 pseudo-descriptor format
+[cols="3,16*"]
+|===
+| Offset | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| +32 16+| Base (31:16)
+
+| +16 16+| Base (15:0)
+
+| +0 16+| Limit
+|===
+
 It is not recommended to mix 16-bit and 32-bit task state segments, due to
 unintended side-effects of missing fields.
-In particular, a 32-bit TSS stores the state of `cr3` (i.e. the Page Directory
-Base Register `pdbr`) and the new general-purpose registers introduced with the
+In particular, a 32-bit TSS stores the state of CR3 (i.e. the Page Directory
+Base Register PDBR) and the new general-purpose registers introduced with the
 386.
 
-.386 TSS structure
+.32-bit TSS structure
+[%collapsible]
+====
 [cols="1,1,1"]
 |===
 | Byte offset | +2 | +0
@@ -1620,6 +1816,7 @@ Base Register `pdbr`) and the new general-purpose registers introduced with the
 
 | 100 | I/O map base | T flag
 |===
+====
 
 I/O map base:: Base offset of a bitmap in the TSS.
                This allows code running at a CPL higher than the IOPL to have
@@ -1633,10 +1830,10 @@ I/O map base:: Base offset of a bitmap in the TSS.
                byte boundary, meaning two bytes need to be loaded.
                Thus it is recommended to have an extra byte after the highest
                I/O port that is accessed, with numerical value 255.]
-T flag:: Bit 0 of the corresponding word in the table.
-         All other bits are reserved.
-         If set, will raise a debug trap (interrupt 1), when switching to the
-         task.
+T flag (T):: Bit 0 of the corresponding word in the table.
+             All other bits are reserved.
+             If set, will raise a debug trap (interrupt 1), when switching to the
+             task.
 
 ==== Paging
 The 386 added support for paging as an extra translation layer, in addition to
@@ -1687,14 +1884,14 @@ The least significant part is the offset within the page itself.
 10+| PD index (0-1023) 10+| PT index (0-1023) 12+| Offset (0-4095)
 |===
 
-The physical address of the PD is given by `cr3`.
-Both `cr3` and entries in the PD and PT are 32-bit physical addresses pointing
-to a PD, PT or page respectively.
+The physical address of the PD is given by CR3.
+Both CR3 and entries in the PD and PT are 32-bit physical addresses pointing to
+a PD, PT or page respectively.
 Since all these structures must be aligned with page boundaries, the lower
 12 bits of the physical address are always zero and are used for other
 purposes.
-All of these 12 bits are reserved in `cr3` and should be zero.
-The upper 20 bits of `cr3` are known as the `pdbr`, or _Page Directory Base
+All of these 12 bits are reserved in CR3 and should be zero.
+The upper 20 bits of CR3 are known as the PDBR, or _Page Directory Base
 Register_.
 
 .386 page entry
@@ -1703,11 +1900,12 @@ Register_.
 | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-20+| Physical address (31:12) 3+| Available 2+| 0 | D | A 2+| 0 | U/S | R/W | P
+20+| Physical address (31:12)
+3+| Available | 0 | 0 | D | A | 0 |0 | U/S | R/W | P
 |===
 
 Physical address:: The physical address of the page (for a PT entry), PT (for a
-                   PD entry) or PD (for `cr3`).
+                   PD entry).
                    Since pages, PTs and PDs must be aligned, the lower 12 bits
                    have a different meaning, and are effectively zero when
                    determining the 32-bit physical base address.
@@ -1717,20 +1915,16 @@ Available:: These bits are available for use by the operating system.
 Dirty bit (D):: PT entries only.
                 The CPU automatically sets this bit when the corresponding page
                 is written to.
-Accessed bit (A):: Not in `cr3`.
-                   The CPU automatically sets this bit when the corresponding
+Accessed bit (A):: The CPU automatically sets this bit when the corresponding
                    page, or a page mapped in the corresponding PT, is read or
                    written to.
-User/supervisor flag (U/S):: Not in `cr3`.
-                             Zero for supervisor; one for user.
+User/supervisor flag (U/S):: Zero for supervisor; one for user.
                              User pages may be accessed by code at CPL 3.
                              Supervisor pages may only be accessed by Rings 0,
                              1 and 2.
-Read/write flag (R/W):: Not in `cr3`.
-                        Zero for read-only; one for read-write; .
+Read/write flag (R/W):: Zero for read-only; one for read-write; .
                         Read-only pages may not be written to by code at CPL 3.
-Present bit (P):: Not in `cr3`.
-                  One indicates the entry may be used.
+Present bit (P):: One indicates the entry may be used.
                   If zero, accessing the corresponding page or PT will cause a
                   page fault and all the other bits may be used by the
                   operating system.
@@ -1758,7 +1952,7 @@ flushed when a page entry is changed that results in some form of more
 restricted access compared to the previous state (relaxing access control
 does not need a TLB flush, since the processor will load the entry again before
 throwing a page fault).
-The TLB can be flushed by writing to `cr3`.
+The TLB can be flushed by writing to CR3.
 
 Due to 32-bit addressing, a single segment can now span all of the 4 GiB
 virtual address space.
@@ -1772,7 +1966,7 @@ This means the GDT only contains a handful of actual segments and the LDT is
 completely ignored.
 
 In this scheme, each process has its own, isolated virtual address space.
-This is facilitated by the fact that the TSS has an entry for `cr3`.
+This is facilitated by the fact that the TSS has an entry for CR3.
 Another advantage of the two-level paging scheme is that common areas of
 virtual memories can be mapped in only one set of page tables, that can be then
 mapped in the page directory of each individual process, instead of each
@@ -1813,7 +2007,7 @@ This new exception is special in certain regards:
 * The error code does not provide an entry in a segment descriptor table.
   Instead it consists of flags indicating the nature of the memory access that
   caused the page fault.
-  `cr2` stores the target linear address that caused the page fault.
+  CR2 stores the target linear address that caused the page fault.
 
 .Page fault error code
 [cols="16*"]
@@ -1835,30 +2029,24 @@ Reserved flag (RSVD):: One if the fault was caused by a reserved bit set to
                        P6 and later.
 
 ==== Control registers ====
-The 386 introduced eight 32-bit control registers `cr0` to `cr7`, that can be
+The 386 introduced eight 32-bit control registers CR0 to CR7, that can be
 accessed through a regular `mov` instruction to or from a general-purpose
 register.
 
-`cr0` is a 32-bit extension to the 16-bit `msw`.
-[%header,cols="32*"]
-|===
-| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
-| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+CR0 is a 32-bit extension to the 16-bit MSW that adds to new flags:
 
-| PG | | | | | | | | | | | | | | |
-| | | | | | | | | | | | | TS | EM | MP | PE
-|===
-
+Extension type (ET):: Zero for a 287; one for a 387.
+                      The 386 automatically initializes this bit.
 Paging (PG):: Zero disables paging; one enables paging.
               Must not be set, if PE is zero.
 
-`cr1` and `cr4` to `cr7` are reserved for future use and cause an undefined
-opcode exception.
+CR1 and CR4 to CR7 are reserved for future use and cause an undefined opcode
+exception.
 
-`cr2` stores the linear address of the memory location that triggered a page
+CR2 stores the linear address of the memory location that triggered a page
 fault.
 
-`cr3` contains the Page Directory Base Table (`pdbr`), the physical address of
+CR3 contains the Page Directory Base Table (PDBR), the physical address of
 the page directory.
 Since the page directory must be page-aligned, the lower 12 bits are reserved.
 
@@ -1878,12 +2066,12 @@ the TSS and to invoke interrupt 1 via the one-byte `int1` instruction.
 Intel reserves `int1` for debugging hardware, while software debuggers should
 use `int3`.
 
-The 386 also introduces eight debug registers `dr0` to `dr7`.
-Much like `cr1`, `dr4` and `dr5` are reserved and cause an undefined opcode
+The 386 also introduces eight debug registers DR0 to DR7.
+Much like CR1, DR4 and DR5 are reserved and cause an undefined opcode
 exception when accessed.
 
-`dr0` to `dr3` contain the linear address of breakpoints zero through three.
-`dr6` is known as the _Debug Status Register_ and `dr7` is known as the _Debug
+DR0 to DR3 contain the linear address of breakpoints zero through three.
+DR6 is known as the _Debug Status Register_ and DR7 is known as the _Debug
 Control Register_.
 
 == Floating-point and vector extensions
@@ -1899,14 +2087,14 @@ Originally implemented as a separate coprocessor, it is integrated into the
 486DX and most processors that came after it.
 
 The instruction set primarily operates on a stack of eight 80-bit registers
-that are addressed as `st(0)` to `st(7)` relative to the top of the stack.
+that are addressed as ST(0) to ST(7) relative to the top of the stack.
 
 === MMX
 *Multimedia Extensions (MMX)* is a SIMD (single instruction; multiple data)
 extension introduced in 1997 with the Pentium MMX.
 AMD first implemented MMX in the K6 in 1997.
 MMX only supported integer math and operated on aliases to the 64-bit
-significand part of the x87 registers, called `mm0` to `mm7`.
+significand part of the x87 registers, called MM0 to MM7.
 Unlike x87, MMX can addresses those registers directly, without a stack
 pointer.
 This aliasing makes it difficult for applications to use MMX and x87 at the
@@ -1928,7 +2116,7 @@ or _Internet Streaming SIMD Extensions (ISSE)_, is a SIMD extension introduced
 in 1999 with the Intel Pentium III and supported by AMD since the Athlon XP in
 2001.
 In addition to adding new instructions to the existing MMX integer instruction
-set, it introduces a new set of eight 128-bit registers `xmm0` to `xmm7` that
+set, it introduces a new set of eight 128-bit registers XMM0 to XMM7 that
 can each store four 32-bit floating-point numbers.
 
 ==== SSE2
@@ -1940,7 +2128,7 @@ ranging from 8-bit to 64-bit, through MMX-like instructions on SSE registers.
 Thus, it is a full replacement of MMX and a partial replacement for x87 (though
 x87 supports higher precision 80-bit floating-point math).
 
-AMD's x86-64 implementation introduced eight new registers `xmm8` to `xmm15`,
+AMD's x86-64 implementation introduced eight new registers XMM8 to XMM15,
 that can only be used in 64-bit mode.
 Infact, SSE2 with 16 registers is mandatory for every x86-64 implementation.
 
@@ -2011,7 +2199,7 @@ AMD dropped official support for FMA4 with Zen in 2017.
 *Advanced Vector Extensions (AVX)* was first proposed by Intel in 2008 and
 implemented in 2011 by Intel with Sandy Bridge and by AMD with Bulldozer.
 It introduces the new _VEX instruction coding_ scheme and expands the 128-bit
-`xmm` SSE registers to 256-bit `ymm` registers (`ymm0` to `ymm15`).
+XMM SSE registers to 256-bit YMM registers (YMM0 to YMM15).
 The VEX coding scheme allows three-operand operations, relaxes alignment
 requirements and allows 128-bit operations.
 
@@ -2025,9 +2213,9 @@ implemented in 2015.
 AVX-512 consists of multiple instruction sets, with only _AVX-512F_ (Foundation)
 being mandatory.
 AVX-512 expands the 256-bit AVX registers to 512-bit registers and introduces
-the new _EVEX coding scheme_, allowing for 32 registers (`zmm0` to `zmm31`).
+the new _EVEX coding scheme_, allowing for 32 registers (ZMM0 to ZMM31).
 The _AVX-512VL_ (vector length) set allows the use of AVX-512 operations on
-256-bit (`ymm0` to `ymm31`) and 128-bit (`xmm0` to ``xmm31`) operands.
+256-bit (YMM0 to YMM31) and 128-bit (XMM0 to XMM31) operands.
 
 ==== AVX-VNNI
 *AVX-VNNI* allows for _AVX-512VNNI_ (virtual neural network interface)
