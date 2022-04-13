@@ -24,7 +24,7 @@ The first iteration of the x86 architecture was introduced in 1978 with the
 *Intel 8086*.
 The 8086 is a 16-bit CPU, with 16-bit registers, a 16-bit data bus and a 20-bit
 address bus.
-Thus it is able to address one megabyte of RAM.
+Thus it is able to address one mebibyte of RAM.
 Although the 8086 has no binary compatibility with the 8080 or 8085, the design
 is such, that all 8080 or 8085 programs could be machine translated to work on
 the 8086.
@@ -268,8 +268,9 @@ _Virtual 8086 mode_ was introduced with the 386 and allows the execution of
 real mode programs in a virtual machine under a hypervisor in protected mode.
 
 === System management mode
-Introduced with the 386SL (a CPU targeting laptops), *system management mode*
-is mostly transparent to the operating system.
+Introduced with the 386SL (a CPU targeting laptops) and included in the 486SL,
+Pentium and subsequent processors , *system management mode* is mostly
+transparent to the operating system.
 System management mode is intended for firmware to provide functions, such as
 power management, independently from the operating system that is currently
 running.
@@ -347,6 +348,14 @@ Modifying reserved bits of CPU registers should be avoided.
 Memory fields marked as "reserved" should be set to zero.
 
 === 8086
+The 8086 and 8088 have a 20-bit physical address space of 1 MiB of RAM, that
+is accessed through two 16-bit values called the _segment_ and _offset_.
+The segment is shifted left by 4 bits (i.e. multiplied by 16) and then added to
+the offset to obtain the 20-bit physical address.
+
+In addition to regular RAM, there is a 16-bit address space of 65536 byte-sized
+I/O ports that can be accessed through the `in` and `out` instructions.
+
 ==== Registers
 The 8086 has eight word-sized and eight byte-sized general-purpose registers.
 These byte-sized registers are aliases for individual bytes of the word-sized
@@ -366,8 +375,6 @@ There are also two word-sized registers that are only indirectly accessible to
 the programmer: the 16-bit instruction pointer IP and the FLAGS register.
 
 .8086 registers
-[%collapsible]
-====
 [%header,cols="6,16*"]
 |===
 | Register name
@@ -401,7 +408,6 @@ the programmer: the 16-bit instruction pointer IP and the FLAGS register.
 
 | DS (data segment) 16+| DS
 |===
-====
 
 The 8086 has following flags:
 
@@ -659,7 +665,8 @@ same as with the 8086.
 The introduction of protected mode with the 286 is a major change to the x86
 ISA.
 Protected mode introduces new data structures, mechanisms for virtual memory,
-memory protection and hardware task switching.
+memory protection, hardware task switching and the ability to access a 24-bit
+physical address space of 16 MiB.
 
 Hardware memory protection is primarily enforced through *protection rings*.
 Ring 0 is the most privileged and Ring 3 is the least privileged.
@@ -675,15 +682,15 @@ rings with higher number (less privilege) are referred to hereafter as _higher_
 | Register
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| AX (accumulator) 8+| AH 8+| AL
+| AX 8+| AH 8+| AL
 
-| CX (counter) 8+| CH 8+| CL
+| CX 8+| CH 8+| CL
 
-| DX (auxiliary accumulator) 8+| DH 8+| DL
+| DX 8+| DH 8+| DL
 
-| BX (base address) 8+| BH 8+| BL
+| BX 8+| BH 8+| BL
 
-| SP (stack pointer) 16+| SP
+| SP 16+| SP
 
 | BP 16+| BP
 
@@ -699,35 +706,17 @@ rings with higher number (less privilege) are referred to hereafter as _higher_
 | MSW
 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | *TS* | *EM* | *MP* | *PE*
 
-.4+| ES 16+| ES (visible selector)
-8+| _Access byte_ 8+| _Base (23:16)_
-16+| _Base (15:0)_
-16+| _Limit_
+| ESfootnote:[Hidden descriptor caches are omitted.] 16+| ES (visible selector)
 
-.4+| CS 14+| (visible CS selector) 2+| CPL
-8+| _Access byte_ 8+| _Base (23:16)_
-16+| _Base (15:0)_
-16+| _Limit_
+| CS 14+| (visible CS selector) 2+| CPL
 
-.4+| SS 14+| (visible SS selector) 2+| CPL
-8+| _Access byte_ 8+| _Base (23:16)_
-16+| _Base (15:0)_
-16+| _Limit_
+| SS 14+| (visible SS selector) 2+| CPL
 
-.4+| DS 16+| DS (visible selector)
-8+| _Access byte_ 8+| _Base (23:16)_
-16+| _Base (15:0)_
-16+| _Limit_
+| DS 16+| DS (visible selector)
 
-.4+| TR 16+| TR (visible selector)
-8+| 8+| _Base (23:16)_
-16+| _Base (15:0)_
-16+| _Limit_
+| TR 16+| TR (visible selector)
 
-.4+| LDTR 16+| LDTR (visible selector)
-8+| 8+| _Base (23:16)_
-16+| _Base (15:0)_
-16+| _Limit_
+| LDTR 16+| LDTR (visible selector)
 
 .3+| GDTR 8+| 8+| Base (23:16)
 16+| Base (15:0)
@@ -1232,7 +1221,7 @@ Its effect depends on the corresponding IDT entry:
 In order to keep track of what interrupts and far calls were serviced by a task
 gate, the CPU maintains the _nested task (NT) flag_.
 Whenever a task switch due to an interrupt and call occurs, the NT flag of the
-new task is set and the "previous TSS" field of the incoming task is filled
+new task is set and the previous TSS backlink of the incoming task is filled
 with the TSS selector of the outgoing task.
 A task switch due to a jump clears the NT flag of the incoming task.
 
@@ -1252,8 +1241,8 @@ If the NT flag is cleared, `iret` behaves in a similar way to `retf`, except
 that the FLAGS register (which was pushed on to the stack) is restored.
 The IOPL is only changed, if the callee is at Ring 0.
 If the NT flag is set, indicating an interrupt or call to a task gate, `iret`
-causes a task switch to the task pointed to by the selector in the "previous
-TSS" field (i.e. the caller task).
+causes a task switch to the task pointed to by the selector in the previous
+TSS backlink (i.e. the caller task).
 The NT flag of the callee (outgoing) task is subsequently cleared.
 
 .16-bit intra-level interrupt or trap gate stack (without error code)
@@ -1320,7 +1309,6 @@ h| Address h| Content h| Content h| Address
 .16-bit inter-level interrupt or trap gate stack (with error code)
 [%collapsible]
 ====
-.16-bit inter-level interrupt or trap gate stack (with error code)
 [cols="5*"]
 |===
 2+h| Caller stack
@@ -1362,7 +1350,7 @@ Table indicator (TI):: Zero for GDT; one for LDT.
 Interrupt (I):: Zero for GDT or LDT; one for IDT.
 External (EX): Set, if exception caused by external interrupt.
 
-Exceptions are classified in three types:footnote:[This terminology was
+Exceptions are classified into three types:footnote:[This terminology was
 introduced with the 386.
 The 286 manual differentiates between restartable (faults and traps) and
 non-restartable exceptions (aborts).]
@@ -1387,7 +1375,7 @@ Abort:: Aborts cannot be restarted reliably and indicate a critical error.
 
 | 1
 | Debug
-| Trapfootnote:[Debug features in the 386 and later may dispatch a fault rather
+| Trapfootnote:[Debug features in the 386 and later may dispatch a fault, rather
   than a trap, as is the case for exceptions caused by the trap flag.]
 | Benign
 | No
@@ -1576,31 +1564,41 @@ the corresponding segment override prefix, were introduced: FS and GS.
 | CR3 20+| Page Directory Base Register (PDBR)
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
 
-.3+| ES footnote:[The arrangement of fields in the hidden descriptor caches
-     is arbitrary.]
-12+| _Atrributes_ 4+| 16+| ES (visible selector)
-32+| _Base_ 32+| _Limit_
+| DR0 32+| Breakpoint 0 linear address
 
-.3+| CS 12+| _Attributes_ 4+| 14+| (visible CS selector) 2+| CPL
-32+| _Base_ 32+| _Limit_
+| DR1 32+| Breakpoint 1 linear address
 
-.3+| SS 12+| _Attributes_ 4+| 14+| (visible SS selector) 2+| CPL
-32+| _Base_ 32+| _Limit_
+| DR2 32+| Breakpoint 2 linear address
 
-.3+| DS 12+| _Attributes_ 4+| 16+| DS (visible selector)
-32+| _Base_ 32+| _Limit_
+| DR3 32+| Breakpoint 3 linear address
 
-.3+| FS 12+| _Attributes_ 4+| 16+| FS (visible selector)
-32+| _Base_ 32+| _Limit_
+| DR6
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+| *BT* | *BS* | *BD* | 0 | 0 | 0 | 0 | 0
+| 0 | 0 | 0 | 0 | *B3* | *B2* | *B1* | *B0*
 
-.3+| GS 12+| _Attributes_ 4+| 16+| GS (visible selector)
-32+| _Base_ 32+| _Limit_
+| DR7
+2+| *LEN3* 2+| *R/W3* 2+| *LEN2* 2+| *R/W2*
+2+| *LEN1* 2+| *R/W1* 2+| *LEN0* 2+| *R/W0*
+| 0 | 0 | 0 | 0 | 0 | 0 | *GE* | *LE*
+| *G3* | *L3* | *G2* | *L2* | *G1* | *L1* | *G0* | *L0*
 
-.3+| TR 16+| 16+| TR (visible selector)
-32+| _Base_ 12+| _Attributes_ 4+| 16+| _Limit_
+| ESfootnote:[Hidden descriptor caches are omitted.]
+16+| 16+| ES (visible selector)
 
-.3+| LDTR 16+| 16+| LDTR (visible selector)
-32+| _Base_ 16+| 16+| _Limit_
+| CS 16+| 14+| (visible CS selector) 2+| CPL
+
+| SS 16+| 14+| (visible SS selector) 2+| CPL
+
+| DS 16+| 16+| DS (visible selector)
+
+| FS 16+| 16+| FS (visible selector)
+
+| GS 16+| 16+| GS (visible selector)
+
+| TR 16+| 16+| TR (visible selector)
+
+| LDTR 16+| 16+| LDTR (visible selector)
 
 .2+| GDTR 32+| Base 16+| 16+| Limit
 
@@ -1655,7 +1653,8 @@ case the default segment is SS.
 
 ==== 32-bit segmentation
 In order to deal with 32-bit addresses and the extended 32-bit physical address
-space, the 386 introduces backwards-compatible changes to segmentation.
+space of 4 GiB, the 386 introduces backwards-compatible changes to
+segmentation.
 
 .386 segment descriptor format
 [cols="3,16*"]
@@ -1688,7 +1687,7 @@ DB:: Set for 32-bit segment; clear for 16-bit segment.
 Granularity flag (G):: If set, limit is given in 4 kiB units, rather than units
                        of one byte.
                        The effective limit is `limit * 4096 + 4095`.
-                        Allows for segments of up to 4 GiB.
+                       Allows for segments of up to 4 GiB.
 
 .New 386 system segment types
 [cols="4*,5,6"]
@@ -1760,61 +1759,86 @@ Base Register PDBR) and the new general-purpose registers introduced with the
 .32-bit TSS structure
 [%collapsible]
 ====
-[cols="1,1,1"]
+[%header,cols="5,32*"]
 |===
-| Byte offset | +2 | +0
+| Byte offset
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-| 0 | Reserved | Previous TSS
+| 0
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| Previous TSS backlink
 
-| 4 2+| `esp0`
+| 4 32+| ESP0
 
-| 8 | Reserved | `ss0`
+| 8
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| SS0
 
-| 12 2+| `esp1`
+| 12 32+| ESP1
 
-| 16 | Reserved | `ss1`
+| 16
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| SS1
 
-| 20 2+| `esp2`
+| 20 32+| ESP2
 
-| 24 | Reserved | `ss2`
+| 24
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| SS2
 
-| 28 2+| `cr3` (`pdbr`)
+| 28 32+| CR3 (PDBR)
 
-| 32 2+| `eip`
+| 32 32+| EIP
 
-| 36 2+| `eflags`
+| 36 32+| EFLAGS
 
-| 40 2+| `eax`
+| 40 32+| EAX
 
-| 44 2+| `ecx`
+| 44 32+| ECX
 
-| 48 2+| `edx`
+| 48 32+| EDX
 
-| 52 2+| `ebx`
+| 52 32+| EBX
 
-| 56 2+| `esp`
+| 56 32+| ESP
 
-| 60 2+| `ebp`
+| 60 32+| EBP
 
-| 64 2+| `esi`
+| 64 32+| ESI
 
-| 68 2+| `edi`
+| 68 32+| EDI
 
-| 72 | Reserved | `es`
+| 72
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| ES
 
-| 76 | Reserved | `cs`
+| 76
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| CS
 
-| 80 | Reserved | `ss`
+| 80
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| SS
 
-| 84 | Reserved | `ds`
+| 84
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| DS
 
-| 88 | Reserved | `fs`
+| 88
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| FS
 
-| 92 | Reserved | `gs`
+| 92
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| GS
 
-| 96 | Reserved | `ldtr`
+| 96
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+16+| LDTR
 
-| 100 | I/O map base | T flag
+| 100 16+| I/O map base
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | T
 |===
 ====
 
@@ -1832,8 +1856,8 @@ I/O map base:: Base offset of a bitmap in the TSS.
                I/O port that is accessed, with numerical value 255.]
 T flag (T):: Bit 0 of the corresponding word in the table.
              All other bits are reserved.
-             If set, will raise a debug trap (interrupt 1), when switching to the
-             task.
+             If set, will raise a debug trap (interrupt 1), after switching to
+             the task, but before executing an instruction.
 
 ==== Paging
 The 386 added support for paging as an extra translation layer, in addition to
@@ -1980,7 +2004,7 @@ Many operating system, however, only use Ring 0 and Ring 3 anyways.
 Another problem is that there is no way to restrict execution of pages, while
 still allowing it to be read or written.
 
-Modern operating systems implement context switching in software, rather than
+Modern operating systems implement *software context switching*, rather than
 using the hardware context switching facilities.
 Modern processors no longer optimize hardware context switching.
 In particular, this means there is a fixed amount of task state segments,
@@ -2066,13 +2090,74 @@ the TSS and to invoke interrupt 1 via the one-byte `int1` instruction.
 Intel reserves `int1` for debugging hardware, while software debuggers should
 use `int3`.
 
-The 386 also introduces eight debug registers DR0 to DR7.
-Much like CR1, DR4 and DR5 are reserved and cause an undefined opcode
-exception when accessed.
-
+The 386 also introduces eight debug registers DR0 to DR7 and corresponding
+`mov` instruction.
+Much like CR1, DR4 and DR5 are reserved and are aliases to DR6 and DR7
+respectively.
 DR0 to DR3 contain the linear address of breakpoints zero through three.
 DR6 is known as the _Debug Status Register_ and DR7 is known as the _Debug
 Control Register_.
+
+DR7 controls under what circumstances the debug exceptions are dispatched:
+
+* R/W0 to R/W3 specify the kind of breakpoint:
+
+  * `00` - Instruction breakpoint.
+    Range must be one byte (`00`).
+    Causes a fault, just _before_ a instruction that starts at the precise
+    linear address of the breakpoint is executed.
+  * `01` - Causes a trap (i.e. the interrupt is dispatched _after_ the
+    instruction is executed) when memory in the range given by DR0 to DR3 and
+    LEN0 to LEN3 is written to.
+  * `10` - Reserved.
+  * `11` - Causes a trap when data is read or written to (see `01`).
+
+* The LEN0 to LEN3 fields control the range of bytes that are affected by a
+  data breakpoint.
+  The linear address must be aligned according to the range field (i.e. 2 byte
+  breakpoints must be word-aligned, 4 byte breakpoints must be dword-aligned).
+
+  * `00` - 1 byte
+  * `01` - 2 byte
+  * `10` - 8 byte (AMD long mode and certain Intel processors only; reserved
+    otherwise)
+  * `11` - 4 byte
+
+* G0 to G3 enable the respective breakpoint globally.
+
+* L0 to L3 enable the respective breakpoint locally.
+  This means they are reset automatically on a task switch.
+
+DR6 indicates the cause of a debug exception.
+The fields are set automatically by the processor, but never reset.
+
+* B0 to B3 indicate a fault or trap due to a breakpoint.
+* BT indicates a trap due to the T flag in a TSS.
+* BS indicates a single-step trap due to the trap flag TF.
+* BD indicates a fault, caused by reading or writing a debug register.
+  This happens, when an in-circuit emulator (such as the ICE-386) is using the
+  debug registers.
+
+Since instruction breakpoints are a fault, resuming the fault may cause the
+breakpoint to happen again.
+To deal with this, the _resume (or restart) flag (RF)_ was introduced.
+This flag is automatically set on the saved EFLAGS register, whenever any fault
+occurs.
+If RF is set, instruction breakpoints are disabled for one instruction, since
+the flag is automatically cleared once a instruction finishes successfully.
+
+==== Test registers
+In addition to control and debug registers, the 386 has a `mov` instruction for
+eight test registers.
+However, only TR6, the _test command register_, and TR7, the _test control
+register_, exist.
+These server to test the TLB during early initialization.
+
+==== Virtual 8086 mode
+In order to allow real mode programs to run under protected mode, the virtual
+8086 mode was introduced.
+Virtual 8086 mode is enabled by setting the _VM flag_ in the EFLAGS register.
+This is usually done through a _VM86 task_.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
@@ -2120,8 +2205,8 @@ set, it introduces a new set of eight 128-bit registers XMM0 to XMM7 that
 can each store four 32-bit floating-point numbers.
 
 ==== SSE2
-*SSE2*, also known as _Willamette New Instructions (WNI)_, was introduced in 2000
-with the Intel Penium 4.
+*SSE2*, also known as _Willamette New Instructions (WNI)_, was introduced in
+2000 with the Intel Pentium 4.
 AMD first implemented it with the x86-64 Opteron in 2003.
 SSE2 adds support for 64-bit floating-point numbers and integers of sizes
 ranging from 8-bit to 64-bit, through MMX-like instructions on SSE registers.
@@ -2130,7 +2215,7 @@ x87 supports higher precision 80-bit floating-point math).
 
 AMD's x86-64 implementation introduced eight new registers XMM8 to XMM15,
 that can only be used in 64-bit mode.
-Infact, SSE2 with 16 registers is mandatory for every x86-64 implementation.
+In fact, SSE2 with 16 registers is mandatory for every x86-64 implementation.
 
 ==== SSE3
 *SSE3*, also known as _Prescott New Instructions (PNI)_, was introduced by Intel
