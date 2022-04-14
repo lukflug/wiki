@@ -606,7 +606,7 @@ h| Address 2+h| Content h| Address
 
 | `sp` | Caller stack | Caller stack | `sp + 2`
 
-| `sp - 2` | | `ip` | `sp`
+| `sp - 2` | | IP | `sp`
 |===
 ====
 
@@ -940,8 +940,9 @@ levels that are taken into account:
   segment selector (i.e. bits 0 and 1 of the segment selector).
 * The __effective privilege level (EPL)__ is the maximum of the CPL and RPL.
 * The __I/O privilege level (IOPL)__ is a value in the FLAGS register that
-  determines the highest CPL allowed to do direct I/O and to set and clear the
-  interrupt flag (`cli` and `sti`) within the current task.
+  determines the highest CPL allowed to do direct I/O (`in`, `out`, `ins` and
+  `outs`), to set and clear the interrupt flag (`cli` and `sti`) and to use the
+  `lock` prefix within the current task.
 
 Certain instructions, such as `lgdt`, can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
@@ -2017,6 +2018,7 @@ The 386 introduces a new exception:
 .New 386 exceptions
 |===
 | Vector | Name | Type | Class | Error code
+
 | 14 | Page fault | Fault | Page fault | Yes
 |===
 
@@ -2151,13 +2153,59 @@ In addition to control and debug registers, the 386 has a `mov` instruction for
 eight test registers.
 However, only TR6, the _test command register_, and TR7, the _test control
 register_, exist.
-These server to test the TLB during early initialization.
+These serve to test the TLB during early initialization.
 
 ==== Virtual 8086 mode
-In order to allow real mode programs to run under protected mode, the virtual
-8086 mode was introduced.
-Virtual 8086 mode is enabled by setting the _VM flag_ in the EFLAGS register.
-This is usually done through a _VM86 task_.
+In order to allow real mode programs to run under protected mode, the *virtual
+8086 mode (VM86 mode)* was introduced.
+The processor is in VM86 mode, if the _VM flag_ in the EFLAGS register is set.
+
+The VM flag should be toggled through an `iret` or a task switch, in order to
+update the segment registers and the instruction and stack pointer to a valid
+state.
+A task in VM86 mode is referred to as a _VM86 task_.
+It runs under the supervision of a protected mode program called the
+_VM86 monitor_.
+
+In VM86 mode, segmentation works in a similar way to real mode: the segment
+base linear address is 16 times the segment selector value and the limit is
+always 65535.
+The CPL in VM86 mode is always 3.
+
+Paging, however, works as it does in protected mode.
+In particular, the VM86 task can access the first mebibyte (plus 64 kiB minus
+16 bytes) of linear address space, meaning that, if paging is enabled, this
+memory does not have to be mapped to the first megabyte of memory, allowing
+for multiple VM86 tasks.
+Paging protection also applies, which allows the VM86 monitor to catch access
+to certain memory areas.
+
+The instructions that are sensitive to IOPL change in VM86 mode.
+In particular, the I/O instructions `in`, `out`, `ins` and `outs` are no longer
+sensitive to IOPL and `pushf`, `popf` and `iret` are now sensitive to IOPL.
+`cli`, `sti` and `lock` remain sensitive.
+This means, if the IOPL is 3, the VM86 tasks may directly control the interrupt
+flag and may issue software interrupts directly, otherwise a general protection
+fault is dispatched.
+
+VM86 mode handles interrupts in a similar way to native protected mode.
+The IDT is used, rather than the real mode IVT.
+The corresponding IVT entry for a interrupt in VM86 mode must point to a task
+gate or interrupt or trap gate pointing to a nonconforming code segment with
+DPL 0.
+If the resulting CPL of a interrupt or trap gate is not zero, a general
+protection fault occurs.
+
+When an interrupt causes a switch out of VM86 mode through an interrupt or trap
+gate, in addition to updating CS:EIP (to the target of the gate) and SS:ESP
+(with the SS0:ESP0 field of the current TSS), the other segment registers DS,
+ES, FS and GS are also pushed on the stack and set to null selectors, since
+they contained real mode segment addresses and not necessarily valid protected
+mode segment selectors.
+
+I/O permissions work much like protected mode, except that IOPL is ignored.
+Instead, the I/O permission bitmap is always consulted, meaning the IOPL is
+effectively zero.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
