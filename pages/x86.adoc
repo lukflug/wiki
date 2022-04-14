@@ -488,6 +488,8 @@ override).
 The default segment is DS, except when the base is BP, in which case it is SS.
 
 .8086 addressing modes
+[%collapsible]
+====
 |===
 | Effective address | Displacement formats | Default segment
 
@@ -514,6 +516,7 @@ The default segment is DS, except when the base is BP, in which case it is SS.
 
 | `di + disp` | Zero, byte or word | DS
 |===
+====
 
 ==== Memory models
 Since 16-bit segments are limited to 64 kiB, applications may use multiple
@@ -596,51 +599,19 @@ Intel reserved the first 32 interrupts for future use (i.e. additional CPU
 exceptions).
 IBM did not heed that recommendation, causing compatibility issues.
 
-.Near call stack
+.Call and interrupt stack
 [%collapsible]
 ====
 |===
-2+h| Before 2+h| After
+| Address | Near call | Far call | Interrupt
 
-h| Address 2+h| Content h| Address
+| `sp + 6` .3+| Caller stack .2+| Caller stack | Caller stack
 
-| `sp` | Caller stack | Caller stack | `sp + 2`
+| `sp + 4` | FLAGS
 
-| `sp - 2` | | IP | `sp`
-|===
-====
+| `sp + 2` | CS | CS
 
-.Real mode far call stack
-[%collapsible]
-====
-|===
-2+h| Before 2+h| After
-
-h| Address 2+h| Content h| Address
-
-| `sp` | Caller stack | Caller stack | `sp + 4`
-
-| `sp - 2` .2+| | CS | `sp + 2`
-
-| `sp - 4` | IP | `sp`
-|===
-====
-
-.Real mode interrupt stack
-[%collapsible]
-====
-|===
-2+h| Before 2+h| After
-
-h| Address 2+h| Content h| Address
-
-| `sp` | Caller stack | Caller stack | `sp + 6`
-
-| `sp - 2` .3+| | FLAGS | `sp + 4`
-
-| `sp - 4` | CS | `sp + 2`
-
-| `sp - 6` | IP | `sp`
+| `sp` | IP | IP | IP
 |===
 ====
 
@@ -1075,46 +1046,26 @@ a general protection fault).
   For a procedure invoked via a TSS or task gate to properly return, it must
   use `iret`, not `retf`.
 
-.16-bit intra-level far call stack
+.Call gate stack
 [%collapsible]
 ====
 |===
-2+h| Before 2+h| After
+| Address | Intra-level | Inter-level
 
-h| Address 2+h| Content h| Address
+| `sp + 12` .3+| Caller stack
+| = SSn:SPnfootnote:[Where _n_ is the target CPL.]
 
-| `sp + 2` | Parameter 2 | Parameter 2 | `sp + 6`
+| `sp + 10` | SS
 
-| `sp` | Parameter 1 | Parameter 1 | `sp + 4`
+| `sp + 8` | SP
 
-| `sp - 2` .2+| | CS | `sp + 2`
+| `sp + 6` | Parameter 2 | Parameter 2
 
-| `sp - 4` | IP | `sp`
-|===
-====
+| `sp + 4` | Parameter 1 | Parameter 1
 
-.16-bit inter-level call gate stack
-[%collapsible]
-====
-[cols="5*"]
-|===
-2+h| Caller stack
-.8+h|
-2+h| Callee stack
+| `sp + 2` | CS | CS
 
-h| Address h| Content h| Content h| Address
-
-| `sp + 6` .2+| Caller stack | SS | `sp + 10`
-
-| `sp + 4`| SP | `sp + 8`
-
-| `sp + 2` | Parameter 2 | Parameter 2 | `sp + 6`
-
-| `sp` | Parameter 1 | Parameter 1 | `sp + 4`
-
-2.2+| | CS | `sp + 2`
-
-| IP | `sp`
+| `sp` | IP | IP
 |===
 ====
 
@@ -1246,89 +1197,34 @@ causes a task switch to the task pointed to by the selector in the previous
 TSS backlink (i.e. the caller task).
 The NT flag of the callee (outgoing) task is subsequently cleared.
 
-.16-bit intra-level interrupt or trap gate stack (without error code)
+.Interrupt and trap gate stack
 [%collapsible]
 ====
+[%header,cols="5"]
 |===
-2+h| Before 2+h| After
+| Address
+| Intra-level, +
+  no error code
+| Intra-level, +
+  error code
+| Inter-level, +
+  no error code
+| Inter-level, +
+  error code
 
-h| Address 2+h| Content h| Address
+| `sp + 14` .4+| Caller stack .3+| Caller stack | | = SSn:SPn
 
-| `sp` | Caller stack | Caller stack | `sp + 6`
+| `sp + 12` | = SSn:SPn | SS
 
-| `sp - 2` .4+| | FLAGS | `sp + 4`
+| `sp + 10` | SS | SP
 
-| `sp - 4` | CS | `sp + 2`
+| `sp + 8` | FLAGS | SP | FLAGS
 
-| `sp - 6` | IP | `sp`
-|===
-====
+| `sp + 6` | FLAGS | IP | FLAGS | IP
 
-.16-bit intra-level interrupt or trap gate stack (with error code)
-[%collapsible]
-====
-|===
-2+h| Before 2+h| After
+| `sp + 2` | IP | CS | IP | CS
 
-h| Address 2+h| Content h| Address
-
-| `sp` | Caller stack | Caller stack | `sp + 8`
-
-| `sp - 2` .4+| | FLAGS | `sp + 6`
-
-| `sp - 4` | CS | `sp + 4`
-
-| `sp - 6` | IP | `sp + 2`
-
-| `sp - 8` | Error code | `sp`
-|===
-====
-
-.16-bit inter-level interrupt or trap gate stack (without error code)
-[%collapsible]
-====
-[cols="5*"]
-|===
-2+h| Caller stack
-.8+h|
-2+h| Callee stack
-
-h| Address h| Content h| Content h| Address
-
-| `sp` | Caller stack | SS | `sp + 8`
-
-2.4+| | SP | `sp + 6`
-
-| FLAGS | `sp + 4`
-
-| CS | `sp + 2`
-
-| IP | `sp`
-|===
-====
-
-.16-bit inter-level interrupt or trap gate stack (with error code)
-[%collapsible]
-====
-[cols="5*"]
-|===
-2+h| Caller stack
-.8+h|
-2+h| Callee stack
-
-h| Address h| Content h| Content h| Address
-
-| `sp` | Caller stack | SS | `sp + 10`
-
-2.5+| | SP | `sp + 8`
-
-| FLAGS | `sp + 6`
-
-| CS | `sp + 4`
-
-| IP | `sp + 2`
-
-| Error code | `sp`
+| `sp` | CS | Error code | CS | Error code
 |===
 ====
 
@@ -1451,6 +1347,8 @@ does not use this terminology, instead it differentiates between protection
 violation and other, instead of contributory and benign.]
 
 .Double exception handling
+[%collapsible]
+====
 [cols="4*"]
 |===
 .2+h| First exception
@@ -1480,6 +1378,7 @@ violation and other, instead of contributory and benign.]
 | Triple fault
 | Triple fault
 |===
+====
 
 ==== Machine Status Word
 The 286 also introduced a new 16-bit register called the _Machine Status Word
@@ -1723,7 +1622,7 @@ interrupts through gates.
 
 | +48 16+| Offset (31:16)
 
-| +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Word count
+| +32 | P 2+| DPL | S 4+| Type 3+| Reserved 5+| Dword count
 
 | +16 16+| Segment
 
@@ -2206,6 +2105,41 @@ mode segment selectors.
 I/O permissions work much like protected mode, except that IOPL is ignored.
 Instead, the I/O permission bitmap is always consulted, meaning the IOPL is
 effectively zero.
+
+.32-bit call stack (ESP = -4 if error code, ESP = 0 otherwise)
+[%collapsible]
+====
+[%header,cols="7*"]
+|===
+| 2+| Call 2+| Interrupt
+2+| Interrupt +
+    from VM86 mode
+
+| Address | +2 | +0 | +2 | +0 | +2 | +0
+
+| 36 2.5+| 2.4+| 2+| = SS0:ESP0
+
+| 32 | | FS
+
+| 28 | | GS
+
+| 24 | | DS
+
+| 20 2+| (= SSn:ESPn) | | ES
+
+| 16 2+| (= SSn:ESPn) | | (SS) | | SS
+
+| 12 | | (SS) 2+| (ESP) 2+| ESP
+
+| 8 2+| (ESP) 2+| EFLAGS 2+| EFLAGS
+
+| 4 | | CS | | CS | | CS
+
+| 0 2+| EIP 2+| EIP 2+| EIP
+
+| -4 2+| 2+| (Error code) 2+| (Error code)
+|===
+====
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
