@@ -151,7 +151,7 @@ system management mode.
 The 6x86MX and MII implement an additional extension to SMM and an extension to
 MMX, called _Extended Multimedia Instructions (EMMI)_.
 MediaGX and Geode GXm, GXLV and GX1 processors implement special instructions
-for display drivers.
+for display drivers for the on-chip video.
 Geode GX2 and AMD Geode introduce a _debug management mode (DMM)_.
 
 === x86-64
@@ -2242,6 +2242,7 @@ New mechanisms were also introduced, that allow finer control of caching.
 .2+| IDR 32+| Base 16+| 16+| Limit
 |===
 ====
+
 Since the FPU is now integrated, numeric exceptions can be routed internally to
 interrupt 16.
 However, to maintain compatibility with older implementation, where the FPU is
@@ -2265,7 +2266,7 @@ When a alignment violation happens, the an alignment check fault is raised.
 
 ==== Cache control
 The new `invd` and `wbinvd` instruction invalidate the cache.
-While the `invd` instruction may cause data loss on a write-through cache, due
+While the `invd` instruction may cause data loss on a writethrough cache, due
 to not writing back changes, the `wbinvd` updates the memory with changes,
 before invalidating the cache.
 
@@ -2275,22 +2276,49 @@ entry, rather than invalidating all of them through writing to CR3.
 The 486 also expanded the test registers of the 386.
 In addition to TR6 and TR7, the 486 introduced TR3 (the _cache test data
 register_), TR4 (the _cache test status register_) and TR5 (the _cache test
-control register_), to test the internal write-through L1 cache.
+control register_), to test the internal writethrough L1 cache.
 
 Two new flags were added to CR0 for global cache control:
 
-* _Cache Disable (CD)_ disables the allocation of new cache lines, meaning
+* _Cache Disable (CD)_ disables the allocation of new cache lines, meaning read
   cache misses are read directly from main memory, but no cache line gets
   replaced.
-* _No Write-through (NW)_ disables write-through caching, meaning that cache
-  hits are not written back to memory, thereby losing cache coherency.
-  Not available on Cx486.
+  To completely disable the cache, the CD bit is set and the cache is flushed
+  through `wbinvd`.
+  On CPUs with MTRR (see i686 section), the memory type may need to be set to
+  uncacheable (UC) when setting the CD, in order to preserve strong memory
+  ordering (which can be done by disabling MTRRs).
+
+* _No Writethrough (NW)_ may only be set if CD is also set and causes cache
+  coherence to no longer be maintained, i.e. write cache misses are written to
+  the cache and never written back to main memory.
+  On 586-class processors and later, setting the NW bit disables writeback
+  caching, forcing any page to writethrough, regardless of PCD and PWT (see
+  below) and MTTRs (see i686 section).
 
 Having NW one and CD zero is invalid and causes a general protection fault.
 
+[NOTE]
+====
+The effect of the CD and NW bits varies over implementations:
+
+* The NW bit does not exist on Cx486 processors.
+
+* The NW bit has a different meaning on Cx5x86, 6x86, MII and MediaGX
+  processors.
+
+* The NW bit is ignored on Intel Pentium 4 and later, as well as any AMD64
+  implementation.
+
+* The CD bit disables caching completely on Intel Atom CPUs.
+
+* If the CD bit is set, 64-bit AMD processors automatically invalidate (and
+  write back) a cache line on a cache hit.
+====
+
 ==== Paging
-If the new _Write Protect (WP)_ in CR0 is set, writing to a read-only page,
-will cause a page exception, even in supervisor mode.
+If the new _Write Protect (WP)_ in CR0 is set, writing to a read-only page will
+cause a page fault, even in supervisor mode.
 
 .486 page entry
 [%header,cols="32*"]
@@ -2308,10 +2336,121 @@ Page-level cache disable (PCD):: Disables caching for this page.
                                  CR3 controls caching for the PD, the PD entry
                                  controls caching for the PT, and the PT entry
                                  controls caching for the page.
-Page-level write-through (PWT):: Disable any write-back cache for this page
-                                 (in particular external ones, the 486 has an
-                                 internal write-through cache).
-                                 See PCD.
+Page-level writethrough (PWT):: Disables any writeback cache for this page
+                                (in particular external ones, the 486 has an
+                                internal writethrough cache).
+                                See PCD.
+
+=== i586
+586-class processors include the Intel Pentium and Pentium MMX, the AMD K5, the
+NexGen Nx586, as well as the Cyrix Cx5x86, Cx6x86 and MediaGX.
+In addition to adding the `cmpxchg8b` and `cpuid` instructions, the Pentium
+introduced MSRs, machine checks and the TSC, along with extensions to paging,
+virtual 8086 mode and debugging.
+
+.586 registers
+[%collapsible]
+====
+[%header,cols="3,32*"]
+|===
+| Register
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| EAX 16+| (EAX) 8+| AH (AX) 8+| AL (AX)
+
+| ECX 16+| (ECX) 8+| CH (CX) 8+| CL (CX)
+
+| EDX 16+| (EDX) 8+| DH (DX) 8+| DL (DX)
+
+| EBX 16+| (EBX) 8+| BH (BX) 8+| BL (BX)
+
+| ESP 16+| (ESP) 16+| SP
+
+| EBP 16+| (EBP) 16+| BP
+
+| ESI 16+| (ESI) 16+| SI
+
+| EDI 16+| (EDI) 16+| DI
+
+| EIP 16+| (EIP) 16+| IP
+
+| EFLAGS
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | *ID* | *VIP* | *VIF* | AC | VM | RF
+| 0 | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | 0 | AF | 0 | PF | 1 | CF
+
+| CR0
+| PG | CD | NW | | | | | | | | | | | AM | | WP
+| | | | | | | | | | | NE | ET | TS | EM | MP | PE
+
+| CR2 32+| Page fault linear address
+
+| CR3 20+| Page Directory Base Register (PDBR)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | PCD | PWT | 0 | 0 | 0
+
+| CR4
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+| 0 | 0 | 0 | 0 | 0 | 0 | *MCE* | 0 | *PSE* | *TSD* | *PVI* | *VME*
+
+| DR0 32+| Breakpoint 0 linear address
+
+| DR1 32+| Breakpoint 1 linear address
+
+| DR2 32+| Breakpoint 2 linear address
+
+| DR3 32+| Breakpoint 3 linear address
+
+| DR6
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1
+| BT | BS | BD | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | B3 | B2 | B1 | B0
+
+| DR7
+2+| LEN3 2+| R/W3 2+| LEN2 2+| R/W2 2+| LEN1 2+| R/W1 2+| LEN0 2+| R/W0
+| 0 | 0 | *GD* | 0 | 0 | 1 | GE | LE | G3 | L3 | G2 | L2 | G1 | L1 | G0 | L0
+
+| ESfootnote:[Hidden descriptor caches are omitted.]
+16+| 16+| ES (visible selector)
+
+| CS 16+| 14+| (visible CS selector) 2+| CPL
+
+| SS 16+| 14+| (visible SS selector) 2+| CPL
+
+| DS 16+| 16+| DS (visible selector)
+
+| FS 16+| 16+| FS (visible selector)
+
+| GS 16+| 16+| GS (visible selector)
+
+| TR 16+| 16+| TR (visible selector)
+
+| LDTR 16+| 16+| LDTR (visible selector)
+
+.2+| GDTR 32+| Base 16+| 16+| Limit
+
+.2+| IDR 32+| Base 16+| 16+| Limit
+|===
+====
+
+==== CPUID
+Pentium and late 486 models support the `cpuid` instruction, in order to
+facilitate the detection of CPU models.
+The ability to toggle the _ID flag_ in EFLAGS indicates the presence of the
+`cpuid` instruction.
+
+`cpuid` returns a variety of information in `eax`, `ebx`, `ecx` and `edx`,
+based on the initial value of `eax`, the _function number_.
+There are standard function numbers, starting from 0x00000000, and extended
+function numbers, starting from 0x80000000.
+
+The most important functions are:
+
+* `eax` = 0x00000000 returns the highest standard function number in `eax` and
+  a 12 byte vendor string in `ebx`, `ecx` and `edx`.
+  The vendor string is "GenuineIntel" for Intel processors and "AuthenticAMD"
+  for AMD processors.
+* `eax` = 0x00000001 returns version information in `eax` and feature
+  information in `ecx` and `edx`.
+* `eax` = 0x80000000 returns the highest extended function number in `eax`
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
