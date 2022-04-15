@@ -58,6 +58,7 @@
 <li><a href="#_80286">3.3. 80286</a></li>
 <li><a href="#_i386">3.4. i386</a></li>
 <li><a href="#_i486">3.5. i486</a></li>
+<li><a href="#_i586">3.6. i586</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -276,7 +277,7 @@ system management mode.
 The 6x86MX and MII implement an additional extension to SMM and an extension to
 MMX, called <em>Extended Multimedia Instructions (EMMI)</em>.
 MediaGX and Geode GXm, GXLV and GX1 processors implement special instructions
-for display drivers.
+for display drivers for the on-chip video.
 Geode GX2 and AMD Geode introduce a <em>debug management mode (DMM)</em>.</p>
 </div>
 </div>
@@ -5231,7 +5232,7 @@ When a alignment violation happens, the an alignment check fault is raised.</p>
 <h4 id="_cache_control">3.5.1. Cache control</h4>
 <div class="paragraph">
 <p>The new <code>invd</code> and <code>wbinvd</code> instruction invalidate the cache.
-While the <code>invd</code> instruction may cause data loss on a write-through cache, due
+While the <code>invd</code> instruction may cause data loss on a writethrough cache, due
 to not writing back changes, the <code>wbinvd</code> updates the memory with changes,
 before invalidating the cache.</p>
 </div>
@@ -5243,7 +5244,7 @@ entry, rather than invalidating all of them through writing to CR3.</p>
 <p>The 486 also expanded the test registers of the 386.
 In addition to TR6 and TR7, the 486 introduced TR3 (the <em>cache test data
 register</em>), TR4 (the <em>cache test status register</em>) and TR5 (the <em>cache test
-control register</em>), to test the internal write-through L1 cache.</p>
+control register</em>), to test the internal writethrough L1 cache.</p>
 </div>
 <div class="paragraph">
 <p>Two new flags were added to CR0 for global cache control:</p>
@@ -5251,26 +5252,70 @@ control register</em>), to test the internal write-through L1 cache.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><em>Cache Disable (CD)</em> disables the allocation of new cache lines, meaning
+<p><em>Cache Disable (CD)</em> disables the allocation of new cache lines, meaning read
 cache misses are read directly from main memory, but no cache line gets
-replaced.</p>
+replaced.
+To completely disable the cache, the CD bit is set and the cache is flushed
+through <code>wbinvd</code>.
+On CPUs with MTRR (see i686 section), the memory type may need to be set to
+uncacheable (UC) when setting the CD, in order to preserve strong memory
+ordering (which can be done by disabling MTRRs).</p>
 </li>
 <li>
-<p><em>No Write-through (NW)</em> disables write-through caching, meaning that cache
-hits are not written back to memory, thereby losing cache coherency.
-Not available on Cx486.</p>
+<p><em>No Writethrough (NW)</em> may only be set if CD is also set and causes cache
+coherence to no longer be maintained, i.e. write cache misses are written to
+the cache and never written back to main memory.
+On 586-class processors and later, setting the NW bit disables writeback
+caching, forcing any page to writethrough, regardless of PCD and PWT (see
+below) and MTTRs (see i686 section).</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>Having NW one and CD zero is invalid and causes a general protection fault.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The effect of the CD and NW bits varies over implementations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The NW bit does not exist on Cx486 processors.</p>
+</li>
+<li>
+<p>The NW bit has a different meaning on Cx5x86, 6x86, MII and MediaGX
+processors.</p>
+</li>
+<li>
+<p>The NW bit is ignored on Intel Pentium 4 and later, as well as any AMD64
+implementation.</p>
+</li>
+<li>
+<p>The CD bit disables caching completely on Intel Atom CPUs.</p>
+</li>
+<li>
+<p>If the CD bit is set, 64-bit AMD processors automatically invalidate (and
+write back) a cache line on a cache hit.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_paging_2">3.5.2. Paging</h4>
 <div class="paragraph">
-<p>If the new <em>Write Protect (WP)</em> in CR0 is set, writing to a read-only page,
-will cause a page exception, even in supervisor mode.</p>
+<p>If the new <em>Write Protect (WP)</em> in CR0 is set, writing to a read-only page will
+cause a page fault, even in supervisor mode.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 21. 486 page entry</caption>
@@ -5371,14 +5416,278 @@ CR3 controls caching for the PD, the PD entry
 controls caching for the PT, and the PT entry
 controls caching for the page.</p>
 </dd>
-<dt class="hdlist1">Page-level write-through (PWT)</dt>
+<dt class="hdlist1">Page-level writethrough (PWT)</dt>
 <dd>
-<p>Disable any write-back cache for this page
+<p>Disables any writeback cache for this page
 (in particular external ones, the 486 has an
-internal write-through cache).
+internal writethrough cache).
 See PCD.</p>
 </dd>
 </dl>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_i586">3.6. i586</h3>
+<div class="paragraph">
+<p>586-class processors include the Intel Pentium and Pentium MMX, the AMD K5, the
+NexGen Nx586, as well as the Cyrix Cx5x86, Cx6x86 and MediaGX.
+In addition to adding the <code>cmpxchg8b</code> and <code>cpuid</code> instructions, the Pentium
+introduced MSRs, machine checks and the TSC, along with extensions to paging,
+virtual 8086 mode and debugging.</p>
+</div>
+<details>
+<summary class="title">586 registers</summary>
+<div class="content">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 8.5714%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8585%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Register</th>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EAX</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EAX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">AH (AX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">AL (AX)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ECX</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(ECX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">CH (CX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">CL (CX)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EDX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">DH (DX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">DL (DX)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EBX</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EBX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">BH (BX)</p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">BL (BX)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ESP</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(ESP)</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">SP</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EBP</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EBP)</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">BP</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ESI</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(ESI)</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">SI</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDI</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EDI)</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">DI</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EIP</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EIP)</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">IP</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EFLAGS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ID</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>VIP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>VIF</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NT</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">IOPL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ZF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PF</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CF</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PG</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NW</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AM</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WP</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ET</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR2</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Page fault linear address</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR3</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Page Directory Base Register (PDBR)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<div class="sect3">
+<h4 id="_cpuid">3.6.1. CPUID</h4>
+<div class="paragraph">
+<p>Pentium and late 486 models support the <code>cpuid</code> instruction, in order to
+facilitate the detection of CPU models.
+The ability to toggle the <em>ID flag</em> in EFLAGS indicates the presence of the
+<code>cpuid</code> instruction.</p>
+</div>
+<div class="paragraph">
+<p><code>cpuid</code> returns a variety of information in <code>eax</code>, <code>ebx</code>, <code>ecx</code> and <code>edx</code>,
+based on the initial value of <code>eax</code>, the <em>function number</em>.
+There are standard function numbers, starting from 0x00000000, and extended
+function numbers, starting from 0x80000000.</p>
+</div>
+<div class="paragraph">
+<p>The most important functions are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>eax</code> = 0x00000000 returns the highest standard function number in <code>eax</code> and
+a 12 byte vendor string in <code>ebx</code>, <code>ecx</code> and <code>edx</code>.
+The vendor string is "GenuineIntel" for Intel processors and "AuthenticAMD"
+for AMD processors.</p>
+</li>
+<li>
+<p><code>eax</code> = 0x00000001 returns version information in <code>eax</code> and feature
+information in <code>ecx</code> and <code>edx</code>.</p>
+</li>
+<li>
+<p><code>eax</code> = 0x80000000 returns the highest extended function number in <code>eax</code></p>
+</li>
+</ul>
 </div>
 </div>
 </div>
