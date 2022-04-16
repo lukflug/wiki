@@ -927,7 +927,14 @@ levels that are taken into account:
 * The __I/O privilege level (IOPL)__ is a value in the FLAGS register that
   determines the highest CPL allowed to do direct I/O (`in`, `out`, `ins` and
   `outs`), to set and clear the interrupt flag (`cli` and `sti`) and to use the
-  `lock` prefix within the current task.
+  `lock` prefix within the current task. 
+
+[NOTE]
+Trying to set IF indirectly through `popf` or `iret` with NT cleared will
+result in no change of IF, if the CPL is higher than the IOPL.
+The IOPL also remains unchanged after `popf` or `iret` with NT cleared, unless
+the CPL is zero.
+A task switch can always modify any flag.
 
 Certain instructions, such as `lgdt`, can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
@@ -1860,12 +1867,18 @@ User/supervisor flag (U/S):: Zero for supervisor; one for user.
                              User pages may be accessed by code at CPL 3.
                              Supervisor pages may only be accessed by Rings 0,
                              1 and 2.
-Read/write flag (R/W):: Zero for read-only; one for read-write; .
+Read/write flag (R/W):: Zero for read-only; one for read-write.
                         Read-only pages may not be written to by code at CPL 3.
 Present bit (P):: One indicates the entry may be used.
                   If zero, accessing the corresponding page or PT will cause a
                   page fault and all the other bits may be used by the
                   operating system.
+
+[NOTE]
+Implicit access of data structures through paging, such as the GDT, IDT, LDT or
+TSS, are effectively supervisor-mode, even when the current CPL is 3, meaning
+that these structures can be protected by paging, while still allowing for
+e.g. segment selectors to be loaded and interrupts to be dispatched.
 
 Page protection violations result in a page fault.
 Both PT and PD entries hold permission bits.
@@ -2074,9 +2087,10 @@ In order to allow real mode programs to run under protected mode, the *virtual
 8086 mode (VM86 mode)* was introduced.
 The processor is in VM86 mode, if the _VM flag_ in the EFLAGS register is set.
 
-The VM flag should be toggled through an `iret` or a task switch, in order to
-update the segment registers and the instruction and stack pointer to a valid
-state.
+The VM flag cam only be toggled through an `iret` in Ring 0 or a task switch,
+in order to update the segment registers and the instruction and stack pointer
+to a valid state (trying to change the VM flag through `popf` will not result
+in a change of VM).
 A task in VM86 mode is referred to as a _VM86 task_.
 It runs under the supervision of a protected mode program called the
 _VM86 monitor_.
@@ -2096,7 +2110,8 @@ to certain memory areas.
 
 The instructions that are sensitive to IOPL change in VM86 mode.
 In particular, the I/O instructions `in`, `out`, `ins` and `outs` are no longer
-sensitive to IOPL and `pushf`, `popf` and `iret` are now sensitive to IOPL.
+sensitive to IOPL and `pushf`, `popf`, `iret` and `int` (but not `int3`, `into`
+and `int1`) are now sensitive to IOPL.
 `cli`, `sti` and `lock` remain sensitive.
 This means, if the IOPL is 3, the VM86 tasks may directly control the interrupt
 flag and may issue software interrupts directly, otherwise a general protection
@@ -2248,12 +2263,12 @@ interrupt 16.
 However, to maintain compatibility with older implementation, where the FPU is
 external and the exception can be routed through another interrupt, the 486 has
 the option to route the exception externally over the motherboard.
-The _Numeric Error (NE)_ bit in CR0 has to be set to enable the native
+The _numeric error (NE)_ bit in CR0 has to be set to enable the native
 mechanism.
 
 The 486 also introduces a feature to enforce aligned data access.
-The alignment check happens when the _Alignment Check (AC)_ flag in EFLAGS
-_and_ the _Alignment Mask (AM)_ bit in CR0 are set _and_ if the processor is in
+The alignment check happens when the _alignment check (AC)_ flag in EFLAGS
+_and_ the _alignment mask (AM)_ bit in CR0 are set _and_ if the processor is in
 Ring 3.
 When a alignment violation happens, the an alignment check fault is raised.
 
@@ -2280,7 +2295,7 @@ control register_), to test the internal writethrough L1 cache.
 
 Two new flags were added to CR0 for global cache control:
 
-* _Cache Disable (CD)_ disables the allocation of new cache lines, meaning read
+* _Cache disable (CD)_ disables the allocation of new cache lines, meaning read
   cache misses are read directly from main memory, but no cache line gets
   replaced.
   To completely disable the cache, the CD bit is set and the cache is flushed
@@ -2289,7 +2304,7 @@ Two new flags were added to CR0 for global cache control:
   uncacheable (UC) when setting the CD, in order to preserve strong memory
   ordering (which can be done by disabling MTRRs).
 
-* _No Writethrough (NW)_ may only be set if CD is also set and causes cache
+* _No writethrough (NW)_ may only be set if CD is also set and causes cache
   coherence to no longer be maintained, i.e. write cache misses are written to
   the cache and never written back to main memory.
   On 586-class processors and later, setting the NW bit disables writeback
@@ -2317,7 +2332,7 @@ The effect of the CD and NW bits varies over implementations:
 ====
 
 ==== Paging
-If the new _Write Protect (WP)_ in CR0 is set, writing to a read-only page will
+If the new _write protect (WP)_ in CR0 is set, writing to a read-only page will
 cause a page fault, even in supervisor mode.
 
 .486 page entry
@@ -2388,9 +2403,10 @@ virtual 8086 mode and debugging.
 | CR3 20+| Page Directory Base Register (PDBR)
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | PCD | PWT | 0 | 0 | 0
 
-| CR4
-| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
-| 0 | 0 | 0 | 0 | 0 | 0 | *MCE* | 0 | *PSE* | *TSD* | *PVI* | *VME*
+| CR4footnote:[_Italics_ indicate optional extensions.]
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+| 0 | _PCE_ | *MCE* | 0 | *PSE* | *TSD* | *PVI* | *VME*
 
 | DR0 32+| Breakpoint 0 linear address
 
@@ -2431,26 +2447,181 @@ virtual 8086 mode and debugging.
 |===
 ====
 
+The Pentium introduces CR4 to control processor extensions.
+
 ==== CPUID
 Pentium and late 486 models support the `cpuid` instruction, in order to
 facilitate the detection of CPU models.
 The ability to toggle the _ID flag_ in EFLAGS indicates the presence of the
 `cpuid` instruction.
 
-`cpuid` returns a variety of information in `eax`, `ebx`, `ecx` and `edx`,
-based on the initial value of `eax`, the _function number_.
+`cpuid` returns a variety of information in EAX, EBX, ECX and EDX,
+based on the initial value of EAX, the _function number_.
 There are standard function numbers, starting from 0x00000000, and extended
 function numbers, starting from 0x80000000.
 
-The most important functions are:
+Important functions include:footnote:[The original Pentium and late 486 only
+had the first two standard functions.]
 
-* `eax` = 0x00000000 returns the highest standard function number in `eax` and
-  a 12 byte vendor string in `ebx`, `ecx` and `edx`.
+* EAX = 0x00000000 returns the highest standard function number in EAX and
+  a 12 byte vendor string in EBX, ECX and EDX.
   The vendor string is "GenuineIntel" for Intel processors and "AuthenticAMD"
   for AMD processors.
-* `eax` = 0x00000001 returns version information in `eax` and feature
-  information in `ecx` and `edx`.
-* `eax` = 0x80000000 returns the highest extended function number in `eax`
+* EAX = 0x80000000 returns the highest extended function number in EAX.
+* EAX = 0x00000001 returns version information in EAX and feature bits in EDX
+  and ECX.
+* EAX = 0x80000001 returns provides more feature bits in EDX and ECX.
+* EAX = 0x00000007 provides subfunctions based on the value of ECX:
+  * ECX = 0 returns the highest subfunction number in EAX.
+    EBX, ECX and EDX contain even more feature bits.
+  * ECX = 1 returns a further set of feature bits in EAX and EBX.
+* EAX = 0x80000002, 0x80000003, 0x80000004 return part of the processor brand
+  string in EAX, EBX, ECX and EDX.
+  The entire string is therefore 48 bytes long.
+
+There exist many other functions that might be relevant to operating system
+development, such as information on multiprocessor topology.
+The feature bits are used to indicate the presence of a certain processor
+extension, they are generally set if the processor extension is present and
+cleared if it is not preset (see the extensions section for more detailed
+information).
+
+The version information consists of a family, model and stepping ID.
+If the family ID field is 15, then the extended family ID field is added to the
+family field to obtain the actual processor family number.
+If the family ID field is 6footnote:[Not on AMD.] or 15, the model number is
+the extended model ID times 16 plus the model ID.
+
+The processor type is 0 for a regular processor, 1 for a Pentium OverDrive and
+2 for a second processor.
+
+.CPUID version information
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+4+| 8+| Extended family 4+| Extended model
+2+| 2+| Typefootnote:[Intel only.] 4+| Family 4+| Model 4+| Stepping
+|===
+
+It is recommended to check for extensions using the feature bits when possible,
+rather than based on family and model.
+
+==== Model-specific registers
+The Pentium and subsequent processors no longer have the test registers of the
+386 and 486.
+Instead, it introduces *model-specific registers (MSRs)*.
+MSRs are 64-bit registers that are addressed using a 32-bit number and are
+accessed via the Ring 0-only `rdmsr` and `wrmsr` instructions.
+
+The first two MSRs are related to the *machine-check architecture*.
+The machine-checks are model-specific exceptions that usually indicate critical
+errors.
+Information on a machine-check exception is available in relevant MSRs,
+although the details have changed with P6-based processors and later.
+Machine-checks are enabled when the _machine-check enable (MCE)_ bit of CR4 is
+set.
+
+.New Pentium exceptions
+|===
+| Vector | Name | Type | Class | Error code
+
+| 18 | Machine-check | Abort | Benign | No
+|===
+
+The Pentium also introduces the _time stamp counter (TSC)_ MSR, that can be
+read in user mode through the `rdtsc` instruction.
+Setting the _time stamp disable (TSD)_ bit of CR4 restricts `rdtsc` to Ring 0.
+
+The later Pentium MMX variant, in addition to introducing MMX, includes the
+`rdpmc` instruction from the Pentium Pro to read so-called
+_performance-monitoring counters (PMCs)_ MSRs.
+This instruction can be executed in user mode, by setting the
+_performance-monitoring counter enable (PCE)_ bit of CR4.
+
+==== Page size extensions
+The *Page Size Extensions (PSE)* are enabled through the PSE bit of CR4.
+PSE introduces a new bit in PD entries, that allows for 4 MiB pages, rather
+than a PT with 1024 4 kiB pages.
+
+.PSE 4 MiB PD entry
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+10+| Physical address (31:22) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+3+| Available | 0 | *PS* | D | A | PCD | PWT | U/S | R/W | P
+|===
+
+Page size (PS):: PD only.
+                 Zero for 4 kiB pages; one for 4 MiB pages.
+Dirty bit (D):: Exists in PD entries for 4 MiB pages.
+
+4 MiB pages must be 4 MiB aligned, therefore bits 12 to 21 are reserved.
+
+==== Virtual 8086 mode extensions
+*Virtual Mode Extensions (VME)* allow for interrupt handling inside virtual
+8086 mode, without switching to protected mode, thereby increasing performance.
+It is enabled by setting the VME bit in CR4.
+
+With VME enabled, software interrupts caused by the `int` instruction (but not
+`int3`, `into` and `int1`) may be handled by handlers in virtual 8086 mode,
+using the real-mode IVT at linear address zero.
+A 32-byte bitmap (one bit for every interrupt vector), that is located just
+below the I/O permission bitmap (i.e. the base of the interrupt redirection
+bitmap is the I/O map base minus 32) in the TSS is, is used to determine how a
+software interrupt is dispatched.
+
+If the bit corresponding to the interrupt vector is set, the interrupt is
+handled in protected mode using the IDT (or causes a general protection fault,
+if the IOPL is not 3).
+If the bit is cleared, the interrupt is handled in virtual 8086 mode, as if it
+is a real mode interrupt (the IOPL field of the pushed FLAGS register is always
+set to 3).
+Hardware interrupts and exceptions, however, are always handled through
+protected mode interrupt handlers.
+
+VME also introduces the _virtual interrupt flag (VIF)_ and the _virtual
+interrupt pending (VIP)_ flag, for the VM86 task to be able to prevent
+asynchronous hardware interrupts affecting its state, without disabling
+hardware interrupts for all tasks or causing a fault (meaning a costly switch
+to protected mode).
+When VME is enabled and the IOPL is less than 3, `cli`, `sti`, `popf` and
+`iret` will not update the interrupt flag IF (nor cause a general protection
+fault), rather it will update VIF.
+`pushf` and a `int` to a virtual 8086 mode handler (i.e. with the corresponding
+bit in the bitmap cleared) will store VIF, rather than IF, when pushing the
+FLAGS register.
+
+Having VIF and VIP set simultaneously in VM86 mode (such as running `sti`
+virtual 8086 mode while VIP is set) will cause a general protection fault.
+This means when a hardware interrupt occurs, the protected mode handler can
+check the VIF flag.
+If it is cleared, the VM86 task does not expect hardware interrupts, and the
+VM86 monitor can set the VIP flag and return to the VM86 task.
+When the VM86 task sets the IF flag, it will transparently set the VIF flag
+instead, and cause a general protection fault, due to the VIP flag also being
+set.
+The VM86 monitor can then handle the hardware interrupt belatedly and clear the
+VIP flag and set the VIF flag and return.
+
+The _protected mode virtual interrupts (PVI)_ bit of CR4 enables the VIF and
+VIP mechanism for protected mode.
+If the PVI bit is set, the CPL is 3 and the IOPL is less than 3, the `cli` and
+`sti` instructions (`pushf`, `popf`, `int` and `iret` are not affected) will
+change the VIF flag, rather than the IF flag.
+As in VM86, having VIF and VIP set simultaneously causes a general protection
+fault.
+Therefore, the handling of maskable hardware interrupts and also be delayed, as
+with VM86 mode, at the request of user mode software.
+
+[Note]
+VIF and VIP cannot be directly changed through `popf` and, like VM, can only be
+changed through a `iret` in Ring 0 or a `popf` in Ring 1.
+VIF can be indirectly changed in Ring 3 by attempting to change IF, if VME is
+set in VM86 mode or if PVI is set in native protected mode.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
