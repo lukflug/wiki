@@ -1954,6 +1954,22 @@ determines the highest CPL allowed to do direct I/O (<code>in</code>, <code>out<
 </li>
 </ul>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Trying to set IF indirectly through <code>popf</code> or <code>iret</code> with NT cleared will
+result in no change of IF, if the CPL is higher than the IOPL.
+The IOPL also remains unchanged after <code>popf</code> or <code>iret</code> with NT cleared, unless
+the CPL is zero.
+A task switch can always modify any flag.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Certain instructions, such as <code>lgdt</code>, can only be used if the CPL is 0.
 There are also forms of protection independent of the privilege levels, such as
@@ -4260,7 +4276,7 @@ Supervisor pages may only be accessed by Rings 0,
 </dd>
 <dt class="hdlist1">Read/write flag (R/W)</dt>
 <dd>
-<p>Zero for read-only; one for read-write; .
+<p>Zero for read-only; one for read-write.
 Read-only pages may not be written to by code at CPL 3.</p>
 </dd>
 <dt class="hdlist1">Present bit (P)</dt>
@@ -4271,6 +4287,21 @@ page fault and all the other bits may be used by the
 operating system.</p>
 </dd>
 </dl>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Implicit access of data structures through paging, such as the GDT, IDT, LDT or
+TSS, are effectively supervisor-mode, even when the current CPL is 3, meaning
+that these structures can be protected by paging, while still allowing for
+e.g. segment selectors to be loaded and interrupts to be dispatched.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Page protection violations result in a page fault.
@@ -4659,9 +4690,10 @@ These serve to test the TLB during early initialization.</p>
 The processor is in VM86 mode, if the <em>VM flag</em> in the EFLAGS register is set.</p>
 </div>
 <div class="paragraph">
-<p>The VM flag should be toggled through an <code>iret</code> or a task switch, in order to
-update the segment registers and the instruction and stack pointer to a valid
-state.
+<p>The VM flag cam only be toggled through an <code>iret</code> in Ring 0 or a task switch,
+in order to update the segment registers and the instruction and stack pointer
+to a valid state (trying to change the VM flag through <code>popf</code> will not result
+in a change of VM).
 A task in VM86 mode is referred to as a <em>VM86 task</em>.
 It runs under the supervision of a protected mode program called the
 <em>VM86 monitor</em>.</p>
@@ -4684,7 +4716,8 @@ to certain memory areas.</p>
 <div class="paragraph">
 <p>The instructions that are sensitive to IOPL change in VM86 mode.
 In particular, the I/O instructions <code>in</code>, <code>out</code>, <code>ins</code> and <code>outs</code> are no longer
-sensitive to IOPL and <code>pushf</code>, <code>popf</code> and <code>iret</code> are now sensitive to IOPL.
+sensitive to IOPL and <code>pushf</code>, <code>popf</code>, <code>iret</code> and <code>int</code> (but not <code>int3</code>, <code>into</code>
+and <code>int1</code>) are now sensitive to IOPL.
 <code>cli</code>, <code>sti</code> and <code>lock</code> remain sensitive.
 This means, if the IOPL is 3, the VM86 tasks may directly control the interrupt
 flag and may issue software interrupts directly, otherwise a general protection
@@ -5190,13 +5223,13 @@ interrupt 16.
 However, to maintain compatibility with older implementation, where the FPU is
 external and the exception can be routed through another interrupt, the 486 has
 the option to route the exception externally over the motherboard.
-The <em>Numeric Error (NE)</em> bit in CR0 has to be set to enable the native
+The <em>numeric error (NE)</em> bit in CR0 has to be set to enable the native
 mechanism.</p>
 </div>
 <div class="paragraph">
 <p>The 486 also introduces a feature to enforce aligned data access.
-The alignment check happens when the <em>Alignment Check (AC)</em> flag in EFLAGS
-<em>and</em> the <em>Alignment Mask (AM)</em> bit in CR0 are set <em>and</em> if the processor is in
+The alignment check happens when the <em>alignment check (AC)</em> flag in EFLAGS
+<em>and</em> the <em>alignment mask (AM)</em> bit in CR0 are set <em>and</em> if the processor is in
 Ring 3.
 When a alignment violation happens, the an alignment check fault is raised.</p>
 </div>
@@ -5252,7 +5285,7 @@ control register</em>), to test the internal writethrough L1 cache.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><em>Cache Disable (CD)</em> disables the allocation of new cache lines, meaning read
+<p><em>Cache disable (CD)</em> disables the allocation of new cache lines, meaning read
 cache misses are read directly from main memory, but no cache line gets
 replaced.
 To completely disable the cache, the CD bit is set and the cache is flushed
@@ -5262,7 +5295,7 @@ uncacheable (UC) when setting the CD, in order to preserve strong memory
 ordering (which can be done by disabling MTRRs).</p>
 </li>
 <li>
-<p><em>No Writethrough (NW)</em> may only be set if CD is also set and causes cache
+<p><em>No writethrough (NW)</em> may only be set if CD is also set and causes cache
 coherence to no longer be maintained, i.e. write cache misses are written to
 the cache and never written back to main memory.
 On 586-class processors and later, setting the NW bit disables writeback
@@ -5314,7 +5347,7 @@ write back) a cache line on a cache hit.</p>
 <div class="sect3">
 <h4 id="_paging_2">3.5.2. Paging</h4>
 <div class="paragraph">
-<p>If the new <em>Write Protect (WP)</em> in CR0 is set, writing to a read-only page will
+<p>If the new <em>write protect (WP)</em> in CR0 is set, writing to a read-only page will
 cause a page fault, even in supervisor mode.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -5651,10 +5684,184 @@ virtual 8086 mode and debugging.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR4<sup class="footnote">[<a id="_footnoteref_23" class="footnote" href="#_footnotedef_23" title="View footnote.">23</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PCE</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>MCE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PSE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>TSD</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PVI</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>VME</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DR0</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 0 linear address</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DR1</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 1 linear address</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DR2</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 2 linear address</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DR3</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 3 linear address</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DR6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">B3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">B2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">B1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">B0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DR7</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN3</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W3</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN2</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W2</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN1</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W1</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN0</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>GD</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">G0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">L0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_24" class="footnote" href="#_footnotedef_24" title="View footnote.">24</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">ES (visible selector)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CS</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="14"><p class="tableblock">(visible CS selector)</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">CPL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SS</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="14"><p class="tableblock">(visible SS selector)</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">CPL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DS</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">DS (visible selector)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FS</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">FS (visible selector)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GS</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">GS (visible selector)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TR</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">TR (visible selector)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LDTR</p></td>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">LDTR (visible selector)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">GDTR</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Base</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Limit</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">IDR</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Base</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="16"></td>
+<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Limit</p></td>
+</tr>
 </tbody>
 </table>
 </div>
 </details>
+<div class="paragraph">
+<p>The Pentium introduces CR4 to control processor extensions.</p>
+</div>
 <div class="sect3">
 <h4 id="_cpuid">3.6.1. CPUID</h4>
 <div class="paragraph">
@@ -5664,30 +5871,407 @@ The ability to toggle the <em>ID flag</em> in EFLAGS indicates the presence of t
 <code>cpuid</code> instruction.</p>
 </div>
 <div class="paragraph">
-<p><code>cpuid</code> returns a variety of information in <code>eax</code>, <code>ebx</code>, <code>ecx</code> and <code>edx</code>,
-based on the initial value of <code>eax</code>, the <em>function number</em>.
+<p><code>cpuid</code> returns a variety of information in EAX, EBX, ECX and EDX,
+based on the initial value of EAX, the <em>function number</em>.
 There are standard function numbers, starting from 0x00000000, and extended
 function numbers, starting from 0x80000000.</p>
 </div>
 <div class="paragraph">
-<p>The most important functions are:</p>
+<p>Important functions include:<sup class="footnote">[<a id="_footnoteref_25" class="footnote" href="#_footnotedef_25" title="View footnote.">25</a>]</sup></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>eax</code> = 0x00000000 returns the highest standard function number in <code>eax</code> and
-a 12 byte vendor string in <code>ebx</code>, <code>ecx</code> and <code>edx</code>.
+<p>EAX = 0x00000000 returns the highest standard function number in EAX and
+a 12 byte vendor string in EBX, ECX and EDX.
 The vendor string is "GenuineIntel" for Intel processors and "AuthenticAMD"
 for AMD processors.</p>
 </li>
 <li>
-<p><code>eax</code> = 0x00000001 returns version information in <code>eax</code> and feature
-information in <code>ecx</code> and <code>edx</code>.</p>
+<p>EAX = 0x80000000 returns the highest extended function number in EAX.</p>
 </li>
 <li>
-<p><code>eax</code> = 0x80000000 returns the highest extended function number in <code>eax</code></p>
+<p>EAX = 0x00000001 returns version information in EAX and feature bits in EDX
+and ECX.</p>
+</li>
+<li>
+<p>EAX = 0x80000001 returns provides more feature bits in EDX and ECX.</p>
+</li>
+<li>
+<p>EAX = 0x00000007 provides subfunctions based on the value of ECX:</p>
+</li>
+<li>
+<p>ECX = 0 returns the highest subfunction number in EAX.
+EBX, ECX and EDX contain even more feature bits.</p>
+</li>
+<li>
+<p>ECX = 1 returns a further set of feature bits in EAX and EBX.</p>
+</li>
+<li>
+<p>EAX = 0x80000002, 0x80000003, 0x80000004 return part of the processor brand
+string in EAX, EBX, ECX and EDX.
+The entire string is therefore 48 bytes long.</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>There exist many other functions that might be relevant to operating system
+development, such as information on multiprocessor topology.
+The feature bits are used to indicate the presence of a certain processor
+extension, they are generally set if the processor extension is present and
+cleared if it is not preset (see the extensions section for more detailed
+information).</p>
+</div>
+<div class="paragraph">
+<p>The version information consists of a family, model and stepping ID.
+If the family ID field is 15, then the extended family ID field is added to the
+family field to obtain the actual processor family number.
+If the family ID field is 6<sup class="footnote">[<a id="_footnoteref_26" class="footnote" href="#_footnotedef_26" title="View footnote.">26</a>]</sup> or 15, the model number is
+the extended model ID times 16 plus the model ID.</p>
+</div>
+<div class="paragraph">
+<p>The processor type is 0 for a regular processor, 1 for a Pentium OverDrive and
+2 for a second processor.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 22. CPUID version information</caption>
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="4"></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">Extended family</p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Extended model</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Type<sup class="footnote">[<a id="_footnoteref_27" class="footnote" href="#_footnotedef_27" title="View footnote.">27</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Family</p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Model</p></td>
+<td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Stepping</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>It is recommended to check for extensions using the feature bits when possible,
+rather than based on family and model.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_model_specific_registers">3.6.2. Model-specific registers</h4>
+<div class="paragraph">
+<p>The Pentium and subsequent processors no longer have the test registers of the
+386 and 486.
+Instead, it introduces <strong>model-specific registers (MSRs)</strong>.
+MSRs are 64-bit registers that are addressed using a 32-bit number and are
+accessed via the Ring 0-only <code>rdmsr</code> and <code>wrmsr</code> instructions.</p>
+</div>
+<div class="paragraph">
+<p>The first two MSRs are related to the <strong>machine-check architecture</strong>.
+The machine-checks are model-specific exceptions that usually indicate critical
+errors.
+Information on a machine-check exception is available in relevant MSRs,
+although the details have changed with P6-based processors and later.
+Machine-checks are enabled when the <em>machine-check enable (MCE)</em> bit of CR4 is
+set.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 23. New Pentium exceptions</caption>
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Vector</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Class</th>
+<th class="tableblock halign-left valign-top">Error code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The Pentium also introduces the <em>time stamp counter (TSC)</em> MSR, that can be
+read in user mode through the <code>rdtsc</code> instruction.
+Setting the <em>time stamp disable (TSD)</em> bit of CR4 restricts <code>rdtsc</code> to Ring 0.</p>
+</div>
+<div class="paragraph">
+<p>The later Pentium MMX variant, in addition to introducing MMX, includes the
+<code>rdpmc</code> instruction from the Pentium Pro to read so-called
+<em>performance-monitoring counters (PMCs)</em> MSRs.
+This instruction can be executed in user mode, by setting the
+<em>performance-monitoring counter enable (PCE)</em> bit of CR4.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_page_size_extensions">3.6.3. Page size extensions</h4>
+<div class="paragraph">
+<p>The <strong>Page Size Extensions (PSE)</strong> are enabled through the PSE bit of CR4.
+PSE introduces a new bit in PD entries, that allows for 4 MiB pages, rather
+than a PT with 1024 4 kiB pages.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 24. PSE 4 MiB PD entry</caption>
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="10"><p class="tableblock">Physical address (31:22)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PS</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Page size (PS)</dt>
+<dd>
+<p>PD only.
+Zero for 4 kiB pages; one for 4 MiB pages.</p>
+</dd>
+<dt class="hdlist1">Dirty bit (D)</dt>
+<dd>
+<p>Exists in PD entries for 4 MiB pages.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>4 MiB pages must be 4 MiB aligned, therefore bits 12 to 21 are reserved.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_virtual_8086_mode_extensions">3.6.4. Virtual 8086 mode extensions</h4>
+<div class="paragraph">
+<p><strong>Virtual Mode Extensions (VME)</strong> allow for interrupt handling inside virtual
+8086 mode, without switching to protected mode, thereby increasing performance.
+It is enabled by setting the VME bit in CR4.</p>
+</div>
+<div class="paragraph">
+<p>With VME enabled, software interrupts caused by the <code>int</code> instruction (but not
+<code>int3</code>, <code>into</code> and <code>int1</code>) may be handled by handlers in virtual 8086 mode,
+using the real-mode IVT at linear address zero.
+A 32-byte bitmap (one bit for every interrupt vector), that is located just
+below the I/O permission bitmap (i.e. the base of the interrupt redirection
+bitmap is the I/O map base minus 32) in the TSS is, is used to determine how a
+software interrupt is dispatched.</p>
+</div>
+<div class="paragraph">
+<p>If the bit corresponding to the interrupt vector is set, the interrupt is
+handled in protected mode using the IDT (or causes a general protection fault,
+if the IOPL is not 3).
+If the bit is cleared, the interrupt is handled in virtual 8086 mode, as if it
+is a real mode interrupt (the IOPL field of the pushed FLAGS register is always
+set to 3).
+Hardware interrupts and exceptions, however, are always handled through
+protected mode interrupt handlers.</p>
+</div>
+<div class="paragraph">
+<p>VME also introduces the <em>virtual interrupt flag (VIF)</em> and the <em>virtual
+interrupt pending (VIP)</em> flag, for the VM86 task to be able to prevent
+asynchronous hardware interrupts affecting its state, without disabling
+hardware interrupts for all tasks or causing a fault (meaning a costly switch
+to protected mode).
+When VME is enabled and the IOPL is less than 3, <code>cli</code>, <code>sti</code>, <code>popf</code> and
+<code>iret</code> will not update the interrupt flag IF (nor cause a general protection
+fault), rather it will update VIF.
+<code>pushf</code> and a <code>int</code> to a virtual 8086 mode handler (i.e. with the corresponding
+bit in the bitmap cleared) will store VIF, rather than IF, when pushing the
+FLAGS register.</p>
+</div>
+<div class="paragraph">
+<p>Having VIF and VIP set simultaneously in VM86 mode (such as running <code>sti</code>
+virtual 8086 mode while VIP is set) will cause a general protection fault.
+This means when a hardware interrupt occurs, the protected mode handler can
+check the VIF flag.
+If it is cleared, the VM86 task does not expect hardware interrupts, and the
+VM86 monitor can set the VIP flag and return to the VM86 task.
+When the VM86 task sets the IF flag, it will transparently set the VIF flag
+instead, and cause a general protection fault, due to the VIP flag also being
+set.
+The VM86 monitor can then handle the hardware interrupt belatedly and clear the
+VIP flag and set the VIF flag and return.</p>
+</div>
+<div class="paragraph">
+<p>The <em>protected mode virtual interrupts (PVI)</em> bit of CR4 enables the VIF and
+VIP mechanism for protected mode.
+If the PVI bit is set, the CPL is 3 and the IOPL is less than 3, the <code>cli</code> and
+<code>sti</code> instructions (<code>pushf</code>, <code>popf</code>, <code>int</code> and <code>iret</code> are not affected) will
+change the VIF flag, rather than the IF flag.
+As in VM86, having VIF and VIP set simultaneously causes a general protection
+fault.
+Therefore, the handling of maskable hardware interrupts and also be delayed, as
+with VM86 mode, at the request of user mode software.</p>
+</div>
+<div class="paragraph">
+<p>VIF and VIP cannot be directly changed through <code>popf</code> and, like VM, can only be
+changed through a <code>iret</code> in Ring 0 or a <code>popf</code> in Ring 1.
+VIF can be indirectly changed in Ring 3 by attempting to change IF, if VME is
+set in VM86 mode or if PVI is set in native protected mode.</p>
 </div>
 </div>
 </div>
@@ -6049,6 +6633,26 @@ It introduces instructions for the efficient adding of large integers.</p>
   
     <li class="footnote" id="_footnotedef_22">
       22. Always zero.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_23">
+      23. <em>Italics</em> indicate optional extensions.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_24">
+      24. Hidden descriptor caches are omitted.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_25">
+      25. The original Pentium and late 486 only had the first two standard functions.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_26">
+      26. Not on AMD.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_27">
+      27. Intel only.
     </li>
   
   </ul>
