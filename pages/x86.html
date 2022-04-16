@@ -38,9 +38,10 @@
 <li><a href="#_third_generation">1.4. Third generation</a></li>
 <li><a href="#_fourth_generation">1.5. Fourth generation</a></li>
 <li><a href="#_fifth_generation">1.6. Fifth generation</a></li>
-<li><a href="#_sixth_generation">1.7. Sixth generation</a></li>
-<li><a href="#_cyrix_extensions">1.8. Cyrix extensions</a></li>
-<li><a href="#_x86_64">1.9. x86-64</a></li>
+<li><a href="#_cyrix_extensions">1.7. Cyrix extensions</a></li>
+<li><a href="#_sixth_generation">1.8. Sixth generation</a></li>
+<li><a href="#_seventh_generation">1.9. Seventh generation</a></li>
+<li><a href="#_x86_64">1.10. x86-64</a></li>
 </ul>
 </li>
 <li><a href="#_operating_modes">2. Operating modes</a>
@@ -59,6 +60,7 @@
 <li><a href="#_i386">3.4. i386</a></li>
 <li><a href="#_i486">3.5. i486</a></li>
 <li><a href="#_i586">3.6. i586</a></li>
+<li><a href="#_i686">3.7. i686</a></li>
 </ul>
 </li>
 <li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
@@ -245,27 +247,20 @@ systems.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_f
 <div class="paragraph">
 <p>In 1993, the <strong>Intel Pentium</strong> was introduced, featuring the new <strong>P5</strong> (also known
 as <strong>i586</strong>) microarchitecture, which introduced superscalar architecture, a
-64-bit external data bus and branch prediction.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_sixth_generation">1.7. Sixth generation</h3>
-<div class="paragraph">
-<p>The Pentium was followed up by the Pentium Pro in 1995, which is the first
-implementation of the <strong>P6</strong> (also known as <strong>i686</strong>) microarchitecture,
-introducing register renaming, out-of-order execution, speculative execution
-and a 36-bit address bus, that allowed for up to 64 GiBs of RAM, that could be
-accessed through PAE or PSE-36.</p>
+64-bit external data bus and branch prediction.
+The Pentium MMX, introduced in 1997, first implemented the new MMX SIMD
+extension.</p>
 </div>
 <div class="paragraph">
 <p>Intel’s competitors also started building their chips on their own, unique,
-in-house designs, such as the AMD K5 (introduced in 1996) and the Cyrix 5x86
-(1995) and 6x86 (1996), rather than trying to replicate Intel’s chips, or
-orient their designs around them, as with the Am486 and Am5x86 and the Cx486.</p>
+in-house, 586-class designs, such as the AMD K5 (introduced in 1996) and the
+Cyrix 5x86 (1995) and 6x86 (1996), rather than trying to replicate Intel’s
+chips, or orient their designs around them, as with the Am486, Am5x86 and
+Cx486.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_cyrix_extensions">1.8. Cyrix extensions</h3>
+<h3 id="_cyrix_extensions">1.7. Cyrix extensions</h3>
 <div class="paragraph">
 <p>Cyrix processors and their derivatives made by National Semiconductors, AMD and
 VIA, implement extensions, that are not found on any other processor.
@@ -282,10 +277,35 @@ Geode GX2 and AMD Geode introduce a <em>debug management mode (DMM)</em>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_x86_64">1.9. x86-64</h3>
+<h3 id="_sixth_generation">1.8. Sixth generation</h3>
 <div class="paragraph">
-<p>The first processor to implement <strong>x86-64</strong>, a 64-bit extension originally
-proposed by AMD in 1999, was the AMD Opteron, introduced in 2003.
+<p>The Pentium was followed up by the Pentium Pro in 1995, which is the first
+implementation of the <strong>P6</strong> (also known as <strong>i686</strong>) microarchitecture,
+introducing register renaming, out-of-order execution, speculative execution
+and a 36-bit address bus, that allowed for up to 64 GiBs of RAM, that could be
+accessed through PAE or PSE-36.</p>
+</div>
+<div class="paragraph">
+<p>The Pentium II, introduced in 1998, is a P6 processor with MMX.
+The Pentium II was followed up by the Pentium III in 1999.
+AMD released the 686-class K6 in 1997, followed up by the K6-2 in 1998 and
+K6-III in 1999.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_seventh_generation">1.9. Seventh generation</h3>
+<div class="paragraph">
+<p>Seventh generation processors include the NetBurst-based Pentium 4, introduced
+in 2000, and the K7 AMD Athlon, introduced in 1999.
+A major feature of the Pentium 4 is SSE2.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_x86_64">1.10. x86-64</h3>
+<div class="paragraph">
+<p>The first processors to implement <strong>x86-64</strong>, a 64-bit extension originally
+proposed by AMD in 1999, were the AMD Opteron and Athlon64, also known as K8,
+introduced in 2003.
 Aside from increasing the size and count of general-purpose and SSE registers,
 it introduced 64-bit linear addresses, albeit the paging scheme restricts the
 virtual address space to 48 bits (splitting it into to halves through sign
@@ -6267,12 +6287,83 @@ fault.
 Therefore, the handling of maskable hardware interrupts and also be delayed, as
 with VM86 mode, at the request of user mode software.</p>
 </div>
-<div class="paragraph">
-<p>VIF and VIP cannot be directly changed through <code>popf</code> and, like VM, can only be
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+VIF and VIP, like VM, cannot be directly changed through <code>popf</code> and can only be
 changed through a <code>iret</code> in Ring 0 or a <code>popf</code> in Ring 1.
 VIF can be indirectly changed in Ring 3 by attempting to change IF, if VME is
-set in VM86 mode or if PVI is set in native protected mode.</p>
+set in VM86 mode or if PVI is set in native protected mode.
+</td>
+</tr>
+</table>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_debugging_extensions">3.6.5. Debugging extensions</h4>
+<div class="paragraph">
+<p>The functionality of the debug registers was extended in the Pentium in three
+ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>DR7 now has the <em>general detect (GD)</em> bit, which allows software to enable
+general detect exceptions (debug fault when a debug register is accessed).
+This serves to prevent software interfering with emulators that use the debug
+registers.
+The GD bit is cleared automatically on a general detect exception.</p>
+</li>
+<li>
+<p>The R/W0 to R/W3 fields now allow for the <code>10</code> value, which was previously
+reserved.
+The <code>10</code> value sets an I/O breakpoint (same alignment requirements as data
+break point).</p>
+</li>
+<li>
+<p>The <em>debug extensions (DE)</em> bit of CR4, which disables the aliasing of DR4
+and DR5 to DR6 and DR7 when set.
+If this bit is set, reading or writing to DR4 and DR5 cause an invalid opcode
+exception, similar to CR1.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_i686">3.7. i686</h3>
+<div class="paragraph">
+<p>686-class processors include the Intel Pentium Pro, Pentium II and Pentium III,
+as well as the AMD K6, K6-2 and K6-III.
+The Pentium Pro introduced the <code>cmov</code> instructions.
+The term 686 is ambiguous and may refer to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Intel Family 6 processors, which include the Pentium Pro, II and III, as well
+as modern Core 2, i3, i5 and i7 branded processors, but not earlier
+NetBurst-based processors, such as the Pentium 4.</p>
+</li>
+<li>
+<p>All 32-bit processors supporting the Pentium Pro instruction set
+which would include 32-bit NetBurst-based processors, but not later 64-bit
+processors.</p>
+</li>
+<li>
+<p>All 32-bit processors supporting the Pentium Pro instruction set, but not
+supporting SSE2, which would exclude NetBurst-based processors, but include
+the K7 Athlon.</p>
+</li>
+<li>
+<p>Sixth generation x86 processors, which would exclused NetBurst-based
+processors as well as the K7 Athlon.</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
