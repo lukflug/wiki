@@ -164,16 +164,16 @@ K6-III in 1999.
 
 === Seventh generation
 Seventh generation processors include the NetBurst-based Pentium 4, introduced
-in 2000, and the K7 AMD Athlon, introduced in 1999.
+in 2000, and the AMD Athlon, also known as the K7, introduced in 1999.
 A major feature of the Pentium 4 is SSE2.
 
 === x86-64
 The first processors to implement *x86-64*, a 64-bit extension originally
-proposed by AMD in 1999, were the AMD Opteron and Athlon64, also known as K8,
-introduced in 2003.
+proposed by AMD in 1999, were the AMD Opteron and Athlon 64, also known as the
+K8, introduced in 2003.
 Aside from increasing the size and count of general-purpose and SSE registers,
 it introduced 64-bit linear addresses, albeit the paging scheme restricts the
-virtual address space to 48 bits (splitting it into to halves through sign
+linear address space to 48 bits (splitting it into to halves through sign
 extension).
 In addition, many legacy features, such as certain aspects of segmentation,
 have been removed.
@@ -254,7 +254,7 @@ The 386 also introduced optional paging to protected mode, allowing for an
 extra level of translation after segmentation.
 Later extensions, such as PAE and PSE-36, increase the maximum size of physical
 memory to beyond 4 GiB.
-However, the size of virtual address space is still limited to 4 GiB.
+However, the size of linear address space is still limited to 4 GiB.
 
 Thus, the _logical address_, consisting of segment selector and offset is first
 translated to a _linear address_, by adding the segment base address of the
@@ -286,7 +286,7 @@ operand size is 32-bit.
 than 64 kiB, as is the case with 16-bit addressing.
 This, along with paging, largely removes the necessity for multiple segments,
 as modern operating systems mostly rely on paging and have one code segment and
-one data segment per ring per virtual address space, usually having the base
+one data segment per ring per linear address space, usually having the base
 zero.
 To a 32-bit user program, segmentation is essentially transparent and the
 address space consists of 4 GiB of flat, contiguous memory.
@@ -306,7 +306,7 @@ running.
 === Long mode
 *Long mode* was introduced with x86-64 and allows software to use 64-bit
 address and data.
-Linear addresses are now 64-bit, thus allowing for a virtual address space of
+Linear addresses are now 64-bit, thus allowing for a linear address space of
 up to 16 EiB.
 The paging scheme restricts this to 48-bit, however, with the remaining bits
 being sign extended, thus producing two halves of 128 TiB of "canonical address
@@ -1798,14 +1798,15 @@ T flag (T):: Bit 0 of the corresponding word in the table.
 The 386 added support for paging as an extra translation layer, in addition to
 segmentation.
 With paging enabled, segments are not contiguous ranges in physical address
-space, but rather _virtual address space_.
+space, but rather _linear address space_.
 In particular, the base of segments is treated as a _linear address_, rather
 than a physical address.
-Segmentation translates a logical address, consisting of a 16-bit segment
-address and a 32-bit offset, to a 32-bit linear address.
+Segmentation translates a _logical address_, consisting of a 16-bit segment
+address and a 32-bit offset, to a 32-bit linear address (i.e. segment bases are
+no longer physical addresses, but linear addresses).
 Paging is responsible for converting this linear address to a physical address.
 
-This is achieved, by divided both virtual and physical 4 GiB address spaces
+This is achieved by dividing both linear and physical 4 GiB address spaces
 into 1048576 aligned pages of 4096 bytes.
 Paging maps pages of physical memory to certain spots in virtual memory.
 This effectively creates a flat address space that is isolated from physical
@@ -1920,7 +1921,7 @@ throwing a page fault).
 The TLB can be flushed by writing to CR3.
 
 Due to 32-bit addressing, a single segment can now span all of the 4 GiB
-virtual address space.
+linear address space.
 This means programs no longer need to be split into multiple segments, instead
 having a single flat segment starting at linear address zero, similar to the
 tiny memory model.
@@ -1930,7 +1931,7 @@ virtual memory.
 This means the GDT only contains a handful of actual segments and the LDT is
 completely ignored.
 
-In this scheme, each process has its own, isolated virtual address space.
+In this scheme, each process has its own, isolated linear address space.
 This is facilitated by the fact that the TSS has an entry for CR3.
 Another advantage of the two-level paging scheme is that common areas of
 virtual memories can be mapped in only one set of page tables, that can be then
@@ -2420,7 +2421,7 @@ virtual 8086 mode and debugging.
 | CR4footnote:[_Italics_ indicate optional extensions.]
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
-| 0 | _PCE_ | *MCE* | 0 | *PSE* | *TSD* | *PVI* | *VME*
+| _PCE_ | 0 | *MCE* | 0 | *PSE* | *TSD* | *PVI* | *VME*
 
 | DR0 32+| Breakpoint 0 linear address
 
@@ -2670,8 +2671,119 @@ The term 686 is ambiguous and may refer to:
 * All 32-bit processors supporting the Pentium Pro instruction set, but not
   supporting SSE2, which would exclude NetBurst-based processors, but include
   the K7 Athlon.
-* Sixth generation x86 processors, which would exclused NetBurst-based
+* Sixth generation x86 processors, which would exclude NetBurst-based
   processors as well as the K7 Athlon.
+
+.686 registers
+[%collapsible]
+====
+[%header,cols="3,32*"]
+|===
+| Register
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| EAX 16+| (EAX) 8+| AH (AX) 8+| AL (AX)
+
+| ECX 16+| (ECX) 8+| CH (CX) 8+| CL (CX)
+
+| EDX 16+| (EDX) 8+| DH (DX) 8+| DL (DX)
+
+| EBX 16+| (EBX) 8+| BH (BX) 8+| BL (BX)
+
+| ESP 16+| (ESP) 16+| SP
+
+| EBP 16+| (EBP) 16+| BP
+
+| ESI 16+| (ESI) 16+| SI
+
+| EDI 16+| (EDI) 16+| DI
+
+| EIP 16+| (EIP) 16+| IP
+
+| EFLAGS
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ID | VIP | VIF | AC | VM | RF
+| 0 | NT 2+| IOPL | OF | DF | IF | TF | SF | ZF | 0 | AF | 0 | PF | 1 | CF
+
+| CR0
+| PG | CD | NW | | | | | | | | | | | AM | | WP
+| | | | | | | | | | | NE | ET | TS | EM | MP | PE
+
+| CR2 32+| Page fault linear address
+
+| CR3 20+| Page Directory Base Register (PDBR)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | PCD | PWT | 0 | 0 | 0
+
+| CR4footnote:[_Italics_ indicate optional extensions.]
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+| 0 | 0 | 0 | 0 | 0 | 0 | _OS +
+  XMM +
+  EX +
+  CPT_ | _OS +
+  FX +
+  SR_
+| *PCE* | *PGE* | MCE | *PAE* | PSE | TSD | PVI | VME
+
+| DR0 32+| Breakpoint 0 linear address
+
+| DR1 32+| Breakpoint 1 linear address
+
+| DR2 32+| Breakpoint 2 linear address
+
+| DR3 32+| Breakpoint 3 linear address
+
+| DR6
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1
+| BT | BS | BD | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | B3 | B2 | B1 | B0
+
+| DR7
+2+| LEN3 2+| R/W3 2+| LEN2 2+| R/W2 2+| LEN1 2+| R/W1 2+| LEN0 2+| R/W0
+| 0 | 0 | GD | 0 | 0 | 1 | GE | LE | G3 | L3 | G2 | L2 | G1 | L1 | G0 | L0
+
+| ESfootnote:[Hidden descriptor caches are omitted.]
+16+| 16+| ES (visible selector)
+
+| CS 16+| 14+| (visible CS selector) 2+| CPL
+
+| SS 16+| 14+| (visible SS selector) 2+| CPL
+
+| DS 16+| 16+| DS (visible selector)
+
+| FS 16+| 16+| FS (visible selector)
+
+| GS 16+| 16+| GS (visible selector)
+
+| TR 16+| 16+| TR (visible selector)
+
+| LDTR 16+| 16+| LDTR (visible selector)
+
+.2+| GDTR 32+| Base 16+| 16+| Limit
+
+.2+| IDR 32+| Base 16+| 16+| Limit
+|===
+====
+
+==== PAE
+The Pentium Pro extended the physical address space to 36-bit.
+This allows for up to 64 GiB of RAM.
+In order to access this new memory, a new paging mechanism is introduced,
+*Physical Address Extension (PAE)*, which allows pages to be mapped above 4
+GiB.
+PAE is transparent to application programs and the linear address space is
+still restricted to 4 GiB.
+
+PAE is enabled by the PAE bit in CR4 and modifies paging by increasing the size
+of page entries to 64-bit, meaning that a page table now can only hold 512 page
+entries, rather than 1024.
+This means a third level is introduced, the _page directory pointer table
+(PDPT)_.
+This tables contains entries to four page directories, each covering 1 GiB of
+linear address space and containing 512 entries to page directories, each
+covering 2 MiB of linear address space and containing 512 entries to 4 kiB
+pages.
+
+Consequently PSE, when used alongside PAE, allows for 2 MiB pages, rather than
+4 MiB pages.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
