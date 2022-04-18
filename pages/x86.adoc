@@ -1854,18 +1854,28 @@ All of these 12 bits are reserved in CR3 and should be zero.
 The upper 20 bits of CR3 are known as the PDBR, or _Page Directory Base
 Register_.
 
-.386 page entry
-[%header,cols="32*"]
+.386 page entries
+[%header,cols="3,32*"]
 |===
+| Entry type
 | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-20+| Physical address (31:12)
-3+| Available | 0 | 0 | D | A | 0 |0 | U/S | R/W | P
+| CR3
+20+| PD physical address (31:12)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+
+| PD entry
+20+| PT physical address (31:12)
+3+| Available | 0 | 0 | 0 | A | 0 | 0 | U/S | R/W | P
+
+| PT entry
+20+| Page physical address (31:12)
+3+| Available | 0 | 0 | D | A | 0 | 0 | U/S | R/W | P
 |===
 
 Physical address:: The physical address of the page (for a PT entry), PT (for a
-                   PD entry).
+                   PD entry), or PD (for CR3).
                    Since pages, PTs and PDs must be aligned, the lower 12 bits
                    have a different meaning, and are effectively zero when
                    determining the 32-bit physical base address.
@@ -2350,19 +2360,29 @@ The effect of the CD and NW bits varies over implementations:
 If the new _write protect (WP)_ in CR0 is set, writing to a read-only page will
 cause a page fault, even in supervisor mode.
 
-.486 page entry
-[%header,cols="32*"]
+.486 page entries
+[%header,cols="3,32*"]
 |===
+| Entry type
 | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-20+| Physical address (31:12)
+| CR3
+20+| PD physical address (31:12)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | *PCD* | *PWT* | 0 | 0 | 0
+
+| PD entry
+20+| PT physical address (31:12)
+3+| Available | 0 | 0 | 0 | A | *PCD* | *PWT* | U/S | R/W | P
+
+| PT entry
+20+| Page physical address (31:12)
 3+| Available | 0 | 0 | D | A | *PCD* | *PWT* | U/S | R/W | P
 |===
 
 Page-level cache disable (PCD):: Disables caching for this page.
-                                 This bit is present in CR3, in PD entries and
-                                 PT entries.
+                                 This bit (as well as the PWT bit) is present
+                                 in CR3, in PD entries and PT entries.
                                  CR3 controls caching for the PD, the PD entry
                                  controls caching for the PT, and the PT entry
                                  controls caching for the page.
@@ -2560,14 +2580,28 @@ The *Page Size Extensions (PSE)* are enabled through the PSE bit of CR4.
 PSE introduces a new bit in PD entries, that allows for 4 MiB pages, rather
 than a PT with 1024 4 kiB pages.
 
-.PSE 4 MiB PD entry
-[%header,cols="32*"]
+.PSE page entries
+[%header,cols="3,32*"]
 |===
+| Entry type
 | 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-10+| Physical address (31:22) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+| CR3
+20+| PD physical address (31:12)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | PCD | PWT | 0 | 0 | 0
+
+| PD entry
+20+| PT physical address (31:12)
+3+| Available | 0 | *PS* | 0 | A | PCD | PWT | U/S | R/W | P
+
+| PD entry (2 MiB page)
+10+| Page physical address (31:22) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
 3+| Available | 0 | *PS* | D | A | PCD | PWT | U/S | R/W | P
+
+| PT entry
+20+| Page physical address (31:12)
+3+| Available | 0 | 0 | D | A | PCD | PWT | U/S | R/W | P
 |===
 
 Page size (PS):: PD only.
@@ -2763,6 +2797,40 @@ The term 686 is ambiguous and may refer to:
 |===
 ====
 
+==== PGE
+Setting the *page global enable (PGE)* bit in CR4 enables the a new bit in page
+entries, that allows operating systems to mark regions of linear address space
+that are common to all processes (and therefore global).
+The CPU will not flush global pages when swapping address space (i.e. updating
+CR3), increasing TLB efficiency.
+
+.PGE page entries
+[%header,cols="3,32*"]
+|===
+| Entry type
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+| CR3
+20+| PD physical address (31:12)
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | PCD | PWT | 0 | 0 | 0
+
+| PD entry
+20+| PT physical address (31:12)
+3+| Available | 0 | PS | 0 | A | PCD | PWT | U/S | R/W | P
+
+| PD entry (2 MiB page)
+10+| Page physical address (31:22) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+3+| Available | *G* | PS | D | A | PCD | PWT | U/S | R/W | P
+
+| PT entry
+20+| Page physical address (31:12)
+3+| Available | *G* | 0 | D | A | PCD | PWT | U/S | R/W | P
+|===
+
+Global (G):: If set, the CPU will not flush this page from the TLB when
+             updating CR3.
+
 ==== PAE
 The Pentium Pro extended the physical address space to 36-bit.
 This allows for up to 64 GiB of RAM.
@@ -2775,15 +2843,25 @@ still restricted to 4 GiB.
 PAE is enabled by the PAE bit in CR4 and modifies paging by increasing the size
 of page entries to 64-bit, meaning that a page table now can only hold 512 page
 entries, rather than 1024.
-This means a third level is introduced, the _page directory pointer table
-(PDPT)_.
+This means a third level is introduced, the *page directory pointer table
+(PDPT)*.
 This tables contains entries to four page directories, each covering 1 GiB of
 linear address space and containing 512 entries to page directories, each
 covering 2 MiB of linear address space and containing 512 entries to 4 kiB
 pages.
 
-Consequently PSE, when used alongside PAE, allows for 2 MiB pages, rather than
-4 MiB pages.
+.PAE linear address
+[%header,cols="32*"]
+|===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
+| 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+
+2+| PDPTIfootnoete:[PDPT index (0-3)]
+9+| PD index (0-511) 9+| PT index (0-511) 12+| Offset (0-4095)
+|===
+
+PAE allows for large pages, that are 2 MiB in size, rather than 4 MiB,
+regardless of the state of the PSE bit.
 
 == Floating-point and vector extensions
 x86 processors have a plethora of extensions that expand on the general-purpose
