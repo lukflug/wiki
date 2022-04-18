@@ -4173,43 +4173,45 @@ The upper 20 bits of CR3 are known as the PDBR, or <em>Page Directory Base
 Register</em>.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 17. 386 page entry</caption>
+<caption class="title">Table 17. 386 page entries</caption>
 <colgroup>
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
+<col style="width: 8.5714%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8585%;">
 </colgroup>
 <thead>
 <tr>
+<th class="tableblock halign-left valign-top">Entry type</th>
 <th class="tableblock halign-left valign-top">31</th>
 <th class="tableblock halign-left valign-top">30</th>
 <th class="tableblock halign-left valign-top">29</th>
@@ -4246,7 +4248,38 @@ Register</em>.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR3</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PD physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PD entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PT physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PT entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Page physical address (31:12)</p></td>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -4265,7 +4298,7 @@ Register</em>.</p>
 <dt class="hdlist1">Physical address</dt>
 <dd>
 <p>The physical address of the page (for a PT entry), PT (for a
-PD entry).
+PD entry), or PD (for CR3).
 Since pages, PTs and PDs must be aligned, the lower 12 bits
 have a different meaning, and are effectively zero when
 determining the 32-bit physical base address.
@@ -5372,43 +5405,45 @@ write back) a cache line on a cache hit.</p>
 cause a page fault, even in supervisor mode.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 21. 486 page entry</caption>
+<caption class="title">Table 21. 486 page entries</caption>
 <colgroup>
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
+<col style="width: 8.5714%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8585%;">
 </colgroup>
 <thead>
 <tr>
+<th class="tableblock halign-left valign-top">Entry type</th>
 <th class="tableblock halign-left valign-top">31</th>
 <th class="tableblock halign-left valign-top">30</th>
 <th class="tableblock halign-left valign-top">29</th>
@@ -5445,7 +5480,38 @@ cause a page fault, even in supervisor mode.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR3</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PD physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PCD</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PWT</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PD entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PT physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PCD</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PWT</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PT entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Page physical address (31:12)</p></td>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -5464,8 +5530,8 @@ cause a page fault, even in supervisor mode.</p>
 <dt class="hdlist1">Page-level cache disable (PCD)</dt>
 <dd>
 <p>Disables caching for this page.
-This bit is present in CR3, in PD entries and
-PT entries.
+This bit (as well as the PWT bit) is present
+in CR3, in PD entries and PT entries.
 CR3 controls caching for the PD, the PD entry
 controls caching for the PT, and the PT entry
 controls caching for the page.</p>
@@ -6111,43 +6177,45 @@ PSE introduces a new bit in PD entries, that allows for 4 MiB pages, rather
 than a PT with 1024 4 kiB pages.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 24. PSE 4 MiB PD entry</caption>
+<caption class="title">Table 24. PSE page entries</caption>
 <colgroup>
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
-<col style="width: 3.125%;">
+<col style="width: 8.5714%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8585%;">
 </colgroup>
 <thead>
 <tr>
+<th class="tableblock halign-left valign-top">Entry type</th>
 <th class="tableblock halign-left valign-top">31</th>
 <th class="tableblock halign-left valign-top">30</th>
 <th class="tableblock halign-left valign-top">29</th>
@@ -6184,7 +6252,38 @@ than a PT with 1024 4 kiB pages.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="10"><p class="tableblock">Physical address (31:22)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR3</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PD physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PD entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PT physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PS</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PD entry (2 MiB page)</p></td>
+<td class="tableblock halign-left valign-top" colspan="10"><p class="tableblock">Page physical address (31:22)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -6198,6 +6297,20 @@ than a PT with 1024 4 kiB pages.</p>
 <td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PS</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PT entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Page physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
@@ -6762,7 +6875,171 @@ processors as well as the K7 Athlon.</p>
 </div>
 </details>
 <div class="sect3">
-<h4 id="_pae">3.7.1. PAE</h4>
+<h4 id="_pge">3.7.1. PGE</h4>
+<div class="paragraph">
+<p>Setting the <strong>page global enable (PGE)</strong> bit in CR4 enables the a new bit in page
+entries, that allows operating systems to mark regions of linear address space
+that are common to all processes (and therefore global).
+The CPU will not flush global pages when swapping address space (i.e. updating
+CR3), increasing TLB efficiency.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 25. PGE page entries</caption>
+<colgroup>
+<col style="width: 8.5714%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8571%;">
+<col style="width: 2.8585%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Entry type</th>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR3</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PD physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PD entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">PT physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PD entry (2 MiB page)</p></td>
+<td class="tableblock halign-left valign-top" colspan="10"><p class="tableblock">Page physical address (31:22)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>G</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PT entry</p></td>
+<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Page physical address (31:12)</p></td>
+<td class="tableblock halign-left valign-top" colspan="3"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>G</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">D</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">R/W</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
+</tr>
+</tbody>
+</table>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Global (G)</dt>
+<dd>
+<p>If set, the CPU will not flush this page from the TLB when
+updating CR3.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_pae">3.7.2. PAE</h4>
 <div class="paragraph">
 <p>The Pentium Pro extended the physical address space to 36-bit.
 This allows for up to 64 GiB of RAM.
@@ -6776,16 +7053,97 @@ still restricted to 4 GiB.</p>
 <p>PAE is enabled by the PAE bit in CR4 and modifies paging by increasing the size
 of page entries to 64-bit, meaning that a page table now can only hold 512 page
 entries, rather than 1024.
-This means a third level is introduced, the <em>page directory pointer table
-(PDPT)</em>.
+This means a third level is introduced, the <strong>page directory pointer table
+(PDPT)</strong>.
 This tables contains entries to four page directories, each covering 1 GiB of
 linear address space and containing 512 entries to page directories, each
 covering 2 MiB of linear address space and containing 512 entries to 4 kiB
 pages.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 26. PAE linear address</caption>
+<colgroup>
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
+<th class="tableblock halign-left valign-top">15</th>
+<th class="tableblock halign-left valign-top">14</th>
+<th class="tableblock halign-left valign-top">13</th>
+<th class="tableblock halign-left valign-top">12</th>
+<th class="tableblock halign-left valign-top">11</th>
+<th class="tableblock halign-left valign-top">10</th>
+<th class="tableblock halign-left valign-top">9</th>
+<th class="tableblock halign-left valign-top">8</th>
+<th class="tableblock halign-left valign-top">7</th>
+<th class="tableblock halign-left valign-top">6</th>
+<th class="tableblock halign-left valign-top">5</th>
+<th class="tableblock halign-left valign-top">4</th>
+<th class="tableblock halign-left valign-top">3</th>
+<th class="tableblock halign-left valign-top">2</th>
+<th class="tableblock halign-left valign-top">1</th>
+<th class="tableblock halign-left valign-top">0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">PDPTIfootnoete:[PDPT index (0-3)]</p></td>
+<td class="tableblock halign-left valign-top" colspan="9"><p class="tableblock">PD index (0-511)</p></td>
+<td class="tableblock halign-left valign-top" colspan="9"><p class="tableblock">PT index (0-511)</p></td>
+<td class="tableblock halign-left valign-top" colspan="12"><p class="tableblock">Offset (0-4095)</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
-<p>Consequently PSE, when used alongside PAE, allows for 2 MiB pages, rather than
-4 MiB pages.</p>
+<p>PAE allows for large pages, that are 2 MiB in size, rather than 4 MiB,
+regardless of the state of the PSE bit.</p>
 </div>
 </div>
 </div>
