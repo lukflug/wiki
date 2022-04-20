@@ -61,26 +61,38 @@
 <li><a href="#_i486">3.5. i486</a></li>
 <li><a href="#_i586">3.6. i586</a></li>
 <li><a href="#_i686">3.7. i686</a></li>
+<li><a href="#_i786">3.8. i786</a></li>
+<li><a href="#_x86_64_2">3.9. x86-64</a></li>
 </ul>
 </li>
-<li><a href="#_floating_point_and_vector_extensions">4. Floating-point and vector extensions</a>
+<li><a href="#_extensions">4. Extensions</a>
 <ul class="sectlevel2">
-<li><a href="#_x87">4.1. x87</a></li>
-<li><a href="#_mmx">4.2. MMX</a></li>
-<li><a href="#_sse">4.3. SSE</a></li>
-<li><a href="#_avx">4.4. AVX</a></li>
+<li><a href="#_model_specific_registers">4.1. Model-specific registers</a></li>
+<li><a href="#_page_size_extensions">4.2. Page size extensions</a></li>
+<li><a href="#_virtual_8086_mode_extensions">4.3. Virtual 8086 mode extensions</a></li>
+<li><a href="#_debugging_extensions">4.4. Debugging extensions</a></li>
+<li><a href="#_pge">4.5. PGE</a></li>
+<li><a href="#_pae">4.6. PAE</a></li>
 </ul>
 </li>
-<li><a href="#_bit_manipulation_extensions">5. Bit manipulation extensions</a>
+<li><a href="#_floating_point_and_vector_extensions">5. Floating-point and vector extensions</a>
 <ul class="sectlevel2">
-<li><a href="#_abm">5.1. ABM</a></li>
-<li><a href="#_bmi1">5.2. BMI1</a></li>
-<li><a href="#_tbm">5.3. TBM</a></li>
-<li><a href="#_bmi2">5.4. BMI2</a></li>
-<li><a href="#_adx">5.5. ADX</a></li>
+<li><a href="#_x87">5.1. x87</a></li>
+<li><a href="#_mmx">5.2. MMX</a></li>
+<li><a href="#_sse">5.3. SSE</a></li>
+<li><a href="#_avx">5.4. AVX</a></li>
 </ul>
 </li>
-<li><a href="#_external_links">6. External links</a></li>
+<li><a href="#_bit_manipulation_extensions">6. Bit manipulation extensions</a>
+<ul class="sectlevel2">
+<li><a href="#_abm">6.1. ABM</a></li>
+<li><a href="#_bmi1">6.2. BMI1</a></li>
+<li><a href="#_tbm">6.3. TBM</a></li>
+<li><a href="#_bmi2">6.4. BMI2</a></li>
+<li><a href="#_adx">6.5. ADX</a></li>
+</ul>
+</li>
+<li><a href="#_external_links">7. External links</a></li>
 </ul></div>
 <article>
 <h1 class="sect0">x86</h1>
@@ -4714,7 +4726,7 @@ The fields are set automatically by the processor, but never reset.</p>
 <p>BS indicates a single-step trap due to the trap flag TF.</p>
 </li>
 <li>
-<p>BD indicates a "general detect fault", caused by reading or writing a debug
+<p>BD indicates a "general detect fault" caused by reading or writing a debug
 register.
 This happens, when an in-circuit emulator (such as the ICE-386) is using the
 debug registers.</p>
@@ -4728,7 +4740,7 @@ To deal with this, the <em>resume (or restart) flag (RF)</em> was introduced.
 This flag is automatically set on the saved EFLAGS register, whenever any fault
 occurs.
 If RF is set, instruction breakpoints are disabled for one instruction, since
-the flag is automatically cleared once a instruction finishes successfully.</p>
+the flag is automatically cleared once an instruction finishes successfully.</p>
 </div>
 </div>
 <div class="sect3">
@@ -4744,22 +4756,22 @@ These serve to test the TLB during early initialization.</p>
 <div class="sect3">
 <h4 id="_virtual_8086_mode_2">3.4.8. Virtual 8086 mode</h4>
 <div class="paragraph">
-<p>In order to allow real mode programs to run under protected mode, the <strong>virtual
-8086 mode (VM86 mode)</strong> was introduced.
-The processor is in VM86 mode, if the <em>VM flag</em> in the EFLAGS register is set.</p>
+<p>In order to allow real mode programs to run under protected mode, the 386
+introduces <strong>virtual 8086 mode (VM86 mode)</strong>.
+The processor is in VM86 mode if the <em>VM flag</em> in the EFLAGS register is set.</p>
 </div>
 <div class="paragraph">
-<p>The VM flag cam only be toggled through an <code>iret</code> in Ring 0 or a task switch,
-in order to update the segment registers and the instruction and stack pointer
-to a valid state (trying to change the VM flag through <code>popf</code> will not result
-in a change of VM).
+<p>The VM flag can only be toggled through an <code>iret</code> in Ring 0 or a task switch,
+in order to update the segment registers, the instruction pointer, and stack
+pointer to a valid state (trying to change the VM flag through <code>popf</code> will not
+result in a change of VM).
 A task in VM86 mode is referred to as a <em>VM86 task</em>.
-It runs under the supervision of a protected mode program called the
-<em>VM86 monitor</em>.</p>
+It runs under the supervision of a protected mode program called the <em>VM86
+monitor</em>.</p>
 </div>
 <div class="paragraph">
 <p>In VM86 mode, segmentation works in a similar way to real mode: the segment
-base linear address is 16 times the segment selector value and the limit is
+base linear address is 16 times the segment selector value, and the limit is
 always 65535.
 The CPL in VM86 mode is always 3.</p>
 </div>
@@ -4774,20 +4786,20 @@ to certain memory areas.</p>
 </div>
 <div class="paragraph">
 <p>The instructions that are sensitive to IOPL change in VM86 mode.
-In particular, the I/O instructions <code>in</code>, <code>out</code>, <code>ins</code> and <code>outs</code> are no longer
-sensitive to IOPL and <code>pushf</code>, <code>popf</code>, <code>iret</code> and <code>int</code> (but not <code>int3</code>, <code>into</code>
-and <code>int1</code>) are now sensitive to IOPL.
-<code>cli</code>, <code>sti</code> and <code>lock</code> remain sensitive.
+In particular, the I/O instructions <code>in</code>, <code>out</code>, <code>ins</code>, and <code>outs</code> are no
+longer sensitive to IOPL, and <code>pushf</code>, <code>popf</code>, <code>iret</code>, and <code>int</code> (but not
+<code>int3</code>, <code>into</code>, and <code>int1</code>) are now sensitive to IOPL.
+<code>cli</code>, <code>sti</code>, and <code>lock</code> remain sensitive.
 This means, if the IOPL is 3, the VM86 tasks may directly control the interrupt
-flag and may issue software interrupts directly, otherwise a general protection
-fault is dispatched.</p>
+flag, and may issue software interrupts directly, otherwise a general
+protection fault is dispatched.</p>
 </div>
 <div class="paragraph">
 <p>VM86 mode handles interrupts in a similar way to native protected mode.
 The IDT is used, rather than the real mode IVT.
-The corresponding IVT entry for a interrupt in VM86 mode must point to a task
-gate or interrupt or trap gate pointing to a nonconforming code segment with
-DPL 0.
+The corresponding IVT entry for an interrupt in VM86 mode must point to a
+interrupt or trap gate pointing to a nonconforming code segment with
+DPL 0, or a task gate.
 If the resulting CPL of a interrupt or trap gate is not zero, a general
 protection fault occurs.</p>
 </div>
@@ -4795,8 +4807,8 @@ protection fault occurs.</p>
 <p>When an interrupt causes a switch out of VM86 mode through an interrupt or trap
 gate, in addition to updating CS:EIP (to the target of the gate) and SS:ESP
 (with the SS0:ESP0 field of the current TSS), the other segment registers DS,
-ES, FS and GS are also pushed on the stack and set to null selectors, since
-they contained real mode segment addresses and not necessarily valid protected
+ES, FS, and GS are also pushed on the stack and set to null selectors, since
+they contained real mode segment addresses, and not necessarily valid protected
 mode segment selectors.</p>
 </div>
 <div class="paragraph">
@@ -4919,7 +4931,7 @@ effectively zero.</p>
 not the Cx5x86).
 It also introduced the <code>cmpxchg</code> and <code>xadd</code> instructions, that are useful for
 synchronization, and <code>bswap</code> to convert between big and little endian.
-New mechanisms were also introduced, that allow finer control of caching.</p>
+New mechanisms that allow finer control of caching were also introduced.</p>
 </div>
 <details>
 <summary class="title">486 registers</summary>
@@ -5279,7 +5291,7 @@ New mechanisms were also introduced, that allow finer control of caching.</p>
 <div class="paragraph">
 <p>Since the FPU is now integrated, numeric exceptions can be routed internally to
 interrupt 16.
-However, to maintain compatibility with older implementation, where the FPU is
+However, to maintain compatibility with older implementations where the FPU is
 external and the exception can be routed through another interrupt, the 486 has
 the option to route the exception externally over the motherboard.
 The <em>numeric error (NE)</em> bit in CR0 has to be set to enable the native
@@ -5349,7 +5361,7 @@ cache misses are read directly from main memory, but no cache line gets
 replaced.
 To completely disable the cache, the CD bit is set and the cache is flushed
 through <code>wbinvd</code>.
-On CPUs with MTRR (see i686 section), the memory type may need to be set to
+On CPUs with MTRR (see MTRR section), the memory type may need to be set to
 uncacheable (UC) when setting the CD, in order to preserve strong memory
 ordering (which can be done by disabling MTRRs).</p>
 </li>
@@ -5357,9 +5369,9 @@ ordering (which can be done by disabling MTRRs).</p>
 <p><em>No writethrough (NW)</em> may only be set if CD is also set and causes cache
 coherence to no longer be maintained, i.e. write cache misses are written to
 the cache and never written back to main memory.
-On 586-class processors and later, setting the NW bit disables writeback
-caching, forcing any page to writethrough, regardless of PCD and PWT (see
-below) and MTTRs (see i686 section).</p>
+On P6 processors and later, setting the NW bit disables writeback caching,
+forcing pages to writethrough, regardless of PWT (see below) and MTTRs
+(see MTRR section).</p>
 </li>
 </ul>
 </div>
@@ -5382,7 +5394,7 @@ below) and MTTRs (see i686 section).</p>
 <p>The NW bit does not exist on Cx486 processors.</p>
 </li>
 <li>
-<p>The NW bit has a different meaning on Cx5x86, 6x86, MII and MediaGX
+<p>The NW bit has a different meaning on Cx5x86, 6x86, MII, and MediaGX
 processors.</p>
 </li>
 <li>
@@ -5406,8 +5418,8 @@ write back) a cache line on a cache hit.</p>
 <div class="sect3">
 <h4 id="_paging_2">3.5.2. Paging</h4>
 <div class="paragraph">
-<p>If the new <em>write protect (WP)</em> in CR0 is set, writing to a read-only page will
-cause a page fault, even in supervisor mode.</p>
+<p>If the new <em>write protect (WP)</em> bit in CR0 is set, writing to a read-only page
+will cause a page fault, even in supervisor mode.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 21. 486 page entries</caption>
@@ -5536,7 +5548,7 @@ cause a page fault, even in supervisor mode.</p>
 <dd>
 <p>Disables caching for this page.
 This bit (as well as the PWT bit) is present
-in CR3, PDEs and PTEs.
+in CR3, PDEs, and PTEs.
 CR3 controls caching for the PD, the PDE
 controls caching for the PT, and the PTE
 controls caching for the page.</p>
@@ -5558,11 +5570,12 @@ See PCD.</p>
 <p>586-class processors include the Intel Pentium and Pentium MMX, the AMD K5, the
 NexGen Nx586, as well as the Cyrix Cx5x86, Cx6x86 and MediaGX.
 In addition to adding the <code>cmpxchg8b</code> and <code>cpuid</code> instructions, the Pentium
-introduced MSRs, machine checks and the TSC, along with extensions to paging,
-virtual 8086 mode and debugging.</p>
+introduced MSRs, machine checks, and the TSC, along with extensions to paging,
+virtual 8086 mode, and debugging.
+The Pentium introduces CR4 to control processor extensions.</p>
 </div>
 <details>
-<summary class="title">586 registers</summary>
+<summary class="title">IA-32 registers</summary>
 <div class="content">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -5777,7 +5790,7 @@ virtual 8086 mode and debugging.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CR4<sup class="footnote">[<a id="_footnoteref_23" class="footnote" href="#_footnotedef_23" title="View footnote.">23</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CR4</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
@@ -5800,12 +5813,17 @@ virtual 8086 mode and debugging.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PCE</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OS<br>
+  XMM<br>
+  EX<br>
+  CPT</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OS<br>
+  FX<br>
+  SR</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PCE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PGE</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>MCE</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PAE</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PSE</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>TSD</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PVI</strong></p></td>
@@ -5890,7 +5908,7 @@ virtual 8086 mode and debugging.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">L0</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_24" class="footnote" href="#_footnotedef_24" title="View footnote.">24</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_23" class="footnote" href="#_footnotedef_23" title="View footnote.">23</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top" colspan="16"></td>
 <td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">ES (visible selector)</p></td>
 </tr>
@@ -5951,8 +5969,26 @@ virtual 8086 mode and debugging.</p>
 </table>
 </div>
 </details>
-<div class="paragraph">
-<p>The Pentium introduces CR4 to control processor extensions.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Virtual interrupt flag (VIF)</dt>
+<dd>
+<p>See VME.</p>
+</dd>
+<dt class="hdlist1">Virtual interrupt pending (VIP)</dt>
+<dd>
+<p>See VME.</p>
+</dd>
+<dt class="hdlist1">ID flag</dt>
+<dd>
+<p>The ability to toggle this flag indicates the presence of <code>cpuid</code>.</p>
+</dd>
+<dt class="hdlist1">General detect (GD)</dt>
+<dd>
+<p>Setting this bit causes a debug fault whenever the debug
+registers are accessed (see debugging extensions).</p>
+</dd>
+</dl>
 </div>
 <div class="sect3">
 <h4 id="_cpuid">3.6.1. CPUID</h4>
@@ -5969,14 +6005,14 @@ There are standard function numbers, starting from 0x00000000, and extended
 function numbers, starting from 0x80000000.</p>
 </div>
 <div class="paragraph">
-<p>Important functions include:<sup class="footnote">[<a id="_footnoteref_25" class="footnote" href="#_footnotedef_25" title="View footnote.">25</a>]</sup></p>
+<p>Important functions include:<sup class="footnote">[<a id="_footnoteref_24" class="footnote" href="#_footnotedef_24" title="View footnote.">24</a>]</sup></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>EAX = 0x00000000 returns the highest standard function number in EAX and
-a 12 byte vendor string in EBX, ECX and EDX.
-The vendor string is "GenuineIntel" for Intel processors and "AuthenticAMD"
+a 12 byte vendor string in EBX, ECX, and EDX.
+The vendor string is "GenuineIntel" for Intel processors, and "AuthenticAMD"
 for AMD processors.</p>
 </li>
 <li>
@@ -6001,8 +6037,12 @@ EBX, ECX and EDX contain even more feature bits.</p>
 </li>
 <li>
 <p>EAX = 0x80000002, 0x80000003, 0x80000004 return part of the processor brand
-string in EAX, EBX, ECX and EDX.
+string in EAX, EBX, ECX, and EDX.
 The entire string is therefore 48 bytes long.</p>
+</li>
+<li>
+<p>EAX = 8x00000008 returns the physical address width in AL and the linear
+address width in AH.</p>
 </li>
 </ul>
 </div>
@@ -6010,15 +6050,15 @@ The entire string is therefore 48 bytes long.</p>
 <p>There exist many other functions that might be relevant to operating system
 development, such as information on multiprocessor topology.
 The feature bits are used to indicate the presence of a certain processor
-extension, they are generally set if the processor extension is present and
-cleared if it is not preset (see the extensions section for more detailed
-information).</p>
+extension.
+They are generally set if the processor extension is present and cleared if it
+is not preset (see the extensions section for more detailed information).</p>
 </div>
 <div class="paragraph">
 <p>The version information consists of a family, model and stepping ID.
 If the family ID field is 15, then the extended family ID field is added to the
 family field to obtain the actual processor family number.
-If the family ID field is 6<sup class="footnote">[<a id="_footnoteref_26" class="footnote" href="#_footnotedef_26" title="View footnote.">26</a>]</sup> or 15, the model number is
+If the family ID field is 6<sup class="footnote">[<a id="_footnoteref_25" class="footnote" href="#_footnotedef_25" title="View footnote.">25</a>]</sup> or 15, the model number is
 the extended model ID times 16 plus the model ID.</p>
 </div>
 <div class="paragraph">
@@ -6103,7 +6143,7 @@ the extended model ID times 16 plus the model ID.</p>
 <td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">Extended family</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Extended model</p></td>
 <td class="tableblock halign-left valign-top" colspan="2"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Type<sup class="footnote">[<a id="_footnoteref_27" class="footnote" href="#_footnotedef_27" title="View footnote.">27</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Type<sup class="footnote">[<a id="_footnoteref_26" class="footnote" href="#_footnotedef_26" title="View footnote.">26</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Family</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Model</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Stepping</p></td>
@@ -6115,8 +6155,76 @@ the extended model ID times 16 plus the model ID.</p>
 rather than based on family and model.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_model_specific_registers">3.6.2. Model-specific registers</h4>
+</div>
+<div class="sect2">
+<h3 id="_i686">3.7. i686</h3>
+<div class="paragraph">
+<p>686-class processors include the Intel Pentium Pro, Pentium II and Pentium III,
+as well as the AMD K6, K6-2 and K6-III.
+The term 686 is ambiguous and may refer to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Intel Family 6 processors, which include the Pentium Pro, II and III, as well
+as modern Core 2, i3, i5 and i7 branded processors, but not earlier
+NetBurst-based processors, such as the Pentium 4.</p>
+</li>
+<li>
+<p>All 32-bit processors supporting the Pentium Pro instruction set,
+which would include 32-bit NetBurst-based processors, but not later 64-bit
+processors.</p>
+</li>
+<li>
+<p>All 32-bit processors supporting the Pentium Pro instruction set, but not
+supporting SSE2, which would exclude NetBurst-based processors, but include
+the K7 Athlon.</p>
+</li>
+<li>
+<p>Sixth generation x86 processors, which would exclude NetBurst-based
+processors as well as the K7 Athlon.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_i786">3.8. i786</h3>
+<div class="paragraph">
+<p>The term "786" may refer to different things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>x86-64 processors.</p>
+</li>
+<li>
+<p>Processors with SSE2, which would include the Pentium 4 and Athlon 64.</p>
+</li>
+<li>
+<p>Seventh-generation microarchitectures, which would include NetBurst and K7.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_x86_64_2">3.9. x86-64</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extensions">4. Extensions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>New features that were introduced after the 486 are usually processor
+extensions, whose presence can be directly and separately determined via
+<code>cpuid</code>.
+There are exceptions, however, such as <code>ud2</code>, long <code>nop</code>, and <code>rdpmc</code> (along
+with the corresponding PCE flag), whose presence are not indicated by any
+feature bit.</p>
+</div>
+<div class="sect2">
+<h3 id="_model_specific_registers">4.1. Model-specific registers</h3>
 <div class="paragraph">
 <p>The Pentium and subsequent processors no longer have the test registers of the
 386 and 486.
@@ -6174,8 +6282,8 @@ This instruction can be executed in user mode, by setting the
 <em>performance-monitoring counter enable (PCE)</em> bit of CR4.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_page_size_extensions">3.6.3. Page size extensions</h4>
+<div class="sect2">
+<h3 id="_page_size_extensions">4.2. Page size extensions</h3>
 <div class="paragraph">
 <p>The <strong>Page Size Extensions (PSE)</strong> are enabled through the PSE bit of CR4.
 PSE introduces a new bit in PDEs, that allows for 4 MiB pages, rather
@@ -6343,8 +6451,8 @@ Zero for 4 kiB pages; one for 4 MiB pages.</p>
 <p>4 MiB pages must be 4 MiB aligned, therefore bits 12 to 21 are reserved.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_virtual_8086_mode_extensions">3.6.4. Virtual 8086 mode extensions</h4>
+<div class="sect2">
+<h3 id="_virtual_8086_mode_extensions">4.3. Virtual 8086 mode extensions</h3>
 <div class="paragraph">
 <p><strong>Virtual Mode Extensions (VME)</strong> allow for interrupt handling inside virtual
 8086 mode, without switching to protected mode, thereby increasing performance.
@@ -6422,8 +6530,8 @@ set in VM86 mode or if PVI is set in native protected mode.
 </table>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_debugging_extensions">3.6.5. Debugging extensions</h4>
+<div class="sect2">
+<h3 id="_debugging_extensions">4.4. Debugging extensions</h3>
 <div class="paragraph">
 <p>The functionality of the debug registers was extended in the Pentium in three
 ways:</p>
@@ -6452,435 +6560,8 @@ exception, similar to CR1.</p>
 </ul>
 </div>
 </div>
-</div>
 <div class="sect2">
-<h3 id="_i686">3.7. i686</h3>
-<div class="paragraph">
-<p>686-class processors include the Intel Pentium Pro, Pentium II and Pentium III,
-as well as the AMD K6, K6-2 and K6-III.
-The Pentium Pro introduced the <code>cmov</code> instructions.
-The term 686 is ambiguous and may refer to:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Intel Family 6 processors, which include the Pentium Pro, II and III, as well
-as modern Core 2, i3, i5 and i7 branded processors, but not earlier
-NetBurst-based processors, such as the Pentium 4.</p>
-</li>
-<li>
-<p>All 32-bit processors supporting the Pentium Pro instruction set
-which would include 32-bit NetBurst-based processors, but not later 64-bit
-processors.</p>
-</li>
-<li>
-<p>All 32-bit processors supporting the Pentium Pro instruction set, but not
-supporting SSE2, which would exclude NetBurst-based processors, but include
-the K7 Athlon.</p>
-</li>
-<li>
-<p>Sixth generation x86 processors, which would exclude NetBurst-based
-processors as well as the K7 Athlon.</p>
-</li>
-</ul>
-</div>
-<details>
-<summary class="title">686 registers</summary>
-<div class="content">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 8.5714%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8571%;">
-<col style="width: 2.8585%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Register</th>
-<th class="tableblock halign-left valign-top">31</th>
-<th class="tableblock halign-left valign-top">30</th>
-<th class="tableblock halign-left valign-top">29</th>
-<th class="tableblock halign-left valign-top">28</th>
-<th class="tableblock halign-left valign-top">27</th>
-<th class="tableblock halign-left valign-top">26</th>
-<th class="tableblock halign-left valign-top">25</th>
-<th class="tableblock halign-left valign-top">24</th>
-<th class="tableblock halign-left valign-top">23</th>
-<th class="tableblock halign-left valign-top">22</th>
-<th class="tableblock halign-left valign-top">21</th>
-<th class="tableblock halign-left valign-top">20</th>
-<th class="tableblock halign-left valign-top">19</th>
-<th class="tableblock halign-left valign-top">18</th>
-<th class="tableblock halign-left valign-top">17</th>
-<th class="tableblock halign-left valign-top">16</th>
-<th class="tableblock halign-left valign-top">15</th>
-<th class="tableblock halign-left valign-top">14</th>
-<th class="tableblock halign-left valign-top">13</th>
-<th class="tableblock halign-left valign-top">12</th>
-<th class="tableblock halign-left valign-top">11</th>
-<th class="tableblock halign-left valign-top">10</th>
-<th class="tableblock halign-left valign-top">9</th>
-<th class="tableblock halign-left valign-top">8</th>
-<th class="tableblock halign-left valign-top">7</th>
-<th class="tableblock halign-left valign-top">6</th>
-<th class="tableblock halign-left valign-top">5</th>
-<th class="tableblock halign-left valign-top">4</th>
-<th class="tableblock halign-left valign-top">3</th>
-<th class="tableblock halign-left valign-top">2</th>
-<th class="tableblock halign-left valign-top">1</th>
-<th class="tableblock halign-left valign-top">0</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EAX</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EAX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">AH (AX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">AL (AX)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ECX</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(ECX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">CH (CX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">CL (CX)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EDX</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EDX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">DH (DX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">DL (DX)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EBX</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EBX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">BH (BX)</p></td>
-<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">BL (BX)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ESP</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(ESP)</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">SP</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EBP</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EBP)</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">BP</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ESI</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(ESI)</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">SI</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EDI</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EDI)</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">DI</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EIP</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">(EIP)</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">IP</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EFLAGS</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VIP</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VIF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AC</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">RF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NT</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">IOPL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">OF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">TF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ZF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PF</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CF</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CR0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PG</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CD</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NW</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">AM</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WP</p></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">NE</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ET</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">TS</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">MP</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PE</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CR2</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Page fault linear address</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CR3</p></td>
-<td class="tableblock halign-left valign-top" colspan="20"><p class="tableblock">Page Directory Base Register (PDBR)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PCD</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PWT</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CR4<sup class="footnote">[<a id="_footnoteref_28" class="footnote" href="#_footnotedef_28" title="View footnote.">28</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OS<br>
-  XMM<br>
-  EX<br>
-  CPT</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OS<br>
-  FX<br>
-  SR</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PCE</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PGE</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">MCE</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PAE</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PSE</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">TSD</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">PVI</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VME</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DR0</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 0 linear address</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DR1</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 1 linear address</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DR2</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 2 linear address</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DR3</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Breakpoint 3 linear address</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DR6</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">BT</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">BS</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">BD</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">B3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">B2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">B1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">B0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DR7</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN3</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W3</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN2</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W2</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN1</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W1</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">LEN0</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">R/W0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GD</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GE</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LE</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">G3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">L3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">G2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">L2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">G1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">L1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">G0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">L0</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_29" class="footnote" href="#_footnotedef_29" title="View footnote.">29</a>]</sup></p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">ES (visible selector)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CS</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="14"><p class="tableblock">(visible CS selector)</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">CPL</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SS</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="14"><p class="tableblock">(visible SS selector)</p></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">CPL</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">DS</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">DS (visible selector)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">FS</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">FS (visible selector)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">GS</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">GS (visible selector)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">TR</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">TR (visible selector)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">LDTR</p></td>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">LDTR (visible selector)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">GDTR</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Base</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Limit</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">IDR</p></td>
-<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Base</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" colspan="16"></td>
-<td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">Limit</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</details>
-<div class="sect3">
-<h4 id="_pge">3.7.1. PGE</h4>
+<h3 id="_pge">4.5. PGE</h3>
 <div class="paragraph">
 <p>Setting the <strong>page global enable (PGE)</strong> bit in CR4 enables the a new bit in page
 entries, that allows operating systems to mark regions of linear address space
@@ -7043,8 +6724,8 @@ updating CR3.</p>
 </dl>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_pae">3.7.2. PAE</h4>
+<div class="sect2">
+<h3 id="_pae">4.6. PAE</h3>
 <div class="paragraph">
 <p>The Pentium Pro extended the physical address space to 36-bit.
 This allows for up to 64 GiB of RAM.
@@ -7157,16 +6838,15 @@ regardless of the state of the PSE bit.</p>
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="_floating_point_and_vector_extensions">4. Floating-point and vector extensions</h2>
+<h2 id="_floating_point_and_vector_extensions">5. Floating-point and vector extensions</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>x86 processors have a plethora of extensions, that expand on the
 general-purpose instruction set.</p>
 </div>
 <div class="sect2">
-<h3 id="_x87">4.1. x87</h3>
+<h3 id="_x87">5.1. x87</h3>
 <div class="paragraph">
 <p><strong>x87</strong>, also known as <em>Numerical Processing Extension (NPX)</em> or <em>FPU</em>, is a
 scalar floating-point calculation extension.
@@ -7181,7 +6861,7 @@ that are addressed as ST(0) to ST(7) relative to the top of the stack.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_mmx">4.2. MMX</h3>
+<h3 id="_mmx">5.2. MMX</h3>
 <div class="paragraph">
 <p><strong>Multimedia Extensions (MMX)</strong>, introduced in 1997 with the Pentium MMX, is a
 SIMD (single instruction; multiple data) extension.
@@ -7193,7 +6873,7 @@ This aliasing makes it difficult for applications to use MMX and x87 at the
 same time.</p>
 </div>
 <div class="sect3">
-<h4 id="_3dnow">4.2.1. 3DNow!</h4>
+<h4 id="_3dnow">5.2.1. 3DNow!</h4>
 <div class="paragraph">
 <p>In 1998, AMD introduced <strong>3DNow!</strong> with the K6-2.
 This extended MMX to introduce support for operations on 32-bit floating-point
@@ -7207,7 +6887,7 @@ instructions that are also found in newer Intel processors).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sse">4.3. SSE</h3>
+<h3 id="_sse">5.3. SSE</h3>
 <div class="paragraph">
 <p><strong>Streaming SIMD Extensions (SSE)</strong>, also known as <em>Katmai New Instructions
 (KNI)</em> or <em>Internet Streaming SIMD Extensions (ISSE)</em>, is a SIMD extension,
@@ -7218,7 +6898,7 @@ set, it introduces a new set of eight 128-bit registers, XMM0 to XMM7, that can
 each store four 32-bit floating-point numbers.</p>
 </div>
 <div class="sect3">
-<h4 id="_sse2">4.3.1. SSE2</h4>
+<h4 id="_sse2">5.3.1. SSE2</h4>
 <div class="paragraph">
 <p><strong>SSE2</strong>, also known as <em>Willamette New Instructions (WNI)</em>, was introduced in
 2000 with the Intel Pentium 4.
@@ -7235,7 +6915,7 @@ In fact, SSE2 with 16 registers is mandatory for every x86-64 implementation.</p
 </div>
 </div>
 <div class="sect3">
-<h4 id="_sse3">4.3.2. SSE3</h4>
+<h4 id="_sse3">5.3.2. SSE3</h4>
 <div class="paragraph">
 <p><strong>SSE3</strong>, also known as <em>Prescott New Instructions (PNI)</em>, was introduced by
 Intel in 2004 with the Prescott Pentium 4, and by AMD in 2005 with the Athlon
@@ -7245,7 +6925,7 @@ the same register.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_ssse3">4.3.3. SSSE3</h4>
+<h4 id="_ssse3">5.3.3. SSSE3</h4>
 <div class="paragraph">
 <p><strong>Supplementary Streaming SMD Extenions 3 (SSSE3)</strong>, also known as <em>Merom New
 Instructions (MNI)</em>, was first implemented by Intel in 2006 with Woodcrest
@@ -7254,7 +6934,7 @@ It is not to be confused with SSE4.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_sse4">4.3.4. SSE4</h4>
+<h4 id="_sse4">5.3.4. SSE4</h4>
 <div class="paragraph">
 <p><strong>SSE4</strong> is divided into two subsets by Intel.
 The first subset, <strong>SSE4.1</strong>, also known as <em>Penryn New Instructions (PNI)</em>, was
@@ -7275,7 +6955,7 @@ data, which is supported by Intel since AVX.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_sse5">4.3.5. SSE5</h4>
+<h4 id="_sse5">5.3.5. SSE5</h4>
 <div class="paragraph">
 <p><strong>SSE5</strong> is a proposed extension by AMD in 2007.
 It does not include all SSE4 instructions, and proposes a new <em>DREX encoding</em>,
@@ -7285,7 +6965,7 @@ split into F16C, XOP and FMA4 in 2009, in order to remain compatible with AVX.</
 </div>
 </div>
 <div class="sect3">
-<h4 id="_f16c">4.3.6. F16C</h4>
+<h4 id="_f16c">5.3.6. F16C</h4>
 <div class="paragraph">
 <p><strong>F16C</strong>, also known as <strong>CVT16</strong>, originally proposed by AMD in 2009, adds
 instructions to convert between half-precision and single-precision
@@ -7295,7 +6975,7 @@ Bridge in 2012.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_xop">4.3.7. XOP</h4>
+<h4 id="_xop">5.3.7. XOP</h4>
 <div class="paragraph">
 <p><strong>Extended Operations (XOP)</strong> adds new vector instructions to SSE, was first
 proposed by AMD in 2015, and first implemented in Bulldozer in 2011.
@@ -7304,7 +6984,7 @@ No Intel CPU implemented XOP, and AMD dropped support with Zen in 2017.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_fma">4.3.8. FMA</h4>
+<h4 id="_fma">5.3.8. FMA</h4>
 <div class="paragraph">
 <p>There exist two variants of <strong>Fused Multiply-Add (FMA)</strong>: the three-operand
 <strong>FMA3</strong> and the four-operand <strong>FMA4</strong>.
@@ -7322,7 +7002,7 @@ AMD dropped official support for FMA4 with Zen in 2017.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_avx">4.4. AVX</h3>
+<h3 id="_avx">5.4. AVX</h3>
 <div class="paragraph">
 <p><strong>Advanced Vector Extensions (AVX)</strong> was first proposed by Intel in 2008, and
 implemented in 2011 by Intel with Sandy Bridge, and by AMD with Bulldozer.
@@ -7332,14 +7012,14 @@ The VEX coding scheme allows three-operand operations, relaxes alignment
 requirements, and allows 128-bit operations.</p>
 </div>
 <div class="sect3">
-<h4 id="_avx2">4.4.1. AVX2</h4>
+<h4 id="_avx2">5.4.1. AVX2</h4>
 <div class="paragraph">
 <p><strong>AVX2</strong> is an extension to AVX introduced by Intel in 2013 with Haswell, and by
 AMD in 2015 with Excavator.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_avx_512">4.4.2. AVX-512</h4>
+<h4 id="_avx_512">5.4.2. AVX-512</h4>
 <div class="paragraph">
 <p><strong>AVX-512</strong> is a set of extensions first proposed by Intel in 2013, and first
 implemented in 2015.
@@ -7352,7 +7032,7 @@ The <em>AVX-512VL</em> (vector length) set allows the use of AVX-512 operations 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_avx_vnni">4.4.3. AVX-VNNI</h4>
+<h4 id="_avx_vnni">5.4.3. AVX-VNNI</h4>
 <div class="paragraph">
 <p><strong>AVX-VNNI</strong> allows for <em>AVX-512VNNI</em> (virtual neural network interface)
 instructions on 128-bit and 256-bit operands using the VEX encoding, for CPUs
@@ -7363,14 +7043,14 @@ that do not yet fully support AVX-512.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_bit_manipulation_extensions">5. Bit manipulation extensions</h2>
+<h2 id="_bit_manipulation_extensions">6. Bit manipulation extensions</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Newer x86 implementations support non-SIMD <strong>bit manipulation instructions sets
 (BMIs)</strong>, that operate on general-purpose registers.</p>
 </div>
 <div class="sect2">
-<h3 id="_abm">5.1. ABM</h3>
+<h3 id="_abm">6.1. ABM</h3>
 <div class="paragraph">
 <p><strong>Advanced Bit Manipulation (ABM)</strong> consists of the instructions <code>popcnt</code> and
 <code>lzcnt</code>, and was introduced by AMD with SSE4A.
@@ -7378,14 +7058,14 @@ Intel introduced <code>popcnt</code> as part of SSE4.2 and <code>lzcnt</code> as
 </div>
 </div>
 <div class="sect2">
-<h3 id="_bmi1">5.2. BMI1</h3>
+<h3 id="_bmi1">6.2. BMI1</h3>
 <div class="paragraph">
 <p><strong>Bit Manipulation Instruction Set 1 (BMI1)</strong> was introduced by AMD with
 Piledriver in 2012, and implemented by Intel with Haswell in 2013.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_tbm">5.3. TBM</h3>
+<h3 id="_tbm">6.3. TBM</h3>
 <div class="paragraph">
 <p><strong>Trailing Bit Manipulation (TBM)</strong> was introduced by AMD with Piledriver in
 2012, and was never implemented by Intel.
@@ -7393,14 +7073,14 @@ Zen-based processors do not support TBM.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_bmi2">5.4. BMI2</h3>
+<h3 id="_bmi2">6.4. BMI2</h3>
 <div class="paragraph">
 <p><strong>Bit Manipulation Instruction Set 2 (BMI2)</strong> was introduced by Intel with
 Haswell in 2013, and supported by AMD since Excavator in 2015.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_adx">5.5. ADX</h3>
+<h3 id="_adx">6.5. ADX</h3>
 <div class="paragraph">
 <p><strong>Multi-Precision Add-Carry Instruction Extensions (ADX)</strong> is an extension
 introduced by Intel with Broadwell in 2014, and supported by AMD since Zen in
@@ -7411,7 +7091,7 @@ It introduces instructions for the efficient adding of large integers.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_external_links">6. External links</h2>
+<h2 id="_external_links">7. External links</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -7516,31 +7196,19 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_23">
-      23. <em>Italics</em> indicate optional extensions.
+      23. Hidden descriptor caches are omitted.
     </li>
   
     <li class="footnote" id="_footnotedef_24">
-      24. Hidden descriptor caches are omitted.
+      24. The original Pentium and late 486 only has the first two standard functions.
     </li>
   
     <li class="footnote" id="_footnotedef_25">
-      25. The original Pentium and late 486 only had the first two standard functions.
+      25. Not on AMD.
     </li>
   
     <li class="footnote" id="_footnotedef_26">
-      26. Not on AMD.
-    </li>
-  
-    <li class="footnote" id="_footnotedef_27">
-      27. Intel only.
-    </li>
-  
-    <li class="footnote" id="_footnotedef_28">
-      28. <em>Italics</em> indicate optional extensions.
-    </li>
-  
-    <li class="footnote" id="_footnotedef_29">
-      29. Hidden descriptor caches are omitted.
+      26. Intel only.
     </li>
   
   </ul>
