@@ -2394,25 +2394,25 @@ is larger than the DPL.</p>
 <div class="sect3">
 <h4 id="_interrupts_and_task_switching">3.3.3. Interrupts and task switching</h4>
 <div class="paragraph">
-<p>The interrupts behave in a similar way to the <code>call</code> instruction.
-Its effect depends on the corresponding IDT entry:</p>
+<p>Interrupts behave in a similar way to the <code>call</code> instruction.
+The effect depends on the corresponding IDT entry:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>If the target is an interrupt or trap gate, it behaves in a similar way to a
 call gate being invoked by a <code>call</code> instruction.
-The main difference is that no parameters from the caller stack are copied,
-if a privilege change occurs.
-Instead, the flags register is always pushed and the trap flag is cleared (in
-a similar fashion to interrupts in real mode).
+The main difference is that no parameters from the caller stack are copied if
+a privilege change occurs.
+Instead, the FLAGS register is always pushed, and the trap flag is cleared
+(in a similar fashion to interrupts in real mode).
 The only difference between an interrupt gate and a trap gate is that an
 interrupt gate clears the interrupt flag (much like real mode), while a trap
 gate does not.</p>
 </li>
 <li>
-<p>If the target is a task gate, it resumes the task described by the TSS the
-task gate points to, much like a <code>call</code> instruction.
+<p>If the target is a task gate, it resumes the task described by the TSS
+pointed to by the task gate, much like a <code>call</code> instruction.
 The interrupt flag of the incoming task is cleared.</p>
 </li>
 </ul>
@@ -2428,10 +2428,10 @@ A task switch due to a jump clears the NT flag of the incoming task.</p>
 <div class="paragraph">
 <p>In addition, each TSS descriptor maintains a flag indicating whether the task
 is "available" or "busy".
-The currently executing task is always busy, along with the previous caller
-chain.
-Only an available task may be resumed through a task gate, while only a busy
-task may be resumed through <code>iret</code>.
+The currently executing task is always busy, as are previous callers in the
+caller chain.
+Only an available task may be resumed through a task gate; only a busy task may
+be resumed through <code>iret</code>.
 Entering a task gate results in the incoming task becoming busy.
 While a <code>jmp</code> instruction causes the outgoing task to become available, <code>call</code>
 instructions and interrupts result in the outgoing task remaining busy.
@@ -2441,7 +2441,7 @@ instructions and interrupts result in the outgoing task remaining busy.
 <p>The behavior of <code>iret</code> depends on the NT flag.
 If the NT flag is cleared, <code>iret</code> behaves in a similar way to <code>retf</code>, except
 that the FLAGS register (which was pushed on to the stack) is restored.
-The IOPL is only changed, if the callee is at Ring 0.
+The IOPL is only changed if the callee is at Ring 0.
 If the NT flag is set, indicating an interrupt or call to a task gate, <code>iret</code>
 causes a task switch to the task pointed to by the selector in the previous
 TSS backlink (i.e. the caller task).
@@ -2521,11 +2521,11 @@ The NT flag of the callee (outgoing) task is subsequently cleared.</p>
 </div>
 </details>
 <div class="paragraph">
-<p>The 286 introduced a plethora of new exceptions.
+<p>The 286 introduces a plethora of new exceptions.
 Protected mode exceptions may push a 16-bit error code on top of the stack,
 usually indicating a descriptor entry related to the exception (the exact
 descriptor entry depends on the exact kind of exception).
-The error may also be zero.</p>
+The error code may also be zero.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 10. Error code format</caption>
@@ -2588,7 +2588,7 @@ The error may also be zero.</p>
 <dt class="hdlist1">Interrupt (I)</dt>
 <dd>
 <p>Zero for GDT or LDT; one for IDT.
-External (EX): Set, if exception caused by external interrupt.</p>
+External (EX): Set if exception caused by external interrupt.</p>
 </dd>
 </dl>
 </div>
@@ -2736,14 +2736,15 @@ trapping instruction.</p>
 <div class="paragraph">
 <p>When an exception occurs while an exception handler is being dispatched, the
 result depends on the kind of exception.
-It may either handle them serially, dispatch a <strong>dobule fault</strong> or enter a
+It may either handle them serially, dispatch a <strong>dobule fault</strong>, or enter a
 <strong>triple fault</strong>.
 When a triple fault occurs, the processor shuts down.
 Depending on the motherboard, this usually causes the computer to be rebooted.</p>
 </div>
 <div class="paragraph">
-<p>Exceptions can be divided in into four relevant classes: benign, contributory,
-page fault (introduced with the 386) and double fault.<sup class="footnote">[<a id="_footnoteref_18" class="footnote" href="#_footnotedef_18" title="View footnote.">18</a>]</sup></p>
+<p>Exceptions can be divided into four relevant classes: <em>benign</em>, <em>contributory</em>,
+<em>page fault</em> (introduced with the 386) and
+<em>double fault</em>.<sup class="footnote">[<a id="_footnoteref_18" class="footnote" href="#_footnotedef_18" title="View footnote.">18</a>]</sup></p>
 </div>
 <details>
 <summary class="title">Double exception handling</summary>
@@ -2806,26 +2807,26 @@ page fault (introduced with the 386) and double fault.<sup class="footnote">[<a 
 <dt class="hdlist1">Protection enabled (PE)</dt>
 <dd>
 <p>Set for protected mode; clear for real mode.
-May not be cleared once set on a 286 (later processors
-allow returning back to real mode).</p>
+May not be cleared once set on a 286 (later
+processors allow returning back to real mode).</p>
 </dd>
 <dt class="hdlist1">Monitor coprocessor (MP)</dt>
 <dd>
 <p>Raises coprocessor not present exception (interrupt
 7) on <code>wait</code>, if MP <em>and</em> TS are set.
-Should be set, if a physical coprocessor is present
+Should be set if a physical coprocessor is present
 (i.e. the results become available asynchronously).</p>
 </dd>
 <dt class="hdlist1">Emulate coprocessor (EM)</dt>
 <dd>
 <p>Raises coprocessor not present exception on <code>esc</code>
-(i.e. on every floating-point instruction), if set.
-Intended for emulating an FPU, if a physical one is
+(i.e. on every floating-point instruction) if set.
+Intended for emulating an FPU if a physical one is
 not present.</p>
 </dd>
 <dt class="hdlist1">Task switched (TS)</dt>
 <dd>
-<p>Raises coprocessor not present exception on <code>esc</code>, if set.
+<p>Raises coprocessor not present exception on <code>esc</code> if set.
 Automatically set when task is switched, so that the
 operating system is able to switch the x87 context for
 tasks using floating-point instructions.
@@ -2834,15 +2835,17 @@ May be cleared again via <code>clts</code>.</p>
 </dl>
 </div>
 <div class="paragraph">
-<p>MP, EM and TS also affect most MMX, 3DNow! and SSE instructions on later CPUs.</p>
+<p>MP, EM, and TS also affect most MMX, 3DNow!, and SSE instructions on later
+CPUs.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_i386">3.4. i386</h3>
 <div class="paragraph">
-<p>The 386 introduced 32-bit extensions, paging, virtual 8086 mode and the ability
-to return to real mode, in addition to new instructions and operand modes.
+<p>The 386 introduced 32-bit extensions, paging, virtual 8086 mode, and the
+ability to return to real mode, in addition to new instructions and operand
+modes.
 It also allows software to change the base and limit of the real mode IVT
 through the IDTR.</p>
 </div>
@@ -2858,7 +2861,7 @@ For example, EAX is a 32-bit register, with AX aliasing to the lower word.
 Similarly EBX, ECX, EDX, ESI, EDI, EBP, ESP, EIP and EFLAGS were added.</p>
 </div>
 <div class="paragraph">
-<p>Segment registers and selectors remain word-sized, however offset sizes are
+<p>Segment registers and selectors remain word-sized, however, offset sizes are
 expanded to 32-bit, yielding a 48-bit logical address.
 Two new data segment registers, similar to DS and ES, that can be used with
 the corresponding segment override prefix, were introduced: FS and GS.</p>
@@ -3222,28 +3225,28 @@ the corresponding segment override prefix, were introduced: FS and GS.</p>
 <p>In addition to adding 32-bit variants to certain instructions (such as adding
 <code>lodsd</code> to complement <code>lodsw</code> and <code>lodsb</code>), the 386 introduced new instructions
 and instruction modes, in order to make the instruction set more orthogonal.
-For example, <code>lss</code>, <code>lfs</code> and <code>lgs</code> instructions, in addition to the existing
-<code>lds</code> and <code>les</code> instructions, new modes for <code>imul</code>, and near conditional jumps
-(in addition to existing short conditional jumps) were added.
+For example, the <code>lss</code>, <code>lfs</code>, and <code>lgs</code> instructions, in addition to the
+existing <code>lds</code> and <code>les</code> instructions, new modes for <code>imul</code>, and near
+conditional jumps (in addition to existing short conditional jumps) were added.
 Completely new instructions were also added, such as instructions to sign
-extend and zero extend smaller registers into larger registers <code>movsx</code> and
+extend and zero extend smaller registers into larger registers, <code>movsx</code> and
 <code>movzx</code>.</p>
 </div>
 <div class="paragraph">
 <p>The 386 decides whether to use 32-bit or 16-bit registers based on the current
 code segment.
 A 32-bit code segment interprets instructions as operations on 32-bit and
-8-bit registers and memory locations and used 32-bit offsets.
+8-bit registers and memory locations and uses 32-bit offsets.
 A 16-bit code segment interprets instructions as operations on 16-bit and
-8-bit registers and memory locations and used 16-bit offsets, in the same way
+8-bit registers and memory locations and uses 16-bit offsets, in the same way
 as previous 16-bit processors of the x86 line.
 16-bit operands and addresses can be used in a 32-bit code segment and vice
 versa using the <strong>operand size prefix</strong> and <strong>address size prefix</strong>.</p>
 </div>
 <div class="paragraph">
-<p>32-bit effective addresses are significantly more orthogonal as their 16-bit
+<p>32-bit effective addresses are significantly more orthogonal than their 16-bit
 counterparts.
-As with 16-bit addresses, 32-bit addresses may have a base, an index and a
+As with 16-bit addresses, 32-bit addresses may have a base, an index, and a
 displacement.
 In addition, a <strong>scale</strong> may be added, that is multiplied with the index.</p>
 </div>
@@ -3376,8 +3379,8 @@ segmentation.</p>
 <dl>
 <dt class="hdlist1">Limit</dt>
 <dd>
-<p>The Limit field has been extended from 16-bit to 20-bit, allowing a
-limit of up to 1 MiB (or 4 GiB using the G-flag).</p>
+<p>The Limit field is extended from 16-bit to 20-bit, allowing a limit of
+up to 1 MiB (or 4 GiB using the G-flag).</p>
 </dd>
 <dt class="hdlist1">Base</dt>
 <dd>
@@ -3485,12 +3488,12 @@ Allows for segments of up to 4 GiB.</p>
 <div class="paragraph">
 <p>Aside from the new 32-bit segments and gates, 386 segmentation fundamentally
 works the same as on the 286.
-Even the behavior of the stack for 32-bit calls and interrupts work essentially
-the same, except that 32-bit registers are pushed, instead of 16-bit registers,
-and 16-bit selectors and error codes are padded with an extra high word, in
-order to become 32-bit.
-The bit size of calls and interrupts is determined by the operand size for
-calls directly targeting code segments and by the type of gate for calls and
+Even the behavior of the stack for 32-bit calls and interrupts works
+essentially the same, except that 32-bit registers are pushed, instead of
+16-bit registers, and 16-bit selectors and error codes are padded with an extra
+high word, in order to become dword-aligned.
+The bit width of calls and interrupts is determined by the operand size for
+calls directly targeting code segments, and by the type of gate for calls and
 interrupts through gates.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
@@ -4015,7 +4018,7 @@ Base Register PDBR) and the new general-purpose registers introduced with the
 <dl>
 <dt class="hdlist1">I/O map base</dt>
 <dd>
-<p>Base offset of a bitmap in the TSS.
+<p>Base offset the <em>I/O permission bitmap</em> in the TSS.
 This allows code running at a CPL higher than the IOPL to have
 limited access to I/O.
 In particular, each bit corresponds to an I/O port.
@@ -4027,10 +4030,8 @@ ports.<sup class="footnote">[<a id="_footnoteref_20" class="footnote" href="#_fo
 </dd>
 <dt class="hdlist1">T flag (T)</dt>
 <dd>
-<p>Bit 0 of the corresponding word in the table.
-All other bits are reserved.
-If set, will raise a debug trap (interrupt 1), after switching to
-the task, but before executing an instruction.</p>
+<p>Will raise a debug trap (interrupt 1) after switching to the task,
+but before executing an instruction, when set.</p>
 </dd>
 </dl>
 </div>
@@ -4041,7 +4042,7 @@ the task, but before executing an instruction.</p>
 <p>The 386 added support for paging as an extra translation layer, in addition to
 segmentation.
 With paging enabled, segments are not contiguous ranges in physical address
-space, but rather <em>linear address space</em>.
+space, but rather contiguous ranges in <em>linear address space</em>.
 In particular, the base of segments is treated as a <em>linear address</em>, rather
 than a physical address.
 Segmentation translates a <em>logical address</em>, consisting of a 16-bit segment
@@ -4053,12 +4054,12 @@ Paging is responsible for converting this linear address to a physical address.<
 <p>This is achieved by dividing both linear and physical 4 GiB address spaces
 into 1048576 aligned pages of 4096 bytes.
 Paging maps pages of physical memory to certain spots in virtual memory.
-This effectively creates a flat address space that is isolated from physical
-memory, allowing for greater isolation of software.</p>
+This effectively creates a flat linear address space that is isolated from
+physical memory, allowing for greater isolation of software.</p>
 </div>
 <div class="paragraph">
 <p>Protected mode segmentation allows for a similar degree of isolation.
-Segments however need to be contiguous and have variable size.
+Segments, however, need to be contiguous and have variable size.
 Pages have fixed size and are invisible to application programs, allowing for
 memory to be arbitrarily fragmented and swapped out in chunks of 4096 bytes.</p>
 </div>
@@ -4068,11 +4069,11 @@ table of 2 MiB (more RAM than many systems had at the time), the 386 employs a
 two-level paging system.
 The root page table is the <strong>page directory (PD)</strong>, which has <em>page directory
 entries (PDEs)</em> pointing to individual <strong>page tables (PT)</strong>, which consists of
-page table entries (PTEs) pointing to the physical base address of individual
+<em>page table entries (PTEs)</em> pointing to the physical base address of individual
 pages.</p>
 </div>
 <div class="paragraph">
-<p>Both of these tables occupy 4 kiB and thus have 1024 entries.
+<p>Both of these tables occupy 4 kiB, and thus have 1024 entries.
 This means each page table (corresponding to one PDE) contains the mapping for
 2 MiB of virtual memory.
 Each PTE determines the mapping of a 4 kiB page.</p>
@@ -4167,7 +4168,7 @@ The least significant part is the offset within the page itself.</p>
 </table>
 <div class="paragraph">
 <p>The physical address of the PD is given by CR3.
-CR3, PDEs and PTEs are 32-bit physical addresses pointing to a PD, PT or page
+CR3, PDEs, and PTEs are 32-bit physical addresses pointing to a PD, PT, or page
 respectively.
 Since all these structures must be aligned with page boundaries, the lower
 12 bits of the physical address are always zero and are used for other
@@ -4303,10 +4304,10 @@ Register</em>.</p>
 <dd>
 <p>The physical address of the page (for a PTE), PT (for a
 PDE), or PD (for CR3).
-Since pages, PTs and PDs must be aligned, the lower 12 bits
+Since pages, PTs, and PDs must be aligned, the lower 12 bits
 have a different meaning, and are effectively zero when
 determining the 32-bit physical base address.
-Alternatively, one can thinking of the 20-bit field as the
+Alternatively, one can thinkS of the 20-bit field as the
 index of the page in physical memory.</p>
 </dd>
 <dt class="hdlist1">Available</dt>
@@ -4341,7 +4342,7 @@ Read-only pages may not be written to by code at CPL 3.</p>
 <dd>
 <p>One indicates the entry may be used.
 If zero, accessing the corresponding page or PT will cause a
-page fault and all the other bits may be used by the
+page fault, and all the other bits may be used by the
 operating system.</p>
 </dd>
 </dl>
@@ -4355,8 +4356,8 @@ operating system.</p>
 <td class="content">
 Implicit access of data structures through paging, such as the GDT, IDT, LDT or
 TSS, are effectively supervisor-mode, even when the current CPL is 3, meaning
-that these structures can be protected by paging, while still allowing for
-e.g. segment selectors to be loaded and interrupts to be dispatched.
+that these structures can be protected by paging, while still allowing for e.g.
+segment selectors to be loaded and interrupts to be dispatched.
 </td>
 </tr>
 </table>
@@ -4366,16 +4367,16 @@ e.g. segment selectors to be loaded and interrupts to be dispatched.
 Both PTEs and PDEs hold permission bits.
 For a page to be a user page, the U/S flag must be set in the corresponding
 PTE <em>and</em> PDE.
-For a page to be a read-only page, the R/W flag must also be set both in the PT
-<em>and</em> in the PD.
+For a page to be a read-write page, the R/W flag must also be set both in the
+PT <em>and</em> in the PD.
 This effectively means, the PDE serves as an override to the corresponding
 PTEs, that restricts permissions further.</p>
 </div>
 <div class="paragraph">
-<p>The present bit works in a similar way in relation to whether the page may be
+<p>The present bit works in a similar way, in relation to whether the page may be
 accessed.
 If the PT itself is not present (indicated by a zero in the present bit of the
-corresponding PDE), the PD may not be accessed.</p>
+corresponding PDE), any page mapped by the PT may not be accessed.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -4400,7 +4401,7 @@ The TLB can be flushed by writing to CR3.
 <div class="paragraph">
 <p>Due to 32-bit addressing, a single segment can now span all of the 4 GiB
 linear address space.
-This means programs no longer need to be split into multiple segments, instead
+This means programs no longer need to be split into multiple segments, instead,
 having a single flat segment starting at linear address zero, similar to the
 tiny memory model.
 Most modern operating systems on the x86 architecture employ this <strong>flat memory
@@ -4410,12 +4411,12 @@ This means the GDT only contains a handful of actual segments and the LDT is
 completely ignored.</p>
 </div>
 <div class="paragraph">
-<p>In this scheme, each process has its own, isolated linear address space.
+<p>In this scheme, each process has its own isolated linear address space.
 This is facilitated by the fact that the TSS has an entry for CR3.
 Another advantage of the two-level paging scheme is that common areas of
 virtual memories can be mapped in only one set of page tables, that can be then
 mapped in the page directory of each individual process, instead of each
-process having a its own set of identical page tables for the common area of
+process having a its own set of identical page tables for common areas of
 virtual memory.</p>
 </div>
 <div class="paragraph">
@@ -4482,9 +4483,9 @@ fault is raised.</p>
 </li>
 <li>
 <p>The error code does not provide an entry in a segment descriptor table.
-Instead it consists of flags indicating the nature of the memory access that
+Instead, it consists of flags indicating the nature of the memory access that
 caused the page fault.
-CR2 stores the target linear address that caused the page fault.</p>
+CR2 stores the linear address that caused the page fault.</p>
 </li>
 </ul>
 </div>
@@ -4566,7 +4567,7 @@ accessed through a regular <code>mov</code> instruction to or from a general-pur
 register.</p>
 </div>
 <div class="paragraph">
-<p>CR0 is a 32-bit extension to the 16-bit MSW that adds to new flags:</p>
+<p>CR0 is a 32-bit extension to the 16-bit MSW that adds two new flags:</p>
 </div>
 <div class="dlist">
 <dl>
@@ -4583,7 +4584,7 @@ Must not be set, if PE is zero.</p>
 </dl>
 </div>
 <div class="paragraph">
-<p>CR1 and CR4 to CR7 are reserved for future use and cause an undefined opcode
+<p>CR1 and CR4 to CR7 are reserved for future use, and cause an undefined opcode
 exception.</p>
 </div>
 <div class="paragraph">
@@ -4625,18 +4626,18 @@ the TSS and to invoke interrupt 1 via the one-byte <code>int1</code> instruction
 <div class="title">Note</div>
 </td>
 <td class="content">
-Intel reserves <code>int1</code> for debugging hardware, while software debuggers should
+Intel reserves <code>int1</code> for hardware debugging, while software debuggers should
 use <code>int3</code>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The 386 also introduces eight debug registers DR0 to DR7 and corresponding
+<p>The 386 also introduces eight debug registers, DR0 to DR7, and corresponding
 <code>mov</code> instruction.
-DR4 and DR5 are reserved and are aliases to DR6 and DR7 respectively.
+DR4 and DR5 are reserved, and are aliases to DR6 and DR7 respectively.
 DR0 to DR3 contain the linear address of breakpoints zero through three.
-DR6 is known as the <em>Debug Status Register</em> and DR7 is known as the <em>Debug
+DR6 is known as the <em>Debug Status Register</em>, and DR7 is known as the <em>Debug
 Control Register</em>.</p>
 </div>
 <div class="paragraph">
@@ -4650,7 +4651,7 @@ Control Register</em>.</p>
 <li>
 <p><code>00</code> - Instruction breakpoint.
 Range must be one byte (<code>00</code>).
-Causes a fault, just <em>before</em> a instruction that starts at the precise
+Causes a fault just <em>before</em> a instruction that starts at the precise
 linear address of the breakpoint is executed.</p>
 </li>
 <li>
@@ -7483,11 +7484,11 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_15">
-      15. May not be restartable on 386 and 486, if it happens   when dispatching an interrupt.
+      15. May not be restartable on 386 and 486 if it happens when   dispatching an interrupt.
     </li>
   
     <li class="footnote" id="_footnotedef_16">
-      16. With the 286, a segment limit overrun during a string   operation, a general protection fault during a coprocessor segment overrun,   and writing into a read-only segment through <code>adc</code>, <code>sbb</code>, <code>rcl</code> or <code>rcr</code> are   not restartable.   On later processors, a general protection fault is always restartable, but if   it was caused while dispatching an interrupt, the interrupt may be lost.
+      16. With the 286, a segment limit overrun during a string   operation, a general protection fault during a coprocessor segment overrun,   and writing into a read-only segment through <code>adc</code>, <code>sbb</code>, <code>rcl</code>, or <code>rcr</code>   are not restartable.   On later processors, a general protection fault is always restartable, but if   it was caused while dispatching an interrupt, the interrupt may be lost.
     </li>
   
     <li class="footnote" id="_footnotedef_17">
@@ -7495,7 +7496,7 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_18">
-      18. The 286 manual does not use this terminology, instead it differentiates between protection violation and other, instead of contributory and benign.
+      18. The 286 manual does not use this terminology. Instead, it differentiates between protection violation and other (instead of contributory and benign).
     </li>
   
     <li class="footnote" id="_footnotedef_19">
