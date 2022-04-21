@@ -1975,7 +1975,7 @@ The 386 introduces a new exception:
 |===
 | Vector | Name | Type | Class | Error code
 
-| 14 | Page fault | Fault | Page fault | Yes
+| 14 | Page fault | Fault | Page fault | Yesfootnote:[Not a segment selector.]
 |===
 
 This new exception is special in certain regards:
@@ -1992,11 +1992,13 @@ This new exception is special in certain regards:
   CR2 stores the linear address that caused the page fault.
 
 .Page fault error code
-[cols="16*"]
+[%header,cols="32*"]
 |===
+| 31 | 30 | 29 | 28 | 27 | 26 | 25 | 24 | 23 | 22 | 21 | 20 | 19 | 18 | 17 | 16
 | 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
 
-13+| Reserved | U/S | W/R | P
+| _RMP_ 15+| Reserved
+| _SGX_ 8+| Reserved | _SS_ | _PK_ | _I/D_ | _RSV_ | U/S | W/R | P
 |===
 
 Present (P):: Zero for a fault caused by a non-present page; one for a
@@ -2006,6 +2008,22 @@ Write/read flag (W/R):: Zero for a fault caused by a read; one for a fault
 User/supervisor flag (U/S):: Zero for a fault caused by a process in user mode;
                              one for a fault caused by a process in supervisor
                              mode.
+
+Following bits are only defined on later processors:
+
+Reserved field set (RSV):: Set if a reserved bit is set (P6 and later only).
+                           Faults due to reserved bits being set only occur if
+                           PSE or PAE are enabled.
+Instruction/date (I/D):: One if the faulting access was an instruction fetch
+                         (processors with NX enabled only).
+Protection key (PK):: One if a protection key violation was caused (processors
+                      with memory protection keys enabled only).
+Shadow stack (SS):: One if faulting access was a shadow stack access
+                    (processors with control-flow enforcement technology only).
+Secure guard extensions (SGX):: One if SGX violation (processors with SGX
+                                only).
+Reverse map table (RMP):: One if RMP violation (processors with SEV-SNP, an SVM
+                          extension, only).
 
 ==== Control registers ====
 The 386 introduced eight 32-bit control registers CR0 to CR7, that can be
@@ -2501,12 +2519,17 @@ Protected-mode virtual interrupts (PVI):: PVI is enabled if set.
 Timestamp disable (TSD):: When set, prevents execution of `rdtsc` when the CPL
                           is not zero (see TSC section).
 Page size extensions (PSE):: PSE for 32-bit paging is enabled if set.
-Physical address extension (PAE):: PAE is enabled if set (P6 and later).
-Machine-check enable (MCE):: Machine-check architecture is enabled when set.
-Page global enable (PGE):: PGE is enabled if set (P6 and later).
+Machine-check enable (MCE):: Machine-check exception is enabled when set.
 Performance monitoring counter enable (PCE):: Allows `rdpmc` in privilege rings
                                               other than Ring 0 (Pentium MMX,
                                               P6 and later, see MSR section).
+General detect (GD):: Setting this bit causes a debug fault whenever the debug
+                      registers are accessed (see debugging extensions section).
+
+Following flags are only implemented in later processor families:
+
+Physical address extension (PAE):: PAE is enabled if set (P6 and later).
+Page global enable (PGE):: PGE is enabled if set (P6 and later).
 OS support for `fxsave` and `fxrstor` (OSFXSR):: `fxsave` and `fxrstor` will
                                                  save and restore SSE registers
                                                  when set.
@@ -2518,10 +2541,9 @@ OS support for SSE exceptions (OSXMMEXCPT):: The CPU will cause a undefined
                                              when an SSE floating-point error
                                              occurs if cleared. 
                                              When set, a SIMD floating-point
-                                             exceptions occurs.
-General detect (GD):: Setting this bit causes a debug fault whenever the debug
-                      registers are accessed (see debugging extensions section).
-Restricted transactional memory (RTM):: TSX only.
+                                             exceptions occurs
+                                             (Pentium III and later).
+Restricted transactional memory (RTM):: Processors with TSX only.
 
 ==== CPUID
 Pentium and late 486 models support the `cpuid` instruction, in order to
@@ -2559,10 +2581,10 @@ There exist many other functions that might be relevant to operating system
 development, such as information on multiprocessor topology.
 The feature bits are used to indicate the presence of a certain processor
 extension.
-They are generally set if the processor extension is present and cleared if it
+They are generally set if the processor extension is present, and cleared if it
 is not preset (see the extensions section for more detailed information).
 
-The version information consists of a family, model and stepping ID.
+The version information consists of a family, model, and stepping ID.
 If the family ID field is 15, then the extended family ID field is added to the
 family field to obtain the actual processor family number.
 If the family ID field is 6footnote:[Not on AMD.] or 15, the model number is
@@ -2618,6 +2640,26 @@ There are exceptions, however, such as `ud2`, long `nop`, and `rdpmc` (along
 with the corresponding PCE flag), whose presence are not indicated by any
 feature bit.
 
+.New exceptions
+|===
+| Vector | Name | Type | Class | Error code | Extension
+
+| 18 | Machine-check exception | Abort | Benign | No | MCE
+
+| 19 | SIMD floating-point exception | Fault | Benign | No | SSE
+
+| 20 | Virtualization exception | Fault | Benign | No | EPT (VMX)
+
+| 21 | Control protection exception | Fault | Benign
+| Yesfootnote:[Not a segment selector.] | CET
+
+| 28 | Hypervisor injection exception | | Benign | No | SEV-SNP (SVM)
+
+| 29 | VMM communication exception | Fault | Contributory | No | SEV-ES (SVM)
+
+| 30 | Security exception | | Contributory | No | SVM
+|===
+
 === Model-specific registers
 The Pentium and subsequent processors no longer have the test registers of the
 386 and 486.
@@ -2632,13 +2674,6 @@ Information on a machine-check exception is available in relevant MSRs,
 although the details have changed with P6-based processors and later.
 Machine-checks are enabled when the _machine-check enable (MCE)_ bit of CR4 is
 set.
-
-.New Pentium exceptions
-|===
-| Vector | Name | Type | Class | Error code
-
-| 18 | Machine-check | Abort | Benign | No
-|===
 
 The Pentium also introduces the _time stamp counter (TSC)_ MSR, that can be
 read in user mode through the `rdtsc` instruction.
