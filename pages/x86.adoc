@@ -2446,13 +2446,13 @@ The Pentium introduces CR4 to control processor extensions.
 
 | CR4
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
-| 0 | 0 | 0 | 0 | 0 | 0 | *OS +
+| 0 | 0 | 0 | 0 | 0 | *OS +
   XMM +
   EX +
   CPT* | *OS +
   FX +
   SR*
-| *PCE* | *PGE* | *MCE* | *PAE* | *PSE* | *TSD* | *PVI* | *VME*
+| *PCE* | *PGE* | *MCE* | *PAE* | *PSE* | *DE* | *TSD* | *PVI* | *VME*
 
 | DR0 32+| Breakpoint 0 linear address
 
@@ -2463,12 +2463,12 @@ The Pentium introduces CR4 to control processor extensions.
 | DR3 32+| Breakpoint 3 linear address
 
 | DR6
-| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | *RTM*
 | BT | BS | BD | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | B3 | B2 | B1 | B0
 
 | DR7
 2+| LEN3 2+| R/W3 2+| LEN2 2+| R/W2 2+| LEN1 2+| R/W1 2+| LEN0 2+| R/W0
-| 0 | 0 | *GD* | 0 | 0 | 1 | GE | LE | G3 | L3 | G2 | L2 | G1 | L1 | G0 | L0
+| 0 | 0 | *GD* | 0 | *RTM* | 1 | GE | LE | G3 | L3 | G2 | L2 | G1 | L1 | G0 | L0
 
 | ESfootnote:[Hidden descriptor caches are omitted.]
 16+| 16+| ES (visible selector)
@@ -2496,9 +2496,32 @@ The Pentium introduces CR4 to control processor extensions.
 Virtual interrupt flag (VIF):: See VME.
 Virtual interrupt pending (VIP):: See VME.
 ID flag:: The ability to toggle this flag indicates the presence of `cpuid`.
+Virtual 8086 mode extensions (VME):: VME is enabled if set.
+Protected-mode virtual interrupts (PVI):: PVI is enabled if set.
+Timestamp disable (TSD):: When set, prevents execution of `rdtsc` when the CPL
+                          is not zero (see TSC section).
+Page size extensions (PSE):: PSE for 32-bit paging is enabled if set.
+Physical address extension (PAE):: PAE is enabled if set (P6 and later).
+Machine-check enable (MCE):: Machine-check architecture is enabled when set.
+Page global enable (PGE):: PGE is enabled if set (P6 and later).
+Performance monitoring counter enable (PCE):: Allows `rdpmc` in privilege rings
+                                              other than Ring 0 (Pentium MMX,
+                                              P6 and later, see MSR section).
+OS support for `fxsave` and `fxrstor` (OSFXSR):: `fxsave` and `fxrstor` will
+                                                 save and restore SSE registers
+                                                 when set.
+                                                 In addition, it enables the
+                                                 execution of SSE instructions
+                                                 (Pentium III and later).
+OS support for SSE exceptions (OSXMMEXCPT):: The CPU will cause a undefined
+                                             opcode exception (interrupt 6)
+                                             when an SSE floating-point error
+                                             occurs if cleared. 
+                                             When set, a SIMD floating-point
+                                             exceptions occurs.
 General detect (GD):: Setting this bit causes a debug fault whenever the debug
-                      registers are accessed (see debugging extensions).
-
+                      registers are accessed (see debugging extensions section).
+Restricted transactional memory (RTM):: TSX only.
 
 ==== CPUID
 Pentium and late 486 models support the `cpuid` instruction, in order to
@@ -2562,8 +2585,8 @@ It is recommended to check for extensions using the feature bits when possible,
 rather than based on family and model.
 
 === i686
-686-class processors include the Intel Pentium Pro, Pentium II and Pentium III,
-as well as the AMD K6, K6-2 and K6-III.
+686-class processors include the Intel Pentium Pro, Pentium II, and
+Pentium III, as well as the AMD K6, K6-2 and K6-III.
 The term 686 is ambiguous and may refer to:
 
 * Intel Family 6 processors, which include the Pentium Pro, II and III, as well
