@@ -4477,7 +4477,7 @@ systems typically have a fixed amount of entries in the GDT.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Page fault</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_21" class="footnote" href="#_footnotedef_21" title="View footnote.">21</a>]</sup></p></td>
 </tr>
 </tbody>
 </table>
@@ -4504,25 +4504,57 @@ CR2 stores the linear address that caused the page fault.</p>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 19. Page fault error code</caption>
 <colgroup>
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
-<col style="width: 6.25%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
+<col style="width: 3.125%;">
 </colgroup>
 <thead>
 <tr>
+<th class="tableblock halign-left valign-top">31</th>
+<th class="tableblock halign-left valign-top">30</th>
+<th class="tableblock halign-left valign-top">29</th>
+<th class="tableblock halign-left valign-top">28</th>
+<th class="tableblock halign-left valign-top">27</th>
+<th class="tableblock halign-left valign-top">26</th>
+<th class="tableblock halign-left valign-top">25</th>
+<th class="tableblock halign-left valign-top">24</th>
+<th class="tableblock halign-left valign-top">23</th>
+<th class="tableblock halign-left valign-top">22</th>
+<th class="tableblock halign-left valign-top">21</th>
+<th class="tableblock halign-left valign-top">20</th>
+<th class="tableblock halign-left valign-top">19</th>
+<th class="tableblock halign-left valign-top">18</th>
+<th class="tableblock halign-left valign-top">17</th>
+<th class="tableblock halign-left valign-top">16</th>
 <th class="tableblock halign-left valign-top">15</th>
 <th class="tableblock halign-left valign-top">14</th>
 <th class="tableblock halign-left valign-top">13</th>
@@ -4543,7 +4575,14 @@ CR2 stores the linear address that caused the page fault.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top" colspan="13"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>RMP</em></p></td>
+<td class="tableblock halign-left valign-top" colspan="15"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>SGX</em></p></td>
+<td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">Reserved</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>SS</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PK</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>I/D</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>RSV</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">U/S</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">W/R</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P</p></td>
@@ -4567,6 +4606,44 @@ caused by a write.</p>
 <p>Zero for a fault caused by a process in user mode;
 one for a fault caused by a process in supervisor
 mode.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Following bits are only defined on later processors:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Reserved field set (RSV)</dt>
+<dd>
+<p>Set if a reserved bit is set (P6 and later only).
+Faults due to reserved bits being set only occur if
+PSE or PAE are enabled.</p>
+</dd>
+<dt class="hdlist1">Instruction/date (I/D)</dt>
+<dd>
+<p>One if the faulting access was an instruction fetch
+(processors with NX enabled only).</p>
+</dd>
+<dt class="hdlist1">Protection key (PK)</dt>
+<dd>
+<p>One if a protection key violation was caused (processors
+with memory protection keys enabled only).</p>
+</dd>
+<dt class="hdlist1">Shadow stack (SS)</dt>
+<dd>
+<p>One if faulting access was a shadow stack access
+(processors with control-flow enforcement technology only).</p>
+</dd>
+<dt class="hdlist1">Secure guard extensions (SGX)</dt>
+<dd>
+<p>One if SGX violation (processors with SGX
+only).</p>
+</dd>
+<dt class="hdlist1">Reverse map table (RMP)</dt>
+<dd>
+<p>One if RMP violation (processors with SEV-SNP, an SVM
+extension, only).</p>
 </dd>
 </dl>
 </div>
@@ -5227,7 +5304,7 @@ New mechanisms that allow finer control of caching were also introduced.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">L0</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_21" class="footnote" href="#_footnotedef_21" title="View footnote.">21</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_22" class="footnote" href="#_footnotedef_22" title="View footnote.">22</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top" colspan="16"></td>
 <td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">ES (visible selector)</p></td>
 </tr>
@@ -5328,7 +5405,7 @@ When a alignment violation happens, the an alignment check fault is raised.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Alignment check</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_22" class="footnote" href="#_footnotedef_22" title="View footnote.">22</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_23" class="footnote" href="#_footnotedef_23" title="View footnote.">23</a>]</sup></p></td>
 </tr>
 </tbody>
 </table>
@@ -5908,7 +5985,7 @@ The Pentium introduces CR4 to control processor extensions.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">L0</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_23" class="footnote" href="#_footnotedef_23" title="View footnote.">23</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ES<sup class="footnote">[<a id="_footnoteref_24" class="footnote" href="#_footnotedef_24" title="View footnote.">24</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top" colspan="16"></td>
 <td class="tableblock halign-left valign-top" colspan="16"><p class="tableblock">ES (visible selector)</p></td>
 </tr>
@@ -6000,23 +6077,35 @@ is not zero (see TSC section).</p>
 <dd>
 <p>PSE for 32-bit paging is enabled if set.</p>
 </dd>
-<dt class="hdlist1">Physical address extension (PAE)</dt>
-<dd>
-<p>PAE is enabled if set (P6 and later).</p>
-</dd>
 <dt class="hdlist1">Machine-check enable (MCE)</dt>
 <dd>
-<p>Machine-check architecture is enabled when set.</p>
-</dd>
-<dt class="hdlist1">Page global enable (PGE)</dt>
-<dd>
-<p>PGE is enabled if set (P6 and later).</p>
+<p>Machine-check exception is enabled when set.</p>
 </dd>
 <dt class="hdlist1">Performance monitoring counter enable (PCE)</dt>
 <dd>
 <p>Allows <code>rdpmc</code> in privilege rings
 other than Ring 0 (Pentium MMX,
 P6 and later, see MSR section).</p>
+</dd>
+<dt class="hdlist1">General detect (GD)</dt>
+<dd>
+<p>Setting this bit causes a debug fault whenever the debug
+registers are accessed (see debugging extensions section).</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Following flags are only implemented in later processor families:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Physical address extension (PAE)</dt>
+<dd>
+<p>PAE is enabled if set (P6 and later).</p>
+</dd>
+<dt class="hdlist1">Page global enable (PGE)</dt>
+<dd>
+<p>PGE is enabled if set (P6 and later).</p>
 </dd>
 <dt class="hdlist1">OS support for <code>fxsave</code> and <code>fxrstor</code> (OSFXSR)</dt>
 <dd>
@@ -6034,16 +6123,12 @@ opcode exception (interrupt 6)
 when an SSE floating-point error
 occurs if cleared.
 When set, a SIMD floating-point
-exceptions occurs.</p>
-</dd>
-<dt class="hdlist1">General detect (GD)</dt>
-<dd>
-<p>Setting this bit causes a debug fault whenever the debug
-registers are accessed (see debugging extensions section).</p>
+exceptions occurs
+(Pentium III and later).</p>
 </dd>
 <dt class="hdlist1">Restricted transactional memory (RTM)</dt>
 <dd>
-<p>TSX only.</p>
+<p>Processors with TSX only.</p>
 </dd>
 </dl>
 </div>
@@ -6062,7 +6147,7 @@ There are standard function numbers, starting from 0x00000000, and extended
 function numbers, starting from 0x80000000.</p>
 </div>
 <div class="paragraph">
-<p>Important functions include:<sup class="footnote">[<a id="_footnoteref_24" class="footnote" href="#_footnotedef_24" title="View footnote.">24</a>]</sup></p>
+<p>Important functions include:<sup class="footnote">[<a id="_footnoteref_25" class="footnote" href="#_footnotedef_25" title="View footnote.">25</a>]</sup></p>
 </div>
 <div class="ulist">
 <ul>
@@ -6108,14 +6193,14 @@ address width in AH.</p>
 development, such as information on multiprocessor topology.
 The feature bits are used to indicate the presence of a certain processor
 extension.
-They are generally set if the processor extension is present and cleared if it
+They are generally set if the processor extension is present, and cleared if it
 is not preset (see the extensions section for more detailed information).</p>
 </div>
 <div class="paragraph">
-<p>The version information consists of a family, model and stepping ID.
+<p>The version information consists of a family, model, and stepping ID.
 If the family ID field is 15, then the extended family ID field is added to the
 family field to obtain the actual processor family number.
-If the family ID field is 6<sup class="footnote">[<a id="_footnoteref_25" class="footnote" href="#_footnotedef_25" title="View footnote.">25</a>]</sup> or 15, the model number is
+If the family ID field is 6<sup class="footnote">[<a id="_footnoteref_26" class="footnote" href="#_footnotedef_26" title="View footnote.">26</a>]</sup> or 15, the model number is
 the extended model ID times 16 plus the model ID.</p>
 </div>
 <div class="paragraph">
@@ -6200,7 +6285,7 @@ the extended model ID times 16 plus the model ID.</p>
 <td class="tableblock halign-left valign-top" colspan="8"><p class="tableblock">Extended family</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Extended model</p></td>
 <td class="tableblock halign-left valign-top" colspan="2"></td>
-<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Type<sup class="footnote">[<a id="_footnoteref_26" class="footnote" href="#_footnotedef_26" title="View footnote.">26</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">Type<sup class="footnote">[<a id="_footnoteref_27" class="footnote" href="#_footnotedef_27" title="View footnote.">27</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Family</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Model</p></td>
 <td class="tableblock halign-left valign-top" colspan="4"><p class="tableblock">Stepping</p></td>
@@ -6280,6 +6365,85 @@ There are exceptions, however, such as <code>ud2</code>, long <code>nop</code>, 
 with the corresponding PCE flag), whose presence are not indicated by any
 feature bit.</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 23. New exceptions</caption>
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Vector</th>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Class</th>
+<th class="tableblock halign-left valign-top">Error code</th>
+<th class="tableblock halign-left valign-top">Extension</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check exception</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MCE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">19</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SIMD floating-point exception</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Virtualization exception</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EPT (VMX)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Control protection exception</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes<sup class="footnote">[<a id="_footnoteref_28" class="footnote" href="#_footnotedef_28" title="View footnote.">28</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CET</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">28</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hypervisor injection exception</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SEV-SNP (SVM)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">29</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VMM communication exception</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fault</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SEV-ES (SVM)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">30</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Security exception</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contributory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SVM</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect2">
 <h3 id="_model_specific_registers">4.1. Model-specific registers</h3>
 <div class="paragraph">
@@ -6298,34 +6462,6 @@ although the details have changed with P6-based processors and later.
 Machine-checks are enabled when the <em>machine-check enable (MCE)</em> bit of CR4 is
 set.</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 23. New Pentium exceptions</caption>
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 20%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Vector</th>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Type</th>
-<th class="tableblock halign-left valign-top">Class</th>
-<th class="tableblock halign-left valign-top">Error code</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">18</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Abort</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Benign</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
 <p>The Pentium also introduces the <em>time stamp counter (TSC)</em> MSR, that can be
 read in user mode through the <code>rdtsc</code> instruction.
@@ -7245,27 +7381,35 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_21">
-      21. Hidden descriptor caches are omitted.
+      21. Not a segment selector.
     </li>
   
     <li class="footnote" id="_footnotedef_22">
-      22. Always zero.
+      22. Hidden descriptor caches are omitted.
     </li>
   
     <li class="footnote" id="_footnotedef_23">
-      23. Hidden descriptor caches are omitted.
+      23. Always zero.
     </li>
   
     <li class="footnote" id="_footnotedef_24">
-      24. The original Pentium and late 486 only has the first two standard functions.
+      24. Hidden descriptor caches are omitted.
     </li>
   
     <li class="footnote" id="_footnotedef_25">
-      25. Not on AMD.
+      25. The original Pentium and late 486 only has the first two standard functions.
     </li>
   
     <li class="footnote" id="_footnotedef_26">
-      26. Intel only.
+      26. Not on AMD.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_27">
+      27. Intel only.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_28">
+      28. Not a segment selector.
     </li>
   
   </ul>
