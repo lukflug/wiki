@@ -2660,6 +2660,34 @@ feature bit.
 | 30 | Security exception | | Contributory | No | SVM
 |===
 
+Following tables contain a list of x86 extensions supported by Intel and AMD.
+There exist other extensions indicated by feature bits obtained through other
+`cpuid` functions or MSRs.
+These are mostly manufacturer-specific, however, and are usually extensions to
+other extensions, or power management features.
+
+.EAX = 0x00000001
+[%header]
+|===
+| Bit 2+| Acronym and name | First specified
+| First implemented (Intel) | First implemented (AMD) | Level
+
+| EDX.0 | FPU | Integrated x87 floating-point unit
+| | 486DX (1989) | Am486 (1992) | i486
+
+| EDX.1 | VME | Virtual 8086 mode enhancements
+| | P5 Pentium (1993) | K5 (1995) | i586
+
+| EDX.2 | DE | Debugging extensions
+| | P5 Pentium (1993) | K5 (1995) | i586
+
+| EDX.3 | PSE | Page size extensions
+| | P5 Pentium (1993) | K5 (1995) | i586
+
+| EDX.4 | TSC | Time stamp counter
+| | P5 Pentium
+|===
+
 === Model-specific registers
 The Pentium and subsequent processors no longer have the test registers of the
 386 and 486.
