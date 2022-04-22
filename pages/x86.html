@@ -6073,6 +6073,12 @@ The Pentium introduces CR4 to control processor extensions.</p>
 <p>When set, prevents execution of <code>rdtsc</code> when the CPL
 is not zero (see TSC section).</p>
 </dd>
+<dt class="hdlist1">Debugging extensions (DE)</dt>
+<dd>
+<p>When set, DR4 and DR5 are no longer aliases to DR6
+and DR7, and instead cause invalid opcode
+exceptions, much like CR1.</p>
+</dd>
 <dt class="hdlist1">Page size extensions (PSE)</dt>
 <dd>
 <p>PSE for 32-bit paging is enabled if set.</p>
@@ -6090,7 +6096,10 @@ P6 and later, see MSR section).</p>
 <dt class="hdlist1">General detect (GD)</dt>
 <dd>
 <p>Setting this bit causes a debug fault whenever the debug
-registers are accessed (see debugging extensions section).</p>
+registers are accessed (general detect exception).
+Intended for preventing software interfering with
+emulators.
+The GD bit is automatically cleared on a debug exception.</p>
 </dd>
 </dl>
 </div>
@@ -6454,53 +6463,50 @@ other extensions, or power management features.</p>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 24. EAX = 0x00000001</caption>
 <colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2858%;">
 </colgroup>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Bit</th>
 <th class="tableblock halign-left valign-top" colspan="2">Acronym and name</th>
 <th class="tableblock halign-left valign-top">First specified</th>
+<th class="tableblock halign-left valign-top">First implemented (Intel)</th>
+<th class="tableblock halign-left valign-top">First implemented (AMD)</th>
+<th class="tableblock halign-left valign-top">Level</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">First implemented (Intel)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">First implemented (AMD)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Level</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.0</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">FPU</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integrated x87 floating-point unit</p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">486DX (1989)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i486DX (1989)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Am486DX (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i486</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Am486 (1992)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i486</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">VME</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Virtual 8086 mode enhancements</p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium (1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.2</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">DE</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Debugging extensions</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium (1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 </tr>
 <tr>
@@ -6508,18 +6514,54 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">PSE</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Page size extensions</p></td>
 <td class="tableblock halign-left valign-top"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium (1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.4</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.4</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">TSC</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Time stamp counter</p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.5</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MSR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Model-specific registers</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.6</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PAE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Physical address extension</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium Pro (1995)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i686</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.7</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MCE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check exception</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CX8</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cmpxchg8b</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 </tr>
 </tbody>
 </table>
@@ -6810,13 +6852,6 @@ ways:</p>
 </div>
 <div class="ulist">
 <ul>
-<li>
-<p>DR7 now has the <em>general detect (GD)</em> bit, which allows software to enable
-general detect exceptions (debug fault when a debug register is accessed).
-This serves to prevent software interfering with emulators that use the debug
-registers.
-The GD bit is cleared automatically on a general detect exception.</p>
-</li>
 <li>
 <p>The R/W0 to R/W3 fields now allow for the <code>10</code> value, which was previously
 reserved.
