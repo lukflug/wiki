@@ -6444,6 +6444,85 @@ feature bit.</p>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>Following tables contain a list of x86 extensions supported by Intel and AMD.
+There exist other extensions indicated by feature bits obtained through other
+<code>cpuid</code> functions or MSRs.
+These are mostly manufacturer-specific, however, and are usually extensions to
+other extensions, or power management features.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 24. EAX = 0x00000001</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Bit</th>
+<th class="tableblock halign-left valign-top" colspan="2">Acronym and name</th>
+<th class="tableblock halign-left valign-top">First specified</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">First implemented (Intel)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">First implemented (AMD)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Level</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.0</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FPU</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Integrated x87 floating-point unit</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">486DX (1989)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Am486 (1992)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i486</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VME</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Virtual 8086 mode enhancements</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1995)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Debugging extensions</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PSE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page size extensions</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium (1993)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.4</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TSC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time stamp counter</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P5 Pentium</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect2">
 <h3 id="_model_specific_registers">4.1. Model-specific registers</h3>
 <div class="paragraph">
@@ -6483,7 +6562,7 @@ PSE introduces a new bit in PDEs, that allows for 4 MiB pages, rather
 than a PT with 1024 4 kiB pages.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 24. PSE page entries</caption>
+<caption class="title">Table 25. PSE page entries</caption>
 <colgroup>
 <col style="width: 8.5714%;">
 <col style="width: 2.8571%;">
@@ -6763,7 +6842,7 @@ The CPU will not flush global pages when swapping address space (i.e. updating
 CR3), increasing TLB efficiency.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 25. PGE page entries (with PSE)</caption>
+<caption class="title">Table 26. PGE page entries (with PSE)</caption>
 <colgroup>
 <col style="width: 8.5714%;">
 <col style="width: 2.8571%;">
@@ -6944,7 +7023,7 @@ entries to 4 kiB pages.</p>
 table index (PDPTI)</em>.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 26. PAE linear address</caption>
+<caption class="title">Table 27. PAE linear address</caption>
 <colgroup>
 <col style="width: 3.125%;">
 <col style="width: 3.125%;">
