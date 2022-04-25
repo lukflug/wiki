@@ -1614,16 +1614,16 @@ Limit:: The Limit field is extended from 16-bit to 20-bit, allowing a limit of
         up to 1 MiB (or 4 GiB using the G-flag).
 Base:: Extended to 32-bit.
 Available (A):: Available for use by the operating system.
-DB:: Set for 32-bit segment; clear for 16-bit segment.
-     Called the D flag for code segments and the B flag for data segments.
-     Meaning depends on type of segment:
-     * For a code segment, it defines the default operand and address
-       size.
-     * For a stack segment, it defines the size of the stack pointer (i.e.
-       whether to use just SP or all of ESP for stack operations).
-     * For a expand-down segment, it defines the upper bound.
-       16-bit expand-down segments have an upper bound of 0xFFFF.
-       32-bit expand-down segments have an upper bound of 0xFFFFFFFF.
+DB flag:: Set for 32-bit segment; clear for 16-bit segment.
+          Called the D flag for code segments and the B flag for data segments.
+          Meaning depends on type of segment:
+          * For a code segment, it defines the default operand and address
+            size.
+          * For a stack segment, it defines the size of the stack pointer (i.e.
+            whether to use just SP or all of ESP for stack operations).
+          * For a expand-down segment, it defines the upper bound.
+            16-bit expand-down segments have an upper bound of 0xFFFF.
+            32-bit expand-down segments have an upper bound of 0xFFFFFFFF.
 Granularity flag (G):: If set, limit is given in 4 kiB units, rather than units
                        of one byte.
                        The effective limit is `limit * 4096 + 4095`.
@@ -2682,28 +2682,34 @@ other extensions, or power management features.
 | | i486DX (1989) | Am486DX (1993) | i486
 
 | EDX.1 | VME | Virtual 8086 mode enhancements
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
 
 | EDX.2 | DE | Debugging extensions
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
 
 | EDX.3 | PSE | Page size extensions
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
 
 | EDX.4 | TSC | Time stamp counter
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
 
 | EDX.5 | MSR | Model-specific registers
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
 
 | EDX.6 | PAE | Physical address extension
-| | Pentium Pro (1995) | | i686
+| | P6 (Pentium Pro, 1995) | | i686
 
 | EDX.7 | MCE | Machine-check exception
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
 
 | EDX.8 | CX8 | `cmpxchg8b`
-| | Pentium (1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (1996) | i586
+
+| EDX.9 | APIC | Integrated local APIC
+| | P54C (Pentium, 1994) | K5 (1996) | i586
+
+| EDX.11 | SPE | `sysenter` and `sysexit`
+| | Klamath (Pentium II, 1997) | K6 (1997)
 |===
 
 === Model-specific registers
