@@ -132,9 +132,10 @@ The Pentium MMX, introduced in 1997, first implemented the new MMX SIMD
 extension.
 
 Intel's competitors also started building their chips on their own unique
-in-house 586-class designs, such as the AMD K5 (1996) and the Cyrix 5x86 (1995)
-and 6x86 (1996), rather than trying to replicate Intel's chips, as with the
-Am486, Am5x86 and Cx486.
+in-house 586-class designs, such as the AMD K5 (1996), the Cyrix 5x86 (1995)
+and 6x86 (1996), the NexGen Nx586 (1994, did initially not have an integrated
+FPU, but a discrete Nx587 existed), and the Centaur WinChip (1997), rather than
+trying to replicate Intel's chips, as with the Am486, Am5x86 and Cx486.
 
 === Cyrix extensions
 Cyrix processors and their derivatives made by National Semiconductors, AMD,
@@ -158,13 +159,16 @@ accessed through PAE or PSE-36.
 
 The Pentium II, introduced in 1998, is a P6 processor with MMX.
 The Pentium II was followed up by the Pentium III in 1999.
-AMD released the 686-class K6 in 1997, followed up by the K6-2 in 1998, and
-K6-III in 1999.
+AMD released the 686-class K6 (based on the Nx586) in 1997, followed up by the
+K6-2 in 1998, and K6-III in 1999.
 
 === Seventh generation
 Seventh generation processors include the NetBurst-based Pentium 4, introduced
 in 2000, and the AMD Athlon, also known as the K7, introduced in 1999.
 A major feature of the Pentium 4 is SSE2.
+
+In addition, VIA introduced its own x86 chips in 2000, after buying Cyrix and
+Centaur.
 
 === x86-64
 The first processors to implement *x86-64*, a 64-bit extension, originally
@@ -2464,13 +2468,13 @@ The Pentium introduces CR4 to control processor extensions.
 
 | CR4
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
-| 0 | 0 | 0 | 0 | 0 | *OS +
+| 0 | 0 | 0 | 0 | 0 | _OS +
   XMM +
   EX +
-  CPT* | *OS +
+  CPT_ | _OS +
   FX +
-  SR*
-| *PCE* | *PGE* | *MCE* | *PAE* | *PSE* | *DE* | *TSD* | *PVI* | *VME*
+  SR_
+| _PCE_ | _PGE_ | *MCE* | _PAE_ | *PSE* | *DE* | *TSD* | *PVI* | *VME*
 
 | DR0 32+| Breakpoint 0 linear address
 
@@ -2481,12 +2485,12 @@ The Pentium introduces CR4 to control processor extensions.
 | DR3 32+| Breakpoint 3 linear address
 
 | DR6
-| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | *RTM*
+| 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | _RTM_
 | BT | BS | BD | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 | B3 | B2 | B1 | B0
 
 | DR7
 2+| LEN3 2+| R/W3 2+| LEN2 2+| R/W2 2+| LEN1 2+| R/W1 2+| LEN0 2+| R/W0
-| 0 | 0 | *GD* | 0 | *RTM* | 1 | GE | LE | G3 | L3 | G2 | L2 | G1 | L1 | G0 | L0
+| 0 | 0 | *GD* | 0 | _RTM_ | 1 | GE | LE | G3 | L3 | G2 | L2 | G1 | L1 | G0 | L0
 
 | ESfootnote:[Hidden descriptor caches are omitted.]
 16+| 16+| ES (visible selector)
@@ -2682,34 +2686,48 @@ other extensions, or power management features.
 | | i486DX (1989) | Am486DX (1993) | i486
 
 | EDX.1 | VME | Virtual 8086 mode enhancements
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) |
 
 | EDX.2 | DE | Debugging extensions
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) |
 
 | EDX.3 | PSE | Page size extensions
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) |
 
 | EDX.4 | TSC | Time stamp counter
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) | i586
 
 | EDX.5 | MSR | Model-specific registers
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) | i586
 
 | EDX.6 | PAE | Physical address extension
-| | P6 (Pentium Pro, 1995) | | i686
+| | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) |
 
 | EDX.7 | MCE | Machine-check exception
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) |
 
 | EDX.8 | CX8 | `cmpxchg8b`
-| | P5 (Pentium, 1993) | K5 (1996) | i586
+| | P5 (Pentium, 1993) | K5 (5k86, 1996) | i586
 
 | EDX.9 | APIC | Integrated local APIC
-| | P54C (Pentium, 1994) | K5 (1996) | i586
+| | P54C (Pentium, 1994) | K75 (Athlon, 1999)footnote:[Early K5s use this bit
+to indicate the presence of PSE, rather than a LAPIC.] |
 
-| EDX.11 | SPE | `sysenter` and `sysexit`
-| | Klamath (Pentium II, 1997) | K6 (1997)
+| EDX.11 | SEP | `sysenter` and `sysexit`
+| | Klamath (Pentium II, 1997) | K7 (Athlon, 1999) | i686
+
+| EDX.12 | MTRR | Memory type range registers
+| | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) |
+
+| EDX.13 | PGE | Global paging extensions
+| | P6 (Pentium Pro, 1995) | K5 (5k86, 1996)footnote:[Early K5s use bit 9 to
+indicate the presence of PSE, rather than a LAPIC.] |
+
+| EDX.14 | MCA | Machine-check architecture
+| | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) |
+
+| EDX.15 | CMOV | `cmov` instruction
+| | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) | i686
 |===
 
 === Model-specific registers
