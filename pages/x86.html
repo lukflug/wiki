@@ -265,9 +265,10 @@ extension.</p>
 </div>
 <div class="paragraph">
 <p>Intel’s competitors also started building their chips on their own unique
-in-house 586-class designs, such as the AMD K5 (1996) and the Cyrix 5x86 (1995)
-and 6x86 (1996), rather than trying to replicate Intel’s chips, as with the
-Am486, Am5x86 and Cx486.</p>
+in-house 586-class designs, such as the AMD K5 (1996), the Cyrix 5x86 (1995)
+and 6x86 (1996), the NexGen Nx586 (1994, did initially not have an integrated
+FPU, but a discrete Nx587 existed), and the Centaur WinChip (1997), rather than
+trying to replicate Intel’s chips, as with the Am486, Am5x86 and Cx486.</p>
 </div>
 </div>
 <div class="sect2">
@@ -299,8 +300,8 @@ accessed through PAE or PSE-36.</p>
 <div class="paragraph">
 <p>The Pentium II, introduced in 1998, is a P6 processor with MMX.
 The Pentium II was followed up by the Pentium III in 1999.
-AMD released the 686-class K6 in 1997, followed up by the K6-2 in 1998, and
-K6-III in 1999.</p>
+AMD released the 686-class K6 (based on the Nx586) in 1997, followed up by the
+K6-2 in 1998, and K6-III in 1999.</p>
 </div>
 </div>
 <div class="sect2">
@@ -309,6 +310,10 @@ K6-III in 1999.</p>
 <p>Seventh generation processors include the NetBurst-based Pentium 4, introduced
 in 2000, and the AMD Athlon, also known as the K7, introduced in 1999.
 A major feature of the Pentium 4 is SSE2.</p>
+</div>
+<div class="paragraph">
+<p>In addition, VIA introduced its own x86 chips in 2000, after buying Cyrix and
+Centaur.</p>
 </div>
 </div>
 <div class="sect2">
@@ -5889,17 +5894,17 @@ The Pentium introduces CR4 to control processor extensions.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OS<br>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OS<br>
   XMM<br>
   EX<br>
-  CPT</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>OS<br>
+  CPT</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>OS<br>
   FX<br>
-  SR</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PCE</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PGE</strong></p></td>
+  SR</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PCE</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PGE</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>MCE</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PAE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>PAE</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>PSE</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>DE</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>TSD</strong></p></td>
@@ -5939,7 +5944,7 @@ The Pentium introduces CR4 to control processor extensions.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>RTM</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>RTM</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">BT</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">BS</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">BD</p></td>
@@ -5971,7 +5976,7 @@ The Pentium introduces CR4 to control processor extensions.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>GD</strong></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>RTM</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>RTM</em></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">GE</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">LE</p></td>
@@ -6497,8 +6502,8 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Virtual 8086 mode enhancements</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.2</p></td>
@@ -6506,8 +6511,8 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Debugging extensions</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.3</p></td>
@@ -6515,8 +6520,8 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Page size extensions</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.4</p></td>
@@ -6524,7 +6529,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Time stamp counter</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 </tr>
 <tr>
@@ -6533,7 +6538,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Model-specific registers</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 </tr>
 <tr>
@@ -6542,8 +6547,8 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Physical address extension</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i686</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.7</p></td>
@@ -6551,8 +6556,8 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check exception</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.8</p></td>
@@ -6560,7 +6565,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>cmpxchg8b</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
 </tr>
 <tr>
@@ -6569,8 +6574,53 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integrated local APIC</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P54C (Pentium, 1994)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (1996)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">i586</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K75 (Athlon, 1999)<sup class="footnote">[<a id="_footnoteref_29" class="footnote" href="#_footnotedef_29" title="View footnote.">29</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.11</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SEP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sysenter</code> and <code>sysexit</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Klamath (Pentium II, 1997)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i686</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.12</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MTRR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory type range registers</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.13</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PGE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Global paging extensions</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)<sup class="footnote">[<a id="_footnoteref_30" class="footnote" href="#_footnotedef_30" title="View footnote.">30</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.14</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MCA</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check architecture</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.15</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CMOV</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cmov</code> instruction</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">i686</p></td>
 </tr>
 </tbody>
 </table>
@@ -7533,6 +7583,14 @@ It introduces instructions for the efficient adding of large integers.</p>
   
     <li class="footnote" id="_footnotedef_28">
       28. Not a segment selector.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_29">
+      29. Early K5s use this bit to indicate the presence of PSE, rather than a LAPIC.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_30">
+      30. Early K5s use bit 9 to indicate the presence of PSE, rather than a LAPIC.
     </li>
   
   </ul>
