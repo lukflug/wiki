@@ -250,7 +250,7 @@ own math coprocessor called the <strong>387SX</strong>.</p>
 <p><strong>Intel 486DX</strong> was introduced in 1989 and implements new features, such as
 tightly coupled (i.e. true) pipelining and an integrated FPU.
 The <strong>Intel 486SX</strong> variant is a version without an integrated FPU.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
-A <strong>Intel 487SX</strong> math coprocessor upgrade was available for 486SX
+An <strong>Intel 487SX</strong> math coprocessor upgrade was available for 486SX
 systems.<sup class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
 </div>
 </div>
@@ -312,8 +312,11 @@ in 2000, and the AMD Athlon, also known as the K7, introduced in 1999.
 A major feature of the Pentium 4 is SSE2.</p>
 </div>
 <div class="paragraph">
-<p>In addition, VIA introduced its own x86 chips in 2000, after buying Cyrix and
-Centaur.</p>
+<p>In addition, VIA introduced its own x86 chips in 2000 (mostly based on
+Centaur’s WinChip), after buying Cyrix and Centaur.
+Notably, the VIA PadLock instruction set extension was introduced in 2003,
+which provides fast random number generation, encryption, and hashing, and is
+not available on Intel and AMD processors.</p>
 </div>
 </div>
 <div class="sect2">
@@ -6315,30 +6318,28 @@ rather than based on family and model.</p>
 <div class="sect2">
 <h3 id="_i686">3.7. i686</h3>
 <div class="paragraph">
-<p>686-class processors include the Intel Pentium Pro, Pentium II, and
-Pentium III, as well as the AMD K6, K6-2 and K6-III.
-The term 686 is ambiguous and may refer to:</p>
+<p>The term 686 is somewhat ambiguous, and often refers to one of following
+things:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Intel Family 6 processors, which include the Pentium Pro, II and III, as well
-as modern Core 2, i3, i5 and i7 branded processors, but not earlier
-NetBurst-based processors, such as the Pentium 4.</p>
+<p>Sixth-generation x86 processors (Intel Pentium Pro, Pentium II, and Pentium
+III, and AMD K6, K6-2, and K6-III), which were released around the same time
+as, and competed directly with the Intel Pentium Pro, II, and III.</p>
 </li>
 <li>
-<p>All 32-bit processors supporting the Pentium Pro instruction set,
-which would include 32-bit NetBurst-based processors, but not later 64-bit
-processors.</p>
+<p>Processors supporting the Pentium Pro instruction set.
+This excludes the AMD K6, K6-2, and K6-III, but includes the AMD Athlon (K7)
+and later.
+This may include all later processors as well, or exclude processors
+supporting SSE2, i.e. NetBurst (i.e. Pentium 4), x86-64 (i.e Athlon 64), and
+later, or exclude processors supporting x86-64.</p>
 </li>
 <li>
-<p>All 32-bit processors supporting the Pentium Pro instruction set, but not
-supporting SSE2, which would exclude NetBurst-based processors, but include
-the K7 Athlon.</p>
-</li>
-<li>
-<p>Sixth generation x86 processors, which would exclude NetBurst-based
-processors as well as the K7 Athlon.</p>
+<p>Family 6 processors, which correspond to all Intel processors after the
+Pentium Pro, except for NetBurst-based ones (but including later Core-branded
+processors), and the AMD K7.</p>
 </li>
 </ul>
 </div>
@@ -6346,15 +6347,13 @@ processors as well as the K7 Athlon.</p>
 <div class="sect2">
 <h3 id="_i786">3.8. i786</h3>
 <div class="paragraph">
-<p>The term "786" may refer to different things:</p>
+<p>The term 786 may refer to either x86-64 processors or a category between 686
+and x86-64:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>x86-64 processors.</p>
-</li>
-<li>
-<p>Processors with SSE2, which would include the Pentium 4 and Athlon 64.</p>
+<p>Processors with SSE2, which would include the NetBurst-based Pentium 4.</p>
 </li>
 <li>
 <p>Seventh-generation microarchitectures, which would include NetBurst and K7.</p>
@@ -6556,7 +6555,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Machine-check exception</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P5 (Pentium, 1993)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)<sup class="footnote">[<a id="_footnoteref_29" class="footnote" href="#_footnotedef_29" title="View footnote.">29</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -6574,7 +6573,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Integrated local APIC</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P54C (Pentium, 1994)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K75 (Athlon, 1999)<sup class="footnote">[<a id="_footnoteref_29" class="footnote" href="#_footnotedef_29" title="View footnote.">29</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K75 (Athlon, 1999)<sup class="footnote">[<a id="_footnoteref_30" class="footnote" href="#_footnotedef_30" title="View footnote.">30</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -6601,7 +6600,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Global paging extensions</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)<sup class="footnote">[<a id="_footnoteref_30" class="footnote" href="#_footnotedef_30" title="View footnote.">30</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)<sup class="footnote">[<a id="_footnoteref_31" class="footnote" href="#_footnotedef_31" title="View footnote.">31</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -6621,6 +6620,51 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i686</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.16</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PAT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Page attribute table</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.17</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PSE-36</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">36-bit page size extensions</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deschutes (Pentium II Xeon, 1998)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K75 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.18</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PSN</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processor serial number</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)<sup class="footnote">[<a id="_footnoteref_32" class="footnote" href="#_footnotedef_32" title="View footnote.">32</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Never</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.19</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CFLSH</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>cflush</code> instruction</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Opteron (K8 SledgeHammer, 2003)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.23</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MMX</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multimedia extensions</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P55C (Pentium MMX, 1996)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K6 (1997)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MMX</p></td>
 </tr>
 </tbody>
 </table>
@@ -7586,11 +7630,19 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_29">
-      29. Early K5s use this bit to indicate the presence of PSE, rather than a LAPIC.
+      29. AMD processors before the K7 never raise the machine-check exception.
     </li>
   
     <li class="footnote" id="_footnotedef_30">
-      30. Early K5s use bit 9 to indicate the presence of PSE, rather than a LAPIC.
+      30. Early K5s use this bit to indicate the presence of PSE, rather than a LAPIC.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_31">
+      31. Early K5s use bit 9 to indicate the presence of PSE, rather than a LAPIC.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_32">
+      32. Pentium III only. Removed with Tualatin.
     </li>
   
   </ul>
