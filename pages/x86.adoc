@@ -120,7 +120,7 @@ own math coprocessor called the *387SX*.
 tightly coupled (i.e. true) pipelining and an integrated FPU.
 The *Intel 486SX* variant is a version without an integrated FPU.footnote:[Early
 486SX chips are actually 486DX chips with the FPU disabled.]
-A *Intel 487SX* math coprocessor upgrade was available for 486SX
+An *Intel 487SX* math coprocessor upgrade was available for 486SX
 systems.footnote:[The 487SX is actually a full 486DX, that disables the 486SX
 completely.]
 
@@ -167,8 +167,11 @@ Seventh generation processors include the NetBurst-based Pentium 4, introduced
 in 2000, and the AMD Athlon, also known as the K7, introduced in 1999.
 A major feature of the Pentium 4 is SSE2.
 
-In addition, VIA introduced its own x86 chips in 2000, after buying Cyrix and
-Centaur.
+In addition, VIA introduced its own x86 chips in 2000 (mostly based on
+Centaur's WinChip), after buying Cyrix and Centaur.
+Notably, the VIA PadLock instruction set extension was introduced in 2003,
+which provides fast random number generation, encryption, and hashing, and is
+not available on Intel and AMD processors.
 
 === x86-64
 The first processors to implement *x86-64*, a 64-bit extension, originally
@@ -2617,27 +2620,27 @@ It is recommended to check for extensions using the feature bits when possible,
 rather than based on family and model.
 
 === i686
-686-class processors include the Intel Pentium Pro, Pentium II, and
-Pentium III, as well as the AMD K6, K6-2 and K6-III.
-The term 686 is ambiguous and may refer to:
+The term 686 is somewhat ambiguous, and often refers to one of following
+things:
 
-* Intel Family 6 processors, which include the Pentium Pro, II and III, as well
-  as modern Core 2, i3, i5 and i7 branded processors, but not earlier
-  NetBurst-based processors, such as the Pentium 4.
-* All 32-bit processors supporting the Pentium Pro instruction set,
-  which would include 32-bit NetBurst-based processors, but not later 64-bit
-  processors.
-* All 32-bit processors supporting the Pentium Pro instruction set, but not
-  supporting SSE2, which would exclude NetBurst-based processors, but include
-  the K7 Athlon.
-* Sixth generation x86 processors, which would exclude NetBurst-based
-  processors as well as the K7 Athlon.
+* Sixth-generation x86 processors (Intel Pentium Pro, Pentium II, and Pentium
+  III, and AMD K6, K6-2, and K6-III), which were released around the same time
+  as, and competed directly with the Intel Pentium Pro, II, and III.
+* Processors supporting the Pentium Pro instruction set.
+  This excludes the AMD K6, K6-2, and K6-III, but includes the AMD Athlon (K7)
+  and later.
+  This may include all later processors as well, or exclude processors
+  supporting SSE2, i.e. NetBurst (i.e. Pentium 4), x86-64 (i.e Athlon 64), and
+  later, or exclude processors supporting x86-64.
+* Family 6 processors, which correspond to all Intel processors after the
+  Pentium Pro, except for NetBurst-based ones (but including later Core-branded
+  processors), and the AMD K7.
 
 === i786
-The term "786" may refer to different things:
+The term 786 may refer to either x86-64 processors or a category between 686
+and x86-64:
 
-* x86-64 processors.
-* Processors with SSE2, which would include the Pentium 4 and Athlon 64.
+* Processors with SSE2, which would include the NetBurst-based Pentium 4.
 * Seventh-generation microarchitectures, which would include NetBurst and K7.
 
 === x86-64
@@ -2704,7 +2707,8 @@ other extensions, or power management features.
 | | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) |
 
 | EDX.7 | MCE | Machine-check exception
-| | P5 (Pentium, 1993) | K5 (5k86, 1996) |
+| | P5 (Pentium, 1993) | K5 (5k86, 1996)footnote:[AMD processors before the K7
+never raise the machine-check exception.] |
 
 | EDX.8 | CX8 | `cmpxchg8b`
 | | P5 (Pentium, 1993) | K5 (5k86, 1996) | i586
@@ -2728,6 +2732,22 @@ indicate the presence of PSE, rather than a LAPIC.] |
 
 | EDX.15 | CMOV | `cmov` instruction
 | | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) | i686
+
+| EDX.16 | PAT | Page attribute table
+| | Katmai (Pentium III, 1999) | K7 (Athlon, 1999) |
+
+| EDX.17 | PSE-36 | 36-bit page size extensions
+| | Deschutes (Pentium II Xeon, 1998) | K75 (Athlon, 1999) |
+
+| EDX.18 | PSN | Processor serial number
+| | Katmai (Pentium III, 1999)footnote:[Pentium III only. Removed with
+Tualatin.] | Never |
+
+| EDX.19 | CFLSH | `cflush` instruction
+| | Katmai (Pentium III, 1999) | Opteron (K8 SledgeHammer, 2003) | SSE
+
+| EDX.23 | MMX | Multimedia extensions
+| | P55C (Pentium MMX, 1996) | K6 (1997) | MMX
 |===
 
 === Model-specific registers
