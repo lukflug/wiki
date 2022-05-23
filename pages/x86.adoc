@@ -2686,7 +2686,7 @@ other extensions, or power management features.
 | First implemented (Intel) | First implemented (AMD) | Level
 
 | EDX.0 | FPU | Integrated x87 floating-point unit
-| | i486DX (1989) | Am486DX (1993) | i486
+| | i486DX (1989) | Am486DX (1993) | i387
 
 | EDX.1 | VME | Virtual 8086 mode enhancements
 | | P5 (Pentium, 1993) | K5 (5k86, 1996) |
