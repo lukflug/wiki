@@ -2570,7 +2570,8 @@ There are standard function numbers, starting from 0x00000000, and extended
 function numbers, starting from 0x80000000.
 
 Important functions include:footnote:[The original Pentium and late 486 only
-has the first two standard functions.]
+has the first two standard functions; further functions were added successively
+in later generations.]
 
 * EAX = 0x00000000 returns the highest standard function number in EAX and
   a 12 byte vendor string in EBX, ECX, and EDX.
@@ -2718,7 +2719,8 @@ never raise the machine-check exception.] |
 to indicate the presence of PSE, rather than a LAPIC.] |
 
 | EDX.11 | SEP | `sysenter` and `sysexit`
-| | Klamath (Pentium II, 1997) | K7 (Athlon, 1999) | i686
+| | Klamath (Pentium II, 1997)footnote:[The Pentium Pro has this bit set, but
+does not implement the feature correctly.] | K7 (Athlon, 1999) | i686
 
 | EDX.12 | MTRR | Memory type range registers
 | | P6 (Pentium Pro, 1995) | K7 (Athlon, 1999) |
@@ -2746,8 +2748,19 @@ Tualatin.] | Never |
 | EDX.19 | CFLSH | `cflush` instruction
 | | Katmai (Pentium III, 1999) | Opteron (K8 SledgeHammer, 2003) | SSE
 
+| EDX.21 | DS | Debug store (for profiling, used by BTS and PEBS)
+| | Pentium 4 (Willamette NetBurst, 2000) | Never |
+
+// note (lukflug): reference for this in Intel SDM page 3336
+| EDX.22 | ACPI | Support for thermal monitoring and clock modulation MSRs (not
+ACPI)
+| | Willamette (NetBurst, Pentium 4, 2000) | Never |
+
 | EDX.23 | MMX | Multimedia extensions
 | | P55C (Pentium MMX, 1996) | K6 (1997) | MMX
+
+| EDX.24 | FXSR | Support for `fxsave` and `fxrstor` |
+| | Katmai (Pentium III, 1999) | K75 (Athlon, 1999) |
 |===
 
 === Model-specific registers
