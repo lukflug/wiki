@@ -6581,7 +6581,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SEP</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>sysenter</code> and <code>sysexit</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Klamath (Pentium II, 1997)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Klamath (Pentium II, 1997)<sup class="footnote">[<a id="_footnoteref_31" class="footnote" href="#_footnotedef_31" title="View footnote.">31</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">K7 (Athlon, 1999)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">i686</p></td>
 </tr>
@@ -6600,7 +6600,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Global paging extensions</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P6 (Pentium Pro, 1995)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)<sup class="footnote">[<a id="_footnoteref_31" class="footnote" href="#_footnotedef_31" title="View footnote.">31</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K5 (5k86, 1996)<sup class="footnote">[<a id="_footnoteref_32" class="footnote" href="#_footnotedef_32" title="View footnote.">32</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
 <tr>
@@ -6644,7 +6644,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">PSN</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Processor serial number</p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)<sup class="footnote">[<a id="_footnoteref_32" class="footnote" href="#_footnotedef_32" title="View footnote.">32</a>]</sup></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)<sup class="footnote">[<a id="_footnoteref_33" class="footnote" href="#_footnotedef_33" title="View footnote.">33</a>]</sup></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Never</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
@@ -6658,6 +6658,25 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.21</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Debug store (for profiling, used by BTS and PEBS)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium 4 (Willamette NetBurst, 2000)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Never</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.22</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ACPI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Support for thermal monitoring and clock modulation MSRs (not
+ACPI)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Willamette (NetBurst, Pentium 4, 2000)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Never</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">EDX.23</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">MMX</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Multimedia extensions</p></td>
@@ -6665,6 +6684,15 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">P55C (Pentium MMX, 1996)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">K6 (1997)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">MMX</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.24</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FXSR</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Support for <code>fxsave</code> and <code>fxrstor</code></p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K75 (Athlon, 1999)</p></td>
 </tr>
 </tbody>
 </table>
@@ -7614,7 +7642,7 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_25">
-      25. The original Pentium and late 486 only has the first two standard functions.
+      25. The original Pentium and late 486 only has the first two standard functions; further functions were added successively in later generations.
     </li>
   
     <li class="footnote" id="_footnotedef_26">
@@ -7638,11 +7666,15 @@ It introduces instructions for the efficient adding of large integers.</p>
     </li>
   
     <li class="footnote" id="_footnotedef_31">
-      31. Early K5s use bit 9 to indicate the presence of PSE, rather than a LAPIC.
+      31. The Pentium Pro has this bit set, but does not implement the feature correctly.
     </li>
   
     <li class="footnote" id="_footnotedef_32">
-      32. Pentium III only. Removed with Tualatin.
+      32. Early K5s use bit 9 to indicate the presence of PSE, rather than a LAPIC.
+    </li>
+  
+    <li class="footnote" id="_footnotedef_33">
+      33. Pentium III only. Removed with Tualatin.
     </li>
   
   </ul>
