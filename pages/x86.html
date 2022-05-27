@@ -4030,6 +4030,10 @@ Base Register PDBR) and the new general-purpose registers introduced with the
 <td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">T</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">104</p></td>
+<td class="tableblock halign-left valign-top" colspan="32"><p class="tableblock">Shadow stack pointer</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -4052,6 +4056,13 @@ ports.<sup class="footnote">[<a id="_footnoteref_20" class="footnote" href="#_fo
 <dd>
 <p>Will raise a debug trap (interrupt 1) after switching to the task,
 but before executing an instruction, when set.</p>
+</dd>
+<dt class="hdlist1">Shadow stack pointer (SSP)</dt>
+<dd>
+<p>Not present in 386, but included her for
+completeness.
+Only available on newer CPUs with control-flow
+enforcement technology (CET).</p>
 </dd>
 </dl>
 </div>
@@ -6654,7 +6665,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>cflush</code> instruction</p></td>
 <td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Opteron (K8 SledgeHammer, 2003)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SledgeHammer (K8, Opteron, 2003)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
 </tr>
 <tr>
@@ -6662,7 +6673,7 @@ other extensions, or power management features.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">DS</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Debug store (for profiling, used by BTS and PEBS)</p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Pentium 4 (Willamette NetBurst, 2000)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Willamette (NetBurst, Pentium 4, 2000)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Never</p></td>
 <td class="tableblock halign-left valign-top"></td>
 </tr>
@@ -6690,9 +6701,45 @@ ACPI)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">FXSR</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Support for <code>fxsave</code> and <code>fxrstor</code></p></td>
 <td class="tableblock halign-left valign-top"></td>
-<td class="tableblock halign-left valign-top"></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">K75 (Athlon, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.25</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Streaming SIMD extensions</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Katmai (Pentium III, 1999)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Palomino (Athlon XP, 2001)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.26</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE2</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Willamette (NetBurst, Pentium 4, 2000)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SledgeHammer (K8, Opteron, 2003)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSE2 or i786</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.27</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self snoop</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Northwood (Pentium 4, 2002)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Never</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EDX.28</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTT</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hyper-threading technology</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Foster MP (Xeon, 2002)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bulldozer (AMD FX, 2011)</p></td>
+<td class="tableblock halign-left valign-top"></td>
 </tr>
 </tbody>
 </table>
