@@ -1786,6 +1786,8 @@ Base Register PDBR) and the new general-purpose registers introduced with the
 
 | 100 16+| I/O map base
 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | T
+
+| 104 32+| Shadow stack pointer
 |===
 ====
 
@@ -1803,6 +1805,10 @@ I/O map base:: Base offset the _I/O permission bitmap_ in the TSS.
                I/O port that is accessed, with numerical value 255.]
 T flag (T):: Will raise a debug trap (interrupt 1) after switching to the task,
              but before executing an instruction, when set.
+Shadow stack pointer (SSP):: Not present in 386, but included her for
+                             completeness.
+                             Only available on newer CPUs with control-flow
+                             enforcement technology (CET).
 
 ==== Paging
 The 386 added support for paging as an extra translation layer, in addition to
@@ -2746,10 +2752,10 @@ indicate the presence of PSE, rather than a LAPIC.] |
 Tualatin.] | Never |
 
 | EDX.19 | CFLSH | `cflush` instruction
-| | Katmai (Pentium III, 1999) | Opteron (K8 SledgeHammer, 2003) | SSE
+| | Katmai (Pentium III, 1999) | SledgeHammer (K8, Opteron, 2003) | SSE
 
 | EDX.21 | DS | Debug store (for profiling, used by BTS and PEBS)
-| | Pentium 4 (Willamette NetBurst, 2000) | Never |
+| | Willamette (NetBurst, Pentium 4, 2000) | Never |
 
 // note (lukflug): reference for this in Intel SDM page 3336
 | EDX.22 | ACPI | Support for thermal monitoring and clock modulation MSRs (not
@@ -2759,8 +2765,22 @@ ACPI)
 | EDX.23 | MMX | Multimedia extensions
 | | P55C (Pentium MMX, 1996) | K6 (1997) | MMX
 
-| EDX.24 | FXSR | Support for `fxsave` and `fxrstor` |
-| | Katmai (Pentium III, 1999) | K75 (Athlon, 1999) |
+| EDX.24 | FXSR | Support for `fxsave` and `fxrstor`
+| | Katmai (Pentium III, 1999) | K75 (Athlon, 1999) | SSE
+
+| EDX.25 | SSE | Streaming SIMD extensions
+| | Katmai (Pentium III, 1999) | Palomino (Athlon XP, 2001) | SSE
+
+| EDX.26 | SSE2 | SSE2
+| | Willamette (NetBurst, Pentium 4, 2000) | SledgeHammer (K8, Opteron, 2003)
+| SSE2 or i786
+
+// note (lukflug): reference: https://www.cpu-world.com/CPUs/Pentium_4/Intel-Pentium%204%201.6%20GHz%20-%20RK80532PC025512%20(BX80532PC1600D).html
+| EDX.27 | SS | Self snoop
+| | Northwood (Pentium 4, 2002) | Never |
+
+| EDX.28 | HTT | Hyper-threading technology
+| | Foster MP (Xeon, 2002) | Bulldozer (AMD FX, 2011) |
 |===
 
 === Model-specific registers
