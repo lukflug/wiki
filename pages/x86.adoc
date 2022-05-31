@@ -242,7 +242,7 @@ making it difficult to use.
 Unlike real mode, there is no linear relationship between segment address and
 segment base address.
 The segment base address and other properties of each segment are determined by
-the _global descriptor table (GDT)_ and _local descriptor table (LDT)_.
+the _Global Descriptor Table (GDT)_ and _Local Descriptor Table (LDT)_.
 The segment address is now a segment selector, which is essentially an index
 to a segment descriptor.
 
