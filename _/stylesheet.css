@@ -56,6 +56,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .tok-nt { color: #8ec07c } /* Name.Tag */
 .tok-nv { color: #83a598 } /* Name.Variable */
 .tok-ow { color: #fb4934 } /* Operator.Word */
+.tok-pm { color: #dddddd } /* Punctuation.Marker */
 .tok-w { color: #dddddd } /* Text.Whitespace */
 .tok-mb { color: #d3869b } /* Literal.Number.Bin */
 .tok-mf { color: #d3869b } /* Literal.Number.Float */
