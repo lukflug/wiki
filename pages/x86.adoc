@@ -78,12 +78,16 @@ The *NEC V20* is a pin compatible replacement for the 8088, and a very popular
 upgrade for XT-class machines, due to being able to execute more instructions
 on average in a smaller amount of time.
 Variants include the *NEC V30*, which is pin compatible with the 8086, the
-_NEC V40_, which corresponds to the 188, and the _NEC V50_, which corresponds
-to the 186.
+_NEC V40_ and _NEC V50_, which are embedded versions of the V20 and V30, and
+the _NEC V41_ and _NEC V51_, which integrate XT-compatible peripherals.
 The _NEC V33_ and the _NEC V53_ are V30 and V50 variants with performance
 equivalent to a 286, that are able to address up to 16 MiB of memory.
 The _NEC V25_ and _NEC V35_ are microcontroller variants of the V20 and V30
 respectively.
+The _NEC V55_ is software compatible with the V25 and V35, and allows the
+data-only access of up to 16 MiB of memory (by adding two new segment
+registers, which are 256 byte page addresses, rather than 16 byte paragraph
+addresses).
 The later V60 series implements a different ISA, but has a V20 emulation mode.
 
 All these CPUs support the 186 instruction set and new instructions exclusively
