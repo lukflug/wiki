@@ -858,9 +858,9 @@ Accessed bit (A):: This bit is set when a segment is accessed.
 
 | 0 | 0 | 1 | 1 | Busy TSS | GDT only
 
-| 0 | 1 | 0 | 0 | Call gate | All
+| 0 | 1 | 0 | 0 | Call gate | GDT, LDT
 
-| 0 | 1 | 0 | 1 | Task gate | GDT, LDT
+| 0 | 1 | 0 | 1 | Task gate | All
 
 | 0 | 1 | 1 | 0 | Interrupt gate | IDT only
 
